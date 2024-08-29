@@ -1,0 +1,33 @@
+version: "3"
+services:
+  discord_bot_paimon:
+    build: ./
+    container_name: discord_bot_paimon
+    restart: unless-stopped
+    volumes: 
+      - ./:/home/ubuntu/paimon/
+    networks:
+      - swag
+
+  discord_bot_paimon_db:
+    image: mongo
+    container_name: discord_bot_paimon_db
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb/config/mongod.conf.orig:/etc/mongod.conf.orig
+      - ./mongodb/db/:/data/db
+      - ./mongodb/config/init-scripts/init-db.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=root-db
+    env_file:
+      - .env
+    networks:
+      - swag
+
+networks:
+    docker_swag:
+        external: true
