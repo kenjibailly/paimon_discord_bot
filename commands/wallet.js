@@ -9,13 +9,14 @@ async function handleWalletCommand(res, client) {
 
         if (wallet) {
             const title = "Wallet Balance";
-            const description = `You have **${wallet.amount}** tokens in your wallet.`;
+            const description = `You have **${wallet.amount}** 🪙 in your wallet.`;
             const embed = createEmbed(title, description, "");
 
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {
                     embeds: [embed],
+                    flags: 64,
                 },
             };
         } else {
@@ -28,6 +29,7 @@ async function handleWalletCommand(res, client) {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {
                     embeds: [embed],
+                    flags: 64,
                 },
             };
         }
@@ -43,6 +45,7 @@ async function handleWalletCommand(res, client) {
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             data: {
                 embeds: [embed],
+                flags: 64,
             },
         };
     }

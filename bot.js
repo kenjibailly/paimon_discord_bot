@@ -2,7 +2,7 @@ require('dotenv/config');
 const { Client, GatewayIntentBits, Events } = require('discord.js');
 const express = require('express');
 const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('discord-interactions');
-const handleSlashCommand = require('./handlers.js');
+const { handleSlashCommand, handleButtonClicks, handleMessageReplies } = require('./handlers.js');
 
 const mongoose = require('mongoose');
 const mongodb_URI = require('./mongodb/URI');
@@ -43,8 +43,22 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
     return res.send(response);
   }
 
+  if (type === InteractionType.MESSAGE_COMPONENT) {
+    const response = await handleButtonClicks(req.body, client);
+    return res.send(response);
+  }
+
   return res.status(400).json({ error: 'Unknown interaction type' });
 });
+
+
+client.on('messageCreate', async message => {
+
+  const response = await handleMessageReplies(message, client);
+  // return res.send(response);
+
+});
+
 
 app.listen(PORT, () => {
   console.log('Express server listening on port', PORT);

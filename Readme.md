@@ -74,3 +74,7 @@ When adding or removing a slash command, the following command must be executed 
 ```bash
 node commands/deploy-commands.js
 ```
+
+## Discord
+
+Move the bot's role to the top of the hierarchy or it will have permissions issues.

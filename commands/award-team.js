@@ -23,7 +23,7 @@ async function handleAwardTeamCommand(res, client) {
     try {
         const result = await Wallet.bulkWrite(newWalletEntries);
         const title = "Tokens";
-        const description = `Awarded **${amount}** tokens to <@&${role}>!`;
+        const description = `Awarded **${amount}** 🪙 to <@&${role}>!`;
         const embed = createEmbed(title, description, "");
 
         return {

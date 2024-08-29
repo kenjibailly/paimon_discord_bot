@@ -47,7 +47,12 @@ async function registerCommands() {
     description: 'Check your wallet balance',
   };
 
-  const NEW_COMMANDS = [AWARD_TEAM_COMMAND, WALLET_COMMAND];
+  const SHOP_COMMAND = {
+    name: 'shop',
+    description: 'Open the shop',
+  };
+
+  const NEW_COMMANDS = [AWARD_TEAM_COMMAND, WALLET_COMMAND, SHOP_COMMAND];
 
   // Fetch existing commands from Discord
   const existingCommands = await fetchCommands();
