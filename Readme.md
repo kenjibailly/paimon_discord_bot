@@ -127,8 +127,6 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 
 </details>
 
-</br>
-
 # Functionality
 
 ### 🦜 Slash Commands:
