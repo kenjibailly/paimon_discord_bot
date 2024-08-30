@@ -2,9 +2,9 @@
 
 # 🤖 Paimon Event Bot
 
-The idea is that game events will be held outside of Discord. Users will be able to join a team and the role will be awarded to them. The winning team gets awarded tokens.
+The idea is that game events will be held outside of Discord. One team goes against the other. The winning team gets awarded tokens through a slash command performed by the staff.
 
-Everyone who wants to join the next game event can react to a message and will be added towards the random team generation. A total of 2 teams will be randomly generated.
+Those who wants to join the game event can react to a message and will be added towards the random team generation. A total of 2 teams will be randomly generated.
 
 Award tokens to roles, all users in that said role will get their tokens. Users can then use their tokens for various rewards using the shop.
 
@@ -132,17 +132,28 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 ### 🦜 Slash Commands:
 - ✅  /award-team
     - Awards a role 🪙
-    - Input: role, amount, reason
+    - Input: role, amount, optional: reason
 - ✅  /award-user
     - Awards a user 🪙
-    - Input: user, amount, reason
+    - Input: user, amount, optional: reason
 - ✅  /deduct-user
     - Deducts 🪙 from a user
-    - Input: user, amount, reason
+    - Input: user, amount, optional: reason
 - ✅ /wallet
     - Checks your wallet balance
 - ✅ /shop
     - Opens the shop
+- ❌ /set-teams
+    - Choose 2 roles to be assigned as teams for the team generation
+    - Input: role, role
+- ❌ /reset-teams
+    - Removes all users from the roles created for the team generation to start over
+- ❌ /start-event
+    - Creates event, users can apply to this event to be added to the team generation
+    - Input: event name, description, optional: image
+- ❌ /set-reward-time
+    - Sets the amount of time the reward will stay before being removed
+    - Input: time in days
 
 ### 🏪 Shop rewards:
 - ✅ Change your nickname
@@ -156,7 +167,3 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 
 - ❌ Users apply to join event, those who applied will be randomly assigned to a team
 - ❌ Assign applied users to random team
-
-### ⚙️ Settings:
-
-- ❌ After X amount of time, the reward will be removed. Amount of time can be configured in the settings, or all rewards can be removed with a command, for example when a game event has started/ended.
