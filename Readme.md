@@ -132,38 +132,50 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 # Functionality
 
 ### 🦜 Slash Commands:
-- ✅  /award-team
-    - Awards a role 🪙
-    - Input: role, amount, optional: reason
-- ✅  /award-user
-    - Awards a user 🪙
-    - Input: user, amount, optional: reason
-- ✅  /deduct-user
-    - Deducts 🪙 from a user
-    - Input: user, amount, optional: reason
-- ✅ /wallet
-    - Checks your wallet balance
+
+#### 🎉 General Functions
+
 - ✅ /shop
     - Opens the shop
-- ❌ /set-teams
-    - Choose 2 roles to be assigned as teams for the team generation
-    - Input: role, role
-- ❌ /reset-teams
-    - Removes all users from the roles created for the team generation to start over
-- ❌ /start-event
-    - Creates event, users can apply to this event to be added to the team generation
-    - Input: event name, description, optional: image
-- ❌ /set-reward-time
-    - Sets the amount of time the reward will stay before being removed
-    - Input: time in days
+- ✅ /wallet
+    - Checks your wallet balance
 - ❌ /games
     - Lists the upcoming games
+
+#### 🧑‍💼 Staff functions
+
+- ✅  /award-team
+    - Awards a role 🪙
+    - Input: `role`, `amount`, optional: `reason`
+- ✅  /award-user
+    - Awards a user 🪙
+    - Input: `user`, `amount`, optional: `reason`
+- ✅  /deduct-user
+    - Deducts 🪙 from a user
+    - Input: `user`, `amount`, optional: `reason`
+- ❌ /start-event
+    - Creates event, users can apply to this event to be added to the team generation
+    - Input: `event name`, `description`, optional: `image link`
+- ❌ /reset-teams
+    - Removes all users from the roles created for the team generation to start over
 - ❌ /add-game
     - Adds game to the end of the list
-    - Input: game
+    - Input: `game`
+
+#### ⚙️ Settings
+
+- ❌ /set-teams
+    - Choose 2 roles to be assigned as teams for the team generation
+    - Input: `role`, `role`
+- ❌ /set-rewards
+    - Set chosen rewards, this enables your selected rewards and disables those unselected, default: `all enabled`
+    - Input: `reward drop down list`
 - ❌ /set-reward-price
-    - Sets the price per reward for the user to claim
-    - Input: reward drop down list, amount
+    - Sets the price per reward for the user to claim, default: `1` 🪙
+    - Input: `reward drop down list`, `amount`
+- ❌ /set-reward-time
+    - Sets the amount of time the reward will stay before being removed, default: `30 days`
+    - Input: `time in days`
 
 ### 🏪 Shop 
 
