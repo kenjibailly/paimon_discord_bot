@@ -156,6 +156,9 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
     - Input: time in days
 - ❌ /games
     - Lists the upcoming games
+- ❌ /add-game
+    - Adds game to the end of the list
+    - Input: game
 
 ### 🏪 Shop rewards:
 - ✅ Change your nickname
