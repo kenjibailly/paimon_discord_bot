@@ -47,6 +47,29 @@ Used in this project:
     ```
 </details>
 
+### ⚓ Docker
+
+<details>
+
+<summary>🛠️ Open for installation steps</summary>
+
+Edit `docker-compose.yml`:
+
+> Network `swag` is the network you put your swag / nginx-proxy-manager / nginx container in, change to your own existing network. 
+
+```bash
+docker-compose up -d
+```
+
+Create a proxy to your (sub)domain with swag / nginx-proxy-manager / nginx. 
+```
+http://discord_bot_paimon:3000
+```
+And add a CNAME for your sub domain if used.
+
+</details>
+
+
 ### 🌀 Discord Developer Portal
 
 <details>
@@ -55,7 +78,7 @@ Used in this project:
 
 Go to the [Discord Developer Portal](https://discord.com/developers/applications/) and create a `New Application`.
 
-Under the `General Information` tab, find `Interactions Endpoint URL` and add your url your proxied ending in `/interactions`.
+Under the `General Information` tab, find `Interactions Endpoint URL` and add your url you proxied ending in `/interactions`.
 Example:
 ```
 https://sub.domain.com/interactions
@@ -79,27 +102,6 @@ Under the `OAuth2` tab, find `OAuth2 URL Generator` and check `bot` under the sc
 
 </details>
 
-### ⚓ Docker
-
-<details>
-
-<summary>🛠️ Open for installation steps</summary>
-
-Edit `docker-compose.yml`:
-
-> Network `swag` is the network you put your swag / nginx-proxy-manager / nginx container in, change to your own existing network. 
-
-```bash
-docker-compose up -d
-```
-
-Create a proxy to your (sub)domain with swag / nginx-proxy-manager / nginx. 
-```
-http://discord_bot_paimon:3000
-```
-And add a CNAME for your sub domain if used.
-
-</details>
 
 ### 💾 Register Discord Slash Commands
 
@@ -121,7 +123,7 @@ node commands/deploy-commands.js
 
 <summary>🛠️ Open for installation steps</summary>
 
-Move the bot's role to the top of the hierarchy or it will have permissions issues.
+Go to `Server Settings` > `Roles` and move the bot's role to the top of the hierarchy or it will have permissions issues.
 
 Change the permissions of the commands of the bot. Go to `Server Settings` > `Integrations`, find the bot under `Bots and Apps` and click on `Manage`. Configure each command's permissions to your preference.
 
