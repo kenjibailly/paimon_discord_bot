@@ -154,6 +154,8 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 - ❌ /set-reward-time
     - Sets the amount of time the reward will stay before being removed
     - Input: time in days
+- ❌ /games
+    - Lists the upcoming games
 
 ### 🏪 Shop rewards:
 - ✅ Change your nickname
