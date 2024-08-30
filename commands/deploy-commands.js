@@ -39,6 +39,12 @@ async function registerCommands() {
         description: 'Amount of coins to award',
         required: true,
       },
+      {
+        type: 3, // 3 corresponds to a STRING in Discord's API
+        name: 'reason',
+        description: 'Reason for the awarding',
+        required: false, // Make it optional or true if you need it to be required
+      },
     ],
   };
 
@@ -47,12 +53,62 @@ async function registerCommands() {
     description: 'Check your wallet balance',
   };
 
+  const DEDUCT_USER_COMMAND = {
+    name: 'deduct-user',
+    description: 'Deduct shop coins from wallet of user by amount',
+    options: [
+      {
+        type: 6, // 6 corresponds to a USER in Discord's API
+        name: 'user',
+        description: 'Select a user to deduct wallet',
+        required: true,
+      },
+      {
+        type: 4, // 4 corresponds to an INTEGER in Discord's API
+        name: 'amount',
+        description: 'Amount of coins to deduct',
+        required: true,
+      },
+      {
+        type: 3, // 3 corresponds to a STRING in Discord's API
+        name: 'reason',
+        description: 'Reason for the deduction',
+        required: false, // Make it optional or true if you need it to be required
+      },
+    ],
+  };
+
+  const AWARD_USER_COMMAND = {
+    name: 'award-user',
+    description: 'Award shop coins to a user',
+    options: [
+      {
+        type: 6, // 6 corresponds to a USER in Discord's API
+        name: 'user',
+        description: 'Select a user to deduct wallet',
+        required: true,
+      },
+      {
+        type: 4, // 4 corresponds to an INTEGER in Discord's API
+        name: 'amount',
+        description: 'Amount of coins to award',
+        required: true,
+      },
+      {
+        type: 3, // 3 corresponds to a STRING in Discord's API
+        name: 'reason',
+        description: 'Reason for the awarding',
+        required: false, // Make it optional or true if you need it to be required
+      },
+    ],
+  };
+
   const SHOP_COMMAND = {
     name: 'shop',
     description: 'Open the shop',
   };
 
-  const NEW_COMMANDS = [AWARD_TEAM_COMMAND, WALLET_COMMAND, SHOP_COMMAND];
+  const NEW_COMMANDS = [AWARD_TEAM_COMMAND, WALLET_COMMAND, DEDUCT_USER_COMMAND, AWARD_USER_COMMAND, SHOP_COMMAND];
 
   // Fetch existing commands from Discord
   const existingCommands = await fetchCommands();

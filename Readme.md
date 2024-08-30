@@ -1,31 +1,57 @@
-# Paimon Bot
+<div align="center">
 
-The idea is that game events will be held within the discord server. Users will be able to join a team and the role will be awarded to them. The winning team gets awarded tokens.
+# 🤖 Paimon Event Bot
+
+The idea is that game events will be held outside of Discord. Users will be able to join a team and the role will be awarded to them. The winning team gets awarded tokens.
 
 Everyone who wants to join the next game event can react to a message and will be added towards the random team generation. A total of 2 teams will be randomly generated.
 
 Award tokens to roles, all users in that said role will get their tokens. Users can then use their tokens for various rewards using the shop.
 
-Shop rewards:
-- add custom emoji next to name
-- add custom server emoji
-- add custom channel
-- change someone's nickname of choice
-- choose next game
-- add custom role name and color
-- add custom soundboard sound
-
 After X amount of time, the reward will be removed and can be configured in the settings, or all rewards can be removed with a command, for example when a game event has started/ended.
 
-# How to install
+</div>
 
-Copy `.env.sample` and paste it in the same directory, rename it to `.env`. Or use this command:
-We will fill in the variables later.
-```bash
-cp .env.example .env
-```
+## ⚙️ Technical information
 
-## Discord Developer Portal
+Used in this project:
+- Docker
+- MongoDB
+- Nodejs (Discordjs)
+
+## 💾 How to install
+
+### 💻 Local
+<details>
+
+<summary>🛠️ Open for installation steps</summary>
+
+1. Clone the repository
+
+    ```bash 
+    git clone https://github.com/kenjibailly/paimon_discord_bot
+    ```
+
+2. Copy example .env file and make changes:
+
+    > We will fill in the variables later.
+
+    ```bash
+    cp .env.example .env
+    ```
+
+3. Run the Docker Compose
+
+    ```bash
+    docker-compose up -d
+    ```
+</details>
+
+### 🌀 Discord Developer Portal
+
+<details>
+
+<summary>🛠️ Open for installation steps</summary>
 
 Go to the [Discord Developer Portal](https://discord.com/developers/applications/) and create a `New Application`.
 
@@ -51,7 +77,13 @@ Now we will fill in the .env file we created.
 Now invite your Discord bot to your server.
 Under the `OAuth2` tab, find `OAuth2 URL Generator` and check `bot` under the scopes, then check `Administrator` under the bot permissions. Now find `Generated URL` at the bottom of the page and copy the link. Open the link in your browser and invite the Discord Bot to your server.
 
-## Docker
+</details>
+
+### ⚓ Docker
+
+<details>
+
+<summary>🛠️ Open for installation steps</summary>
 
 Edit `docker-compose.yml`:
 
@@ -67,7 +99,13 @@ http://discord_bot_paimon:3000
 ```
 And add a CNAME for your sub domain if used.
 
-## How to add slash commands
+</details>
+
+### 💾 Register Discord Slash Commands
+
+<details>
+
+<summary>🛠️ Open for installation steps</summary>
 
 When adding or removing a slash command, the following command must be executed in order for Discord to acknowledge the slash command:
 
@@ -75,6 +113,52 @@ When adding or removing a slash command, the following command must be executed 
 node commands/deploy-commands.js
 ```
 
-## Discord
+</details>
+
+### 👾 Discord
+
+<details>
+
+<summary>🛠️ Open for installation steps</summary>
 
 Move the bot's role to the top of the hierarchy or it will have permissions issues.
+
+Change the permissions of the commands of the bot. Go to `Server Settings` > `Integrations`, find the bot under `Bots and Apps` and click on `Manage`. Configure each command's permissions to your preference.
+
+</details>
+
+</br>
+
+# Functionality
+
+### 🦜 Slash Commands:
+- ✅  /award-team
+    - Awards a role 🪙
+    - Input: role, amount, reason
+- ✅  /award-user
+    - Awards a user 🪙
+    - Input: user, amount, reason
+- ✅  /deduct-user
+    - Deducts 🪙 from a user
+    - Input: user, amount, reason
+- ✅ /wallet
+    - Checks your wallet balance
+- ✅ /shop
+    - Opens the shop
+
+### 🏪 Shop rewards:
+- ✅ Change your nickname
+- ✅ Change someone's nickname
+- ❌ Add custom channel
+- ❌ Choose next game
+- ❌ Add custom role name and color
+- ❌ Add custom soundboard sound
+
+### 💪 Join event and assign team
+
+- ❌ Users apply to join event, those who applied will be randomly assigned to a team
+- ❌ Assign applied users to random team
+
+### ⚙️ Settings:
+
+- ❌ After X amount of time, the reward will be removed. Amount of time can be configured in the settings, or all rewards can be removed with a command, for example when a game event has started/ended.

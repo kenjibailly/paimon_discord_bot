@@ -2,11 +2,15 @@ const { InteractionResponseType } = require('discord-interactions');
 const Wallet = require('../models/wallet');
 const createEmbed = require('../helpers/embed');
 
-async function handleAwardTeamCommand(res, client) {
-    const { data, guild_id } = res;
-    const { options } = data;
-    const role = options.find(option => option.name === 'role').value;
-    const amount = options.find(option => option.name === 'amount').value;
+async function handleAwardTeamCommand(interaction, client) {
+    const { data, member, guild_id } = interaction;
+
+    const [roleOption, amountOption, reasonOption] = data.options;
+
+    const role = roleOption ? roleOption.value : null;
+    const amount = amountOption ? amountOption.value : null;
+    const reason = reasonOption ? reasonOption.value : "No reason provided"; // Default value if no reason is provided
+
 
     const guild = await client.guilds.fetch(guild_id);
     const members = await guild.members.fetch();
@@ -14,7 +18,7 @@ async function handleAwardTeamCommand(res, client) {
     
     let newWalletEntries = roleMembers.map(member => ({
         updateOne: {
-            filter: { user_id: member.user.id },
+            filter: { user_id: member.user.id, guild_id: guild_id },
             update: { $inc: { amount: amount } },
             upsert: true,
         }
@@ -23,7 +27,8 @@ async function handleAwardTeamCommand(res, client) {
     try {
         const result = await Wallet.bulkWrite(newWalletEntries);
         const title = "Tokens";
-        const description = `Awarded **${amount}** 🪙 to <@&${role}>!`;
+        const description = `<@${member.user.id}> awarded **${amount}** 🪙 to <@&${role}>!
+        \nReason: **${reason}**`;
         const embed = createEmbed(title, description, "");
 
         return {
@@ -37,7 +42,7 @@ async function handleAwardTeamCommand(res, client) {
 
         const title = "Tokens";
         const description = `Failed to add tokens to the database, please try again.`;
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {

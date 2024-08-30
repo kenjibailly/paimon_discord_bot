@@ -8,8 +8,8 @@ async function handleExchangeShopButton(interaction, client) {
 
     // Create a private thread that is only visible to the user who clicked the button
     const thread = await channel.threads.create({
-        name: `Exchange Shop - ${interaction.member.user.username}`, // Ensure you use the correct user property
-        autoArchiveDuration: 15, // Archive the thread after 60 minutes of inactivity
+        name: `Exchange Shop - ${interaction.member.user.global_name}`, // Ensure you use the correct user property
+        autoArchiveDuration: 60, // Archive the thread after 60 minutes of inactivity
         reason: 'User initiated exchange shop interaction',
         invitable: false, // Don't allow other users to join the thread
         type: 12, // Private Thread (only visible to members who are added)
@@ -37,7 +37,11 @@ async function handleExchangeShopButton(interaction, client) {
                         options: [
                             {
                                 label: 'Change your nickname',
-                                value: 'change-own-nickname',
+                                value: 'change-nickname',
+                            },
+                            {
+                                label: 'Change someone\'s nickname',
+                                value: 'change-user-nickname',
                             },
                             {
                                 label: 'Add custom server emoji',
@@ -46,10 +50,6 @@ async function handleExchangeShopButton(interaction, client) {
                             {
                                 label: 'Add custom channel',
                                 value: 'add-channel',
-                            },
-                            {
-                                label: 'Change someone\'s nickname',
-                                value: 'change-nickname',
                             },
                             {
                                 label: 'Choose next game',

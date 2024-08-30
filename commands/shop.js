@@ -1,15 +1,15 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 
-async function handleShopCommand(res, client) {
+async function handleShopCommand(interaction, client) {
     const title = "Shop";
     const description = `
 Exchange your tokens for the following rewards:
         
-- Change your nickname, tip: you can add 1 emoji next to your name
+- Change your nickname
+- Change someone's nickname
 - add custom server emoji
 - add custom channel
-- change someone's nickname of choice
 - choose next game
 - add custom role name and color
 - add custom soundboard sound

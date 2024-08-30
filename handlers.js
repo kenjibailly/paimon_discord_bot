@@ -16,7 +16,7 @@ async function handleSlashCommand(res, client) {
 
         const title = "Unknown Command";
         const description = `I do not know this command.`;
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {
@@ -41,7 +41,7 @@ async function handleButtonClicks(res, client) {
 
         const title = "Unknown Button";
         const description = `I do not know this button.`;
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {

@@ -12,18 +12,22 @@ async function handleCancelThread(interaction, client) {
         // Send a confirmation message before closing the thread
         const title = "Shop";
         const description = `This thread will be closed shortly.`;
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
         await thread.send({ embeds: [embed] });
 
-        // Remove the user from the thread
-        await thread.members.remove(interaction.member.user.id, 'User requested to close the thread');
+        const members = await thread.members.fetch(); // Get all members of the thread
+
+        // Remove all members except the bot itself
+        members.forEach(async member => {
+            if (member.id !== client.user.id) { // `client.user.id` is the bot's ID
+                await thread.members.remove(member.id, 'Removing all members except the bot');
+            }
+        });
 
         setTimeout(() => {
             thread.delete();
-        }, 10000);
-
-        console.log(`Thread ${thread.name} has been deleted and user removed by ${interaction.member.user.global_name}`);
+        }, 5000);
 
         // Respond to the interaction to avoid the "This interaction failed" message
         return {
