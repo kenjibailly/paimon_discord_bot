@@ -161,8 +161,15 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 - ❌ /add-game
     - Adds game to the end of the list
     - Input: game
+- ❌ /set-reward-price
+    - Sets the price per reward for the user to claim
+    - Input: reward drop down list, amount
 
-### 🏪 Shop rewards:
+### 🏪 Shop 
+
+When opening the shop, the user can click a button to start interacting with the bot in a private thread. The bot will guide the user and ask the required things needed in order for the reward to be claimed and the wallet to be deducted.
+
+#### 🏆 Rewards:
 - ✅ Change your nickname
 - ✅ Change someone's nickname
 - ❌ Add custom channel
