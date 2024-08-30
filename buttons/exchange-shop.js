@@ -8,7 +8,7 @@ async function handleExchangeShopButton(interaction, client) {
 
     // Create a private thread that is only visible to the user who clicked the button
     const thread = await channel.threads.create({
-        name: `Exchange Shop - ${interaction.member.user.global_name}`, // Ensure you use the correct user property
+        name: `Shop - ${interaction.member.user.global_name}`, // Ensure you use the correct user property
         autoArchiveDuration: 60, // Archive the thread after 60 minutes of inactivity
         reason: 'User initiated exchange shop interaction',
         invitable: false, // Don't allow other users to join the thread
