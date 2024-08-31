@@ -1,0 +1,91 @@
+const { InteractionResponseType } = require('discord-interactions');
+const TokenEmoji = require('../models/token-emoji');
+const createEmbed = require('../helpers/embed');
+
+async function handleSetTokenEmojiCommand(interaction, client) {
+    const { data, guild_id } = interaction;
+
+    // Find the token emoji option
+    const tokenEmojiOption = data.options.find(opt => opt.name === 'token_emoji');
+    const tokenEmoji = tokenEmojiOption ? tokenEmojiOption.value : null;
+
+    // Validate that token emoji is provided
+    if (!tokenEmoji) {
+        const title = "Invalid Input";
+        const description = "A token emoji must be provided.";
+        const color = "#ff0000";
+        const embed = createEmbed(title, description, color);
+
+        return {
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                embeds: [embed],
+                flags: 64,
+            },
+        };
+    }
+
+    try {
+        // Determine if the emoji is custom or normal
+        let tokenEmojiName;
+        let tokenEmojiId = null;
+
+        // Regex to detect custom emoji (e.g., <:_name_:123456789012345678>)
+        const customEmojiRegex = /^<:(\w+):(\d+)>$/;
+        const match = tokenEmoji.match(customEmojiRegex);
+
+        if (match) {
+            // Custom emoji
+            tokenEmojiName = match[1];
+            tokenEmojiId = match[2];
+        } else {
+            // Normal emoji
+            tokenEmojiName = tokenEmoji;
+        }
+
+        // Prepare the update object
+        const update = {
+            token_emoji_name: tokenEmojiName,
+            token_emoji_id: tokenEmojiId,
+            token_emoji: tokenEmojiId ? `<:${tokenEmojiName}:${tokenEmojiId}>` : tokenEmojiName, // Set the full emoji string
+        };
+
+        // Upsert operation: find one by guild_id and update it, or create if not exists
+        const result = await TokenEmoji.findOneAndUpdate(
+            { guild_id: guild_id },
+            update,
+            { upsert: true, new: true } // Create if not exists, return the updated document
+        );
+
+        const description = `The token emoji has been set to ${result.token_emoji}`;
+        const title = "Token Emoji Updated";
+        const color = "";
+        const embed = createEmbed(title, description, color);
+
+        return {
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                embeds: [embed],
+                flags: 64,
+            },
+        };
+
+    } catch (error) {
+        console.error('Error updating token emoji:', error);
+
+        const title = "Error";
+        const description = `An error occurred while updating the token emoji. Please try again later.`;
+        const color = "#ff0000";
+        const embed = createEmbed(title, description, color);
+
+        return {
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                embeds: [embed],
+                flags: 64,
+            },
+        };
+    }
+}
+
+module.exports = handleSetTokenEmojiCommand;

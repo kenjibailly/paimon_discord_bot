@@ -164,18 +164,21 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 
 #### ⚙️ Settings
 
-- ❌ /set-teams
+- ✅ /set-teams
     - Choose 2 roles to be assigned as teams for the team generation
     - Input: `role`, `role`
-- ❌ /set-rewards
-    - Set chosen rewards, this enables your selected rewards and disables those unselected, default: `all enabled`
-    - Input: `reward drop down list`
-- ❌ /set-reward-price
-    - Sets the price per reward for the user to claim, default: `1` 🪙
-    - Input: `reward drop down list`, `amount`
-- ❌ /set-reward-time
-    - Sets the amount of time the reward will stay before being removed, default: `30 days`
-    - Input: `time in days`
+- ✅ /set-reward
+    - Sets the price per reward and / or time the reward gets removed after and / or enable or disable the reward
+    - Input: `reward drop down list`, optional: `price`, optional: `time`, optional: `enable/disable`
+- ✅ /set-all-rewards
+    - Sets the price of all rewards and / or time all the rewards gets removed after, default: `30 days`
+    - Input: `time`
+- ✅ /set-token-emoji
+    - Sets the token emoji to your preferred emoji, custom emoji are allowed, default: 🪙
+    - Input: `emoji`
+
+
+Rewards are automatically set to be all enabled and have a default price of 1 🪙;
 
 ### 🏪 Shop 
 
@@ -184,10 +187,11 @@ When opening the shop, the user can click a button to start interacting with the
 #### 🏆 Rewards:
 - ✅ Change your nickname
 - ✅ Change someone's nickname
-- ❌ Add custom channel
-- ❌ Choose next game
-- ❌ Add custom role name and color
-- ❌ Add custom soundboard sound
+- ❌ Add a custom server emoji
+- ❌ Add a custom channel
+- ❌ Add a custom role name and color
+- ❌ Add a custom soundboard sound
+- ❌ Choose the next game
 
 ### 💪 Join event and assign team
 

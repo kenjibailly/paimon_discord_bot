@@ -3,6 +3,7 @@ const { Client, GatewayIntentBits, Events } = require('discord.js');
 const express = require('express');
 const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('discord-interactions');
 const { handleSlashCommand, handleButtonClicks, handleMessageReplies } = require('./handlers.js');
+const botJoinsGuild = require("./bot_joins_guild");
 
 const mongoose = require('mongoose');
 const mongodb_URI = require('./mongodb/URI');
@@ -27,6 +28,10 @@ const client = new Client({
 
 client.once(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}!`);
+});
+
+client.on('guildCreate', async (guild) => {
+  botJoinsGuild(client, guild);
 });
 
 // Express server setup for handling interactions

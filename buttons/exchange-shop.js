@@ -44,24 +44,24 @@ async function handleExchangeShopButton(interaction, client) {
                                 value: 'change-user-nickname',
                             },
                             {
-                                label: 'Add custom server emoji',
-                                value: 'add-server-emoji',
+                                label: 'Add a custom server emoji',
+                                value: 'add-emoji',
                             },
                             {
-                                label: 'Add custom channel',
+                                label: 'Add a custom channel',
                                 value: 'add-channel',
                             },
                             {
-                                label: 'Choose next game',
-                                value: 'choose-game',
-                            },
-                            {
-                                label: 'Add custom role name and color',
+                                label: 'Add a custom role name and color',
                                 value: 'add-role',
                             },
                             {
-                                label: 'Add custom soundboard sound',
-                                value: 'add-sound',
+                                label: 'Add a custom soundboard sound',
+                                value: 'add-soundboard',
+                            },
+                            {
+                                label: 'Choose the next game',
+                                value: 'choose-game',
                             },
                         ],
                         placeholder: 'Select an option...',

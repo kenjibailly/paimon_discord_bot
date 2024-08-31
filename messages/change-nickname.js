@@ -1,12 +1,14 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
+const getTokenEmoji = require('../helpers/get-token-emoji'); // Import getTokenEmoji
 
 async function handleChangeNickname(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
-    if(!user_exchange_data.name == "change-nickname") {
+    if (user_exchange_data.name !== "change-nickname") {
         return;
     }
+
     const messageContent = message.content;
     const validationError = validateNicknameAndEmoji(messageContent);
 
@@ -14,9 +16,8 @@ async function handleChangeNickname(message, client) {
         console.log(validationError);
         // Send a confirmation message before closing the thread
         const title = "Shop";
-        const description = validationError + `
-        Please try again.`;
-        const color = "error";
+        const description = `${validationError}\nPlease try again.`;
+        const color = "#ff0000"; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
         await message.channel.send({
@@ -24,45 +25,64 @@ async function handleChangeNickname(message, client) {
         });
         return;
     }
+
     let user_text;
     if (user_exchange_data.taggedUser) {
         let guild = await client.guilds.fetch(message.guild.id);
-        member = await guild.members.fetch(user_exchange_data.taggedUser);
+        let member = await guild.members.fetch(user_exchange_data.taggedUser);
         user_text = `**${member.user.globalName}**'s`;
     } else {
         user_text = "your";
     }
+
+    // Fetch token emoji using the getTokenEmoji function
+    const tokenEmoji = await getTokenEmoji(message.guild.id);
+    
+    if (tokenEmoji.data) {
+        await message.channel.send({
+            embeds: [tokenEmoji],
+        });
+        return;
+    }
+    
+    // Determine if the emoji is custom or normal
+    const emojiDisplay = tokenEmoji.token_emoji_id 
+        ? `<:${tokenEmoji.token_emoji_name}:${tokenEmoji.token_emoji_id}>` 
+        : tokenEmoji.token_emoji;
+
     const title = "Shop";
     const description = `
-    Do you want to change ${user_text} nickname to **${messageContent}** ?
-    This will deduct **1** 🪙 from your wallet.`;
+    Do you want to change ${user_text} nickname to **${messageContent}**?
+    This will deduct **1** ${emojiDisplay} from your wallet.`;
     const embed = createEmbed(title, description, "");
 
     // Encode the message content to make it URL-safe
     const encodedContent = encodeURIComponent(messageContent);
 
+    // Construct the button component
+    const buttonComponent = {
+        type: 2, // Button type
+        style: 1, // Primary style
+        label: "Exchange",
+        emoji: {
+            name: tokenEmoji.token_emoji_name, // Use the emoji name
+            id: tokenEmoji.token_emoji_id // Include the ID if it's a custom emoji
+        },
+        custom_id: `exchange-change-nickname:${encodedContent}`
+    };
+
+    // Send the message
     await message.channel.send({
         embeds: [embed],
         components: [
             {
-                type: 1,
-                components: [
-                    {
-                        type: 2,
-                        style: 1,
-                        label: "Exchange",
-                        emoji: {
-                            name: "🪙",
-                        },
-                        custom_id: `exchange-change-nickname:${encodedContent}`
-                    },
-                    {
-                        type: 2,
-                        style: 4,
-                        label: "Cancel",
-                        custom_id: "cancel-thread"
-                    }
-                ]
+                type: 1, // Action row type
+                components: [buttonComponent, {
+                    type: 2, // Button type
+                    style: 4, // Danger style
+                    label: "Cancel",
+                    custom_id: "cancel-thread"
+                }]
             }
         ]
     });
@@ -70,9 +90,10 @@ async function handleChangeNickname(message, client) {
 
 async function handleChangeUserNickname(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
-    if(!user_exchange_data.name == "change-user-nickname") {
+    if (user_exchange_data.name !== "change-user-nickname") {
         return;
     }
+
     const messageContent = message.content;
     const validationError = validateTaggedUser(messageContent);
 
@@ -80,9 +101,8 @@ async function handleChangeUserNickname(message, client) {
         console.log(validationError);
         // Send a confirmation message before closing the thread
         const title = "Shop";
-        const description = validationError + `
-        Please try again.`;
-        const color = "error";
+        const description = `${validationError}\nPlease try again.`;
+        const color = "#ff0000"; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
         await message.channel.send({
@@ -90,7 +110,6 @@ async function handleChangeUserNickname(message, client) {
         });
         return;
     }
-
 
     // Extract the tagged user ID from the message content
     const taggedUser = messageContent.match(/<@(\d+)>/)[1];
@@ -107,7 +126,6 @@ async function handleChangeUserNickname(message, client) {
         await thread.members.remove(taggedUser, 'Tagged user removed from the thread');
     }
 
-    
     const title = "Shop";
     const description = `Reply with desired new nickname for **${member.user.globalName}**.`;
     const embed = createEmbed(title, description, "");
