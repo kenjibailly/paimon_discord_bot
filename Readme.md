@@ -155,7 +155,7 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 - ❌ /start-event
     - Creates event, users can apply to this event to be added to the team generation
     - Input: `event name`, `description`, `game`, optional: `image link`
-- ❌ /reset-teams
+- ✅ /reset-teams
     - Removes all users from the roles created for the team generation to start over
 - ✅ /add-game
     - Adds game to the list

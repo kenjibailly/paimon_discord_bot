@@ -241,6 +241,11 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
     description: 'Show a list of all the games',
   };
 
+  const RESET_TEAMS_COMMAND = {
+    name: 'reset-teams',
+    description: 'Remove all users from the set teams',
+  };
+
   // Conditionally create the REMOVE_GAME_COMMAND if there are games
   let REMOVE_GAME_COMMAND;
   let UPDATE_GAME_COMMAND;
@@ -300,6 +305,7 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
     SET_BOT_CHANNEL_COMMAND,
     ADD_GAME_COMMAND,
     GAMES_COMMAND,
+    RESET_TEAMS_COMMAND,
     ...(REMOVE_GAME_COMMAND ? [REMOVE_GAME_COMMAND] : []), // Add REMOVE_GAME_COMMAND only if it exists
     ...(UPDATE_GAME_COMMAND ? [UPDATE_GAME_COMMAND] : []), // Add UPDATE_GAME_COMMAND if it exists
   ];
