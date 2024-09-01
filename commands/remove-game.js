@@ -17,7 +17,7 @@ async function handleRemoveGameCommand(interaction, client) {
             const game = await Games.findOneAndDelete({ guild_id: guild_id, normalized_name: game_name });
 
             const title = "Game Removed";
-            const description = `Game successfully removed \n\n`;
+            const description = `Game successfully removed`;
             const color = "";
             const embed = createEmbed(title, description, color);
 
@@ -40,7 +40,7 @@ async function handleRemoveGameCommand(interaction, client) {
                 console.log("Error Games Registering Commands: " + error);
                 const title = "Game Remove Error";
                 const description = `Game couldn't be removed because of the command register, please contact the administrator or try again later.`;
-                const color = "";
+                const color = "#FF0000";
                 const embed = createEmbed(title, description, color);
         
                 return {
@@ -64,7 +64,7 @@ async function handleRemoveGameCommand(interaction, client) {
 
             const title = "Game Remove Error";
             const description = `Game couldn't be removed, please contact the administrator or try again later.`;
-            const color = "";
+            const color = "#FF0000";
             const embed = createEmbed(title, description, color);
     
             return {

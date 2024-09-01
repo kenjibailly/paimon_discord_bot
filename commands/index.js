@@ -11,6 +11,7 @@ const handleSetBotChannelCommand = require('./set-bot-channel');
 const handleAddGameCommand = require('./add-game');
 const handleGamesCommand = require('./games');
 const handleRemoveGameCommand = require('./remove-game');
+const handleUpdateGameCommand = require('./update-game');
 
 module.exports = {
     'award-team': handleAwardTeamCommand,
@@ -26,4 +27,5 @@ module.exports = {
     'add-game': handleAddGameCommand,
     'games': handleGamesCommand,
     'remove-game': handleRemoveGameCommand,
+    'update-game': handleUpdateGameCommand,
 };

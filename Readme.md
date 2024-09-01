@@ -163,6 +163,9 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 - ✅ /remove-game
     - Removes game
     - Input: `game name list`
+- ✅ /update-game
+    - Removes game
+    - Input: `game name list`
 
 #### ⚙️ Settings
 

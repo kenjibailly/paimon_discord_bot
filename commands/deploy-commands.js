@@ -243,6 +243,7 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
 
   // Conditionally create the REMOVE_GAME_COMMAND if there are games
   let REMOVE_GAME_COMMAND;
+  let UPDATE_GAME_COMMAND;
   if (games && games.length > 0) {
     REMOVE_GAME_COMMAND = {
       name: 'remove-game',
@@ -254,6 +255,32 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
           description: 'Select a game to remove',
           required: true,
           choices: games,
+        },
+      ],
+    };
+
+    UPDATE_GAME_COMMAND = {
+      name: 'update-game',
+      description: 'Updates a game from the list',
+      options: [
+        {
+          type: 3, // STRING
+          name: 'game',
+          description: 'Select a game to update',
+          required: true,
+          choices: games,
+        },
+        {
+          type: 3, // STRING
+          name: 'name',
+          description: 'Change name of the game',
+          required: false,
+        },
+        {
+          type: 3, // STRING
+          name: 'description',
+          description: 'Change description of the game',
+          required: false,
         },
       ],
     };
@@ -274,6 +301,7 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
     ADD_GAME_COMMAND,
     GAMES_COMMAND,
     ...(REMOVE_GAME_COMMAND ? [REMOVE_GAME_COMMAND] : []), // Add REMOVE_GAME_COMMAND only if it exists
+    ...(UPDATE_GAME_COMMAND ? [UPDATE_GAME_COMMAND] : []), // Add UPDATE_GAME_COMMAND if it exists
   ];
 
   // Fetch existing commands from Discord
@@ -290,22 +318,25 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
   }
 
   if (deleteRemoveCommand) {
-    // The name of the command you want to delete
-const commandToDeleteName = 'REMOVE_GAME_COMMAND';
-
-// Find the command to delete
-const commandToDelete = existingCommands.find(existingCommand => 
-  existingCommand.name === commandToDeleteName
-);
-
-// Delete the specific command if it exists
-if (commandToDelete) {
-  await deleteCommand(commandToDelete.id);
-  console.log(`Deleted command: ${commandToDeleteName}`);
-  } else {
-  console.log(`Command ${commandToDeleteName} not found.`);
+    // Define the names of the commands you want to delete
+    const commandsToDeleteNames = ['REMOVE_GAME_COMMAND', 'UPDATE_GAME_COMMAND'];
+  
+    // Loop through each command name and delete if it exists
+    for (const commandName of commandsToDeleteNames) {
+      // Find the command to delete
+      const commandToDelete = existingCommands.find(
+        existingCommand => existingCommand.name === commandName.toLowerCase() // Convert to lowercase as the command names are in lowercase
+      );
+  
+      // Delete the specific command if it exists
+      if (commandToDelete) {
+        await deleteCommand(commandToDelete.id);
+        console.log(`Deleted command: ${commandName}`);
+      } else {
+        console.log(`Command ${commandName} not found.`);
+      }
+    }
   }
-}
 
   // Register or update the existing commands
   try {
