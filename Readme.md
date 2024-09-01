@@ -107,13 +107,12 @@ Under the `OAuth2` tab, find `OAuth2 URL Generator` and check `bot` under the sc
 
 <details>
 
-<summary>🛠️ Open for installation steps</summary>
+<summary>✅ Information</summary>
 
-When adding or removing a slash command, the following command must be executed in order for Discord to acknowledge the slash command:
+The slash commands are automatically registered when the bot enters the server. 
+When a game is being added or removed from the list, this specific slash command is being added, updated or removed.
 
-```bash
-node commands/deploy-commands.js
-```
+> The Discord client has to be refreshed before the change in the slash command(s) get updated. `ctrl + R` on windows. Restart app on mobile.
 
 </details>
 
@@ -139,7 +138,7 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
     - Opens the shop
 - ✅ /wallet
     - Checks your wallet balance
-- ❌ /games
+- ✅ /games
     - Lists the upcoming games
 
 #### 🧑‍💼 Staff functions
@@ -155,12 +154,15 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
     - Input: `user`, `amount`, optional: `reason`
 - ❌ /start-event
     - Creates event, users can apply to this event to be added to the team generation
-    - Input: `event name`, `description`, optional: `image link`
+    - Input: `event name`, `description`, `game`, optional: `image link`
 - ❌ /reset-teams
     - Removes all users from the roles created for the team generation to start over
-- ❌ /add-game
-    - Adds game to the end of the list
+- ✅ /add-game
+    - Adds game to the list
     - Input: `game`
+- ✅ /remove-game
+    - Removes game
+    - Input: `game name list`
 
 #### ⚙️ Settings
 
@@ -169,7 +171,7 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
     - Input: `role`, `role`
 - ✅ /set-reward
     - Sets the price per reward and / or time the reward gets removed after and / or enable or disable the reward
-    - Input: `reward drop down list`, optional: `price`, optional: `time`, optional: `enable/disable`
+    - Input: `reward name list`, optional: `price`, optional: `time`, optional: `enable/disable`
 - ✅ /set-all-rewards
     - Sets the price of all rewards and / or time all the rewards gets removed after, default: `30 days`
     - Input: `time`

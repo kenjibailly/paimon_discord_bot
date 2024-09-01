@@ -37,7 +37,7 @@ async function handleChangeNickname(message, client) {
 
     // Fetch token emoji using the getTokenEmoji function
     const tokenEmoji = await getTokenEmoji(message.guild.id);
-    
+    // Validation when tokenEmoji isn't set
     if (tokenEmoji.data) {
         await message.channel.send({
             embeds: [tokenEmoji],

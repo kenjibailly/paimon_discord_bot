@@ -22,28 +22,29 @@ async function deleteCommand(commandId) {
   }
 }
 
-async function registerCommands() {
+async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
+  // Define commands
   const AWARD_TEAM_COMMAND = {
     name: 'award-team',
     description: 'Award shop coins to a team/role',
     options: [
       {
-        type: 8, // 8 corresponds to a ROLE in Discord's API
+        type: 8, // ROLE
         name: 'role',
         description: 'Select a role to award coins to',
         required: true,
       },
       {
-        type: 4, // 4 corresponds to an INTEGER in Discord's API
+        type: 4, // INTEGER
         name: 'amount',
         description: 'Amount of coins to award',
         required: true,
       },
       {
-        type: 3, // 3 corresponds to a STRING in Discord's API
+        type: 3, // STRING
         name: 'reason',
         description: 'Reason for the awarding',
-        required: false, // Make it optional or true if you need it to be required
+        required: false,
       },
     ],
   };
@@ -58,22 +59,22 @@ async function registerCommands() {
     description: 'Deduct shop coins from wallet of user by amount',
     options: [
       {
-        type: 6, // 6 corresponds to a USER in Discord's API
+        type: 6, // USER
         name: 'user',
         description: 'Select a user to deduct wallet',
         required: true,
       },
       {
-        type: 4, // 4 corresponds to an INTEGER in Discord's API
+        type: 4, // INTEGER
         name: 'amount',
         description: 'Amount of coins to deduct',
         required: true,
       },
       {
-        type: 3, // 3 corresponds to a STRING in Discord's API
+        type: 3, // STRING
         name: 'reason',
         description: 'Reason for the deduction',
-        required: false, // Make it optional or true if you need it to be required
+        required: false,
       },
     ],
   };
@@ -83,22 +84,22 @@ async function registerCommands() {
     description: 'Award shop coins to a user',
     options: [
       {
-        type: 6, // 6 corresponds to a USER in Discord's API
+        type: 6, // USER
         name: 'user',
-        description: 'Select a user to deduct wallet',
+        description: 'Select a user to award wallet',
         required: true,
       },
       {
-        type: 4, // 4 corresponds to an INTEGER in Discord's API
+        type: 4, // INTEGER
         name: 'amount',
         description: 'Amount of coins to award',
         required: true,
       },
       {
-        type: 3, // 3 corresponds to a STRING in Discord's API
+        type: 3, // STRING
         name: 'reason',
         description: 'Reason for the awarding',
-        required: false, // Make it optional or true if you need it to be required
+        required: false,
       },
     ],
   };
@@ -108,73 +109,45 @@ async function registerCommands() {
     description: 'Open the shop',
   };
 
-
   const SET_REWARD_COMMAND = {
     name: 'set-reward',
     description: 'Set reward price, reset time, enable/disable reward',
     options: [
       {
-        type: 3, // 3 corresponds to a STRING in Discord's API
+        type: 3, // STRING
         name: 'reward',
-        description: 'Select whether to award a user or a role',
+        description: 'Select the reward type',
         required: true,
         choices: [
-          {
-            name: 'Change your nickname',
-            value: 'change-own-nickname',
-          },
-          {
-            name: "Change someone's nickname",
-            value: 'change-user-nickname',
-          },
-          {
-            name: 'Add a custom server emoji',
-            value: 'custom-emoji',
-          },
-          {
-            name: 'Add a custom channel',
-            value: 'custom-channel',
-          },
-          {
-            name: 'Add a custom role name and color',
-            value: 'custom-role',
-          },
-          {
-            name: 'Add a custom soundboard sound',
-            value: 'custom-soundboard',
-          },
-          {
-            name: 'Choose next game',
-            value: 'choose-game',
-          },
+          { name: 'Change your nickname', value: 'change-own-nickname' },
+          { name: "Change someone's nickname", value: 'change-user-nickname' },
+          { name: 'Add a custom server emoji', value: 'custom-emoji' },
+          { name: 'Add a custom channel', value: 'custom-channel' },
+          { name: 'Add a custom role name and color', value: 'custom-role' },
+          { name: 'Add a custom soundboard sound', value: 'custom-soundboard' },
+          { name: 'Choose next game', value: 'choose-game' },
         ],
       },
       {
-        type: 4, // 4 corresponds to an INTEGER in Discord's API
+        type: 4, // INTEGER
         name: 'price',
         description: 'Price of the reward',
         required: false,
       },
       {
-        type: 4, // 4 corresponds to an INTEGER in Discord's API
+        type: 4, // INTEGER
         name: 'time',
-        description: 'Time in days, reward gets removed after',
+        description: 'Time in days before reward is removed',
         required: false,
       },
       {
-        type: 3, // 3 corresponds to a STRING in Discord's API
+        type: 3, // STRING
         name: 'enable',
-        description: 'Enable or disable a reward.',
+        description: 'Enable or disable the reward',
         required: false,
         choices: [
-          {
-            name: 'Enable',
-            value: 'true',
-          },
-          {
-            name: "Disable",
-            value: 'false',
-          },
+          { name: 'Enable', value: 'true' },
+          { name: 'Disable', value: 'false' },
         ],
       },
     ],
@@ -182,83 +155,125 @@ async function registerCommands() {
 
   const SET_ALL_REWARDS_COMMAND = {
     name: 'set-all-rewards',
-    description: 'Set reward price, reset time, for all rewards',
+    description: 'Set reward price and time for all rewards',
     options: [
       {
-        type: 4, // 4 corresponds to an INTEGER in Discord's API
+        type: 4, // INTEGER
         name: 'price',
         description: 'Price of the rewards',
         required: false,
       },
       {
-        type: 4, // 4 corresponds to an INTEGER in Discord's API
+        type: 4, // INTEGER
         name: 'time',
-        description: 'Time in days, rewards get removed after',
+        description: 'Time in days before rewards are removed',
         required: false,
       },
     ],
   };
 
-
   const SET_TEAMS_COMMAND = {
     name: 'set-teams',
-    description: 'Choose 2 roles to be assigned as teams for the team generation',
+    description: 'Choose 2 roles as teams for team generation',
     options: [
       {
-        type: 8, // 8 corresponds to a ROLE in Discord's API
+        type: 8, // ROLE
         name: 'team_1',
-        description: 'First team',
+        description: 'First team role',
         required: true,
       },
       {
-        type: 8, // 8 corresponds to a ROLE in Discord's API
+        type: 8, // ROLE
         name: 'team_2',
-        description: 'Second team',
+        description: 'Second team role',
         required: true,
       },
     ],
   };
-
 
   const SET_TOKEN_EMOJI_COMMAND = {
     name: 'set-token-emoji',
-    description: 'Set the token emoji to your preferred emoji',
+    description: 'Set the token emoji',
     options: [
       {
-        type: 3, // 3 corresponds to a STRING in Discord's API
+        type: 3, // STRING
         name: 'token_emoji',
         description: 'Token Emoji (e.g., 😃)',
         required: true,
-      }
+      },
     ],
   };
-
 
   const SET_BOT_CHANNEL_COMMAND = {
     name: 'set-bot-channel',
-    description: 'Set the channel the bot should post updates in',
+    description: 'Set the bot channel for updates',
     options: [
       {
-        type: 7, // 7 corresponds to a CHANNEL in Discord's API
+        type: 7, // CHANNEL
         name: 'channel',
         description: 'Choose a channel',
         required: true,
-      }
+      },
     ],
   };
-  
 
+  const ADD_GAME_COMMAND = {
+    name: 'add-game',
+    description: 'Add a game to the list',
+    options: [
+      {
+        type: 3, // STRING
+        name: 'name',
+        description: 'Name of the game',
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: 'description',
+        description: 'Description of the game',
+        required: false,
+      },
+    ],
+  };
+
+  const GAMES_COMMAND = {
+    name: 'games',
+    description: 'Show a list of all the games',
+  };
+
+  // Conditionally create the REMOVE_GAME_COMMAND if there are games
+  let REMOVE_GAME_COMMAND;
+  if (games && games.length > 0) {
+    REMOVE_GAME_COMMAND = {
+      name: 'remove-game',
+      description: 'Remove a game from the list',
+      options: [
+        {
+          type: 3, // STRING
+          name: 'game',
+          description: 'Select a game to remove',
+          required: true,
+          choices: games,
+        },
+      ],
+    };
+  }
+
+  // Define new commands based on the presence of REMOVE_GAME_COMMAND
   const NEW_COMMANDS = [
-    AWARD_TEAM_COMMAND, 
-    WALLET_COMMAND, 
-    DEDUCT_USER_COMMAND, 
-    AWARD_USER_COMMAND, 
-    SHOP_COMMAND, 
+    AWARD_TEAM_COMMAND,
+    WALLET_COMMAND,
+    DEDUCT_USER_COMMAND,
+    AWARD_USER_COMMAND,
+    SHOP_COMMAND,
     SET_REWARD_COMMAND,
     SET_ALL_REWARDS_COMMAND,
     SET_TEAMS_COMMAND,
     SET_TOKEN_EMOJI_COMMAND,
-    SET_BOT_CHANNEL_COMMAND
+    SET_BOT_CHANNEL_COMMAND,
+    ADD_GAME_COMMAND,
+    GAMES_COMMAND,
+    ...(REMOVE_GAME_COMMAND ? [REMOVE_GAME_COMMAND] : []), // Add REMOVE_GAME_COMMAND only if it exists
   ];
 
   // Fetch existing commands from Discord
@@ -274,13 +289,32 @@ async function registerCommands() {
     await deleteCommand(command.id);
   }
 
+  if (deleteRemoveCommand) {
+    // The name of the command you want to delete
+const commandToDeleteName = 'REMOVE_GAME_COMMAND';
+
+// Find the command to delete
+const commandToDelete = existingCommands.find(existingCommand => 
+  existingCommand.name === commandToDeleteName
+);
+
+// Delete the specific command if it exists
+if (commandToDelete) {
+  await deleteCommand(commandToDelete.id);
+  console.log(`Deleted command: ${commandToDeleteName}`);
+  } else {
+  console.log(`Command ${commandToDeleteName} not found.`);
+  }
+}
+
   // Register or update the existing commands
   try {
-    await InstallGlobalCommands(process.env.APP_ID, NEW_COMMANDS);
+    // Pass guild_id to register commands for a specific guild
+    await InstallGlobalCommands(process.env.APP_ID, NEW_COMMANDS, guild_id);
     console.log('Successfully registered or updated commands.');
   } catch (error) {
     console.error('Error registering commands:', error);
   }
 }
 
-registerCommands();
+module.exports = registerCommands;

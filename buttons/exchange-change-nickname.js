@@ -101,58 +101,49 @@ async function handleExchangeChangeNickname(interaction, client) {
         try {
             let reward;
             if (user_exchange_data.taggedUser) {
-                reward = "change-user-nickname";
-                let awardedReward = await AwardedReward.findOne({
-                    guild_id: interaction.guild_id,
-                    awarded_user_id: user_exchange_data.taggedUser,
-                    reward: { $in: ['change-own-nickname', 'change-user-nickname'] }
-                });
-                if (!awardedReward) {
-                    // Create a new awardedReward if it doesn't exist
-                    awardedReward = new AwardedReward({
+                const reward = "change-user-nickname"; // Example reward value
+                const awardedReward = await AwardedReward.findOneAndUpdate(
+                    {
                         guild_id: interaction.guild_id,
-                        user_id: interaction.member.user.id,
                         awarded_user_id: user_exchange_data.taggedUser,
-                        reward: reward,
-                        value: messageContent,
-                        date: new Date(),
-                    });
-                    await awardedReward.save();
-                } else {
-                    // Update awardedReward if it exist
-                    awardedReward.awarded_user_id = user_exchange_data.taggedUser;
-                    awardedReward.user_id = interaction.member.user.id;
-                    awardedReward.value = messageContent;
-                    awardedReward.reward = reward;
-                    awardedReward.date = new Date();
-                    await awardedReward.save();
-                }
-            } else {
-                reward = "change-own-nickname";
-                let awardedReward = await AwardedReward.findOne({
-                    guild_id: interaction.guild_id,
-                    awarded_user_id: member.user.id,
-                    reward: { $in: ['change-own-nickname', 'change-user-nickname'] }
-                });
-                if (!awardedReward) {
-                    // Create a new awardedReward if it doesn't exist
-                    awardedReward = new AwardedReward({
-                        guild_id: interaction.guild_id,
+                        reward: { $in: ['change-own-nickname', 'change-user-nickname'] } // Match if reward is in the specified array
+                    },
+                    {
+                        awarded_user_id: user_exchange_data.taggedUser,
                         user_id: interaction.member.user.id,
-                        awarded_user_id: interaction.member.user.id,
-                        reward: reward,
                         value: messageContent,
+                        reward: reward,
                         date: new Date(),
-                    });
-                    await awardedReward.save();
-                } else {
-                    // Update awardedReward if it exist
-                    awardedReward.user_id = interaction.member.user.id;
-                    awardedReward.value = messageContent;
-                    awardedReward.reward = reward;
-                    awardedReward.date = new Date();
-                    await awardedReward.save();
-                }
+                    },
+                    {
+                        upsert: true, // Create a new document if one doesn't exist
+                        new: true, // Return the updated document
+                        setDefaultsOnInsert: true // Apply default values on insert if defined
+                    }
+                );
+
+            } else {
+                const reward = "change-own-nickname"; // Example reward value
+
+                const awardedReward = await AwardedReward.findOneAndUpdate(
+                    {
+                        guild_id: interaction.guild_id,
+                        awarded_user_id: interaction.member.user.id,
+                        reward: { $in: ['change-own-nickname', 'change-user-nickname'] } // Match if reward is in the specified array
+                    },
+                    {
+                        user_id: interaction.member.user.id,
+                        value: messageContent,
+                        reward: reward,
+                        date: new Date(),
+                    },
+                    {
+                        upsert: true, // Create a new document if one doesn't exist
+                        new: true, // Return the updated document
+                        setDefaultsOnInsert: true // Apply default values on insert if defined
+                    }
+                );
+
             }
         } catch (error) {
             console.error('Error adding reward to DB:', error);

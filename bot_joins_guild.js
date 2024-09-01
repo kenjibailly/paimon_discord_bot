@@ -1,8 +1,10 @@
 const Rewards = require('./models/rewards');
 const TokenEmoji = require('./models/token-emoji'); // Import the TokenEmoji model
+const registerCommands = require('./commands/deploy-commands');
 
 async function botJoinsGuild(client, guild) {
     const guildId = guild.id;
+    registerCommands(client, guild_id, null, null);
 
     // Define the rewards to add
     const rewardsToAdd = [

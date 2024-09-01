@@ -9,7 +9,7 @@ async function handleShopCommand(interaction, client) {
         const rewards = await Rewards.find();
         rewards.forEach(reward => {
             if (reward.enable === true) {
-                rewards_options += `- ${reward.description}\n`;
+                rewards_options += `- **${reward.description}**\n`;
             }
         });
     } catch (error) {
@@ -25,8 +25,7 @@ async function handleShopCommand(interaction, client) {
         };
     }
     const title = "Shop";
-    const description = `
-Exchange your tokens for the following rewards: \n\n ${rewards_options}`;
+    const description = `Exchange your tokens for the following rewards: \n\n ${rewards_options}`;
     const embed = createEmbed(title, description, "");
 
     try {

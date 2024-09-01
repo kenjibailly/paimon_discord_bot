@@ -14,17 +14,11 @@ async function handleSetBotChannelCommand (interaction, client) {
     const channel = channelOption ? channelOption.value : null;
 
     try {
-        let botChannel = await BotChannel.findOne({guild_id: guild_id});
-        if (!botChannel) {
-            botChannel = new BotChannel({
-                guild_id: guild_id,
-                channel: channel,
-            });
-            await botChannel.save();
-        } else {
-            botChannel.channel = channel;
-            await botChannel.save();
-        }
+        const result = await BotChannel.findOneAndUpdate(
+            { guild_id: guild_id }, 
+            { channel: channel },
+            { upsert: true, new: true } // Create if not exists, return the updated document
+        );
 
         const title = "Bot Channel";
         const description = `You successfully set the bot channel to <#${channel}>`;

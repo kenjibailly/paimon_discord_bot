@@ -8,6 +8,9 @@ const handleSetAllRewardsCommand = require('./set-all-rewards');
 const handleSetTeamsCommand = require('./set-teams');
 const handleSetTokenEmojiCommand = require('./set-token-emoji');
 const handleSetBotChannelCommand = require('./set-bot-channel');
+const handleAddGameCommand = require('./add-game');
+const handleGamesCommand = require('./games');
+const handleRemoveGameCommand = require('./remove-game');
 
 module.exports = {
     'award-team': handleAwardTeamCommand,
@@ -20,4 +23,7 @@ module.exports = {
     'set-teams': handleSetTeamsCommand,
     'set-token-emoji': handleSetTokenEmojiCommand,
     'set-bot-channel': handleSetBotChannelCommand,
+    'add-game': handleAddGameCommand,
+    'games': handleGamesCommand,
+    'remove-game': handleRemoveGameCommand,
 };

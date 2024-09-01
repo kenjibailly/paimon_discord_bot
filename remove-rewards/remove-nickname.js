@@ -9,8 +9,6 @@ async function removeNickname(client, reward) {
         if (member) {
             await member.setNickname(null);
 
-            console.log(reward);
-
             const title = "Award Reset";
             const description = `<@${reward.awarded_user_id}>'s nickname has been reset. **${reward.time} days** have passed.`;
             const color = "";
