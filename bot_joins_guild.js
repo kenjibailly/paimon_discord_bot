@@ -6,13 +6,14 @@ async function botJoinsGuild(client, guild) {
 
     // Define the rewards to add
     const rewardsToAdd = [
-        { guild_id: guildId, name: 'change-own-nickname' },
-        { guild_id: guildId, name: 'change-user-nickname' },
-        { guild_id: guildId, name: 'custom-emoji' },
-        { guild_id: guildId, name: 'custom-channel' },
-        { guild_id: guildId, name: 'custom-role' },
-        { guild_id: guildId, name: 'custom-soundboard' },
-        { guild_id: guildId, name: 'choose-game' },
+        // { guild_id: guildId, name: 'change-nickname' },
+        { guild_id: guildId, name: 'change-own-nickname', description: 'Change your nickname' },
+        { guild_id: guildId, name: 'change-user-nickname', description: 'Change someone\'s nickname' },
+        { guild_id: guildId, name: 'custom-emoji', description: 'Add a custom server emoji' },
+        { guild_id: guildId, name: 'custom-channel', description: 'Add a custom channel'},
+        { guild_id: guildId, name: 'custom-role', description: 'Add a custom role name and color'},
+        { guild_id: guildId, name: 'custom-soundboard', description: 'Add a custom soundboard sound'},
+        { guild_id: guildId, name: 'choose-game', description: 'Choose the next game'},
     ];
 
     try {
@@ -36,6 +37,8 @@ async function botJoinsGuild(client, guild) {
             await TokenEmoji.create({
                 guild_id: guildId,
                 token_emoji: '🪙', // Default emoji
+                token_emoji_name: "🪙",
+                token_emoji_id: null,
             });
             console.log(`Default token emoji set for guild ${guildId}`);
         } else {

@@ -1,6 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const Wallet = require('../models/wallet');
+const AwardedReward = require('../models/awarded-reward');
 const getTokenEmoji = require('../helpers/get-token-emoji');
 const handleCancelThread = require('./cancel-thread');
 const userExchangeData = require('../helpers/userExchangeData');
@@ -26,7 +27,18 @@ async function handleExchangeChangeNickname(interaction, client) {
         // Fetch the wallet
         wallet = await Wallet.findOne({ user_id: interaction.member.user.id, guild_id: interaction.guild_id });
         if (!wallet) {
-            throw new Error('Wallet not found');
+            const title = "Wallet";
+            const description = `I could not find your wallet.`;
+            const color = "error";
+            const embed = createEmbed(title, description, color);
+
+            return {
+                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                    embeds: [embed],
+                    flags: 64,
+                },
+            };
         }
 
         // Fetch the token emoji using getTokenEmoji function
@@ -85,6 +97,79 @@ async function handleExchangeChangeNickname(interaction, client) {
         } else {
             member = await guild.members.fetch(interaction.member.user.id);
         }
+
+        try {
+            let reward;
+            if (user_exchange_data.taggedUser) {
+                reward = "change-user-nickname";
+                let awardedReward = await AwardedReward.findOne({
+                    guild_id: interaction.guild_id,
+                    awarded_user_id: user_exchange_data.taggedUser,
+                    reward: { $in: ['change-own-nickname', 'change-user-nickname'] }
+                });
+                if (!awardedReward) {
+                    // Create a new awardedReward if it doesn't exist
+                    awardedReward = new AwardedReward({
+                        guild_id: interaction.guild_id,
+                        user_id: interaction.member.user.id,
+                        awarded_user_id: user_exchange_data.taggedUser,
+                        reward: reward,
+                        value: messageContent,
+                        date: new Date(),
+                    });
+                    await awardedReward.save();
+                } else {
+                    // Update awardedReward if it exist
+                    awardedReward.awarded_user_id = user_exchange_data.taggedUser;
+                    awardedReward.user_id = interaction.member.user.id;
+                    awardedReward.value = messageContent;
+                    awardedReward.reward = reward;
+                    awardedReward.date = new Date();
+                    await awardedReward.save();
+                }
+            } else {
+                reward = "change-own-nickname";
+                let awardedReward = await AwardedReward.findOne({
+                    guild_id: interaction.guild_id,
+                    awarded_user_id: member.user.id,
+                    reward: { $in: ['change-own-nickname', 'change-user-nickname'] }
+                });
+                if (!awardedReward) {
+                    // Create a new awardedReward if it doesn't exist
+                    awardedReward = new AwardedReward({
+                        guild_id: interaction.guild_id,
+                        user_id: interaction.member.user.id,
+                        awarded_user_id: interaction.member.user.id,
+                        reward: reward,
+                        value: messageContent,
+                        date: new Date(),
+                    });
+                    await awardedReward.save();
+                } else {
+                    // Update awardedReward if it exist
+                    awardedReward.user_id = interaction.member.user.id;
+                    awardedReward.value = messageContent;
+                    awardedReward.reward = reward;
+                    awardedReward.date = new Date();
+                    await awardedReward.save();
+                }
+            }
+        } catch (error) {
+            console.error('Error adding reward to DB:', error);
+
+            let title = "Reward Database Error";
+            let description = `I could not add the reward to the database. Please contact the administrator.`;
+            const color = "#ff0000";
+            const embed = createEmbed(title, description, color);
+
+            return {
+                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                    embeds: [embed],
+                },
+            };
+        }
+
         
         await member.setNickname(messageContent);
 

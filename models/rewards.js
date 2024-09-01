@@ -10,6 +10,10 @@ const rewardsSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    description: {
+        type: String,
+        required: true,
+    },
     enable: {
         type: Boolean,
         default: true,

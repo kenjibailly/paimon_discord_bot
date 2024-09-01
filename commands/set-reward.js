@@ -3,17 +3,6 @@ const Rewards = require('../models/rewards');
 const TokenEmoji = require('../models/token-emoji');
 const createEmbed = require('../helpers/embed');
 
-// Mapping of reward names to display names
-const rewardDisplayNames = {
-    'change-own-nickname': 'Change your nickname',
-    'change-user-nickname': "Change someone's nickname",
-    'custom-emoji': 'Add a custom server emoji',
-    'custom-channel': 'Add a custom channel',
-    'choose-game': 'Choose next game',
-    'custom-role': 'Add a custom role name and color',
-    'custom-soundboard': 'Add a custom soundboard sound',
-};
-
 async function handleSetRewardCommand(interaction, client) {
     const { data, guild_id } = interaction;
 
@@ -59,8 +48,7 @@ async function handleSetRewardCommand(interaction, client) {
         );
 
         if (reward) {
-            const displayName = rewardDisplayNames[rewardName] || rewardName;
-            let description = `The reward **${displayName}** has been updated.`;
+            let description = `The reward **${reward.description}** has been updated.`;
 
             const token_emoji = await TokenEmoji.findOne({guild_id: guild_id});
 

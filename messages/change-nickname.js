@@ -5,7 +5,7 @@ const getTokenEmoji = require('../helpers/get-token-emoji'); // Import getTokenE
 
 async function handleChangeNickname(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
-    if (user_exchange_data.name !== "change-nickname") {
+    if (user_exchange_data.name !== "change-own-nickname") {
         return;
     }
 
@@ -152,7 +152,7 @@ async function handleChangeUserNickname(message, client) {
     // Update only the properties you want to change
     const updatedData = {
         ...existingData, // Spread the existing properties
-        name: "change-nickname", // Update or add the name property
+        name: "change-own-nickname", // Update or add the name property
         taggedUser: taggedUser,  // Update or add the taggedUser property
     };
 

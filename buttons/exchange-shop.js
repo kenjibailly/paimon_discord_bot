@@ -1,5 +1,6 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
+const Rewards = require('../models/rewards');
 
 async function handleExchangeShopButton(interaction, client) {
     // Step 1: Create a thread
@@ -18,7 +19,33 @@ async function handleExchangeShopButton(interaction, client) {
     // Add the user who clicked the button to the thread
     await thread.members.add(interaction.member.user.id);
 
-    // Step 2: Post the message in the thread
+    let options_list = [];
+    try {
+        const rewards = await Rewards.find();
+        rewards.forEach(reward => {
+            if (reward.enable === true) {
+                const add_reward = {
+                    label: reward.description,
+                    value: reward.name,
+                }
+                options_list.push(add_reward);
+            }
+        });
+    } catch (error) {
+        const title = "Error Rewards";
+        const description = `I could not find the rewards in the database. Pleae contact the administrator.`;
+        const embed = createEmbed(title, description, "");
+        return {
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                embeds: [embed],
+                flags: 64,
+            },
+        };
+    }
+    
+
+    // Post the message in the thread
     let title = "Shop";
     let description = `Please choose one of the following options to redeem:`;
     let embed = createEmbed(title, description, "");
@@ -34,36 +61,7 @@ async function handleExchangeShopButton(interaction, client) {
                     {
                         type: 3, // Select Menu
                         custom_id: 'exchange-shop-menu',
-                        options: [
-                            {
-                                label: 'Change your nickname',
-                                value: 'change-nickname',
-                            },
-                            {
-                                label: 'Change someone\'s nickname',
-                                value: 'change-user-nickname',
-                            },
-                            {
-                                label: 'Add a custom server emoji',
-                                value: 'add-emoji',
-                            },
-                            {
-                                label: 'Add a custom channel',
-                                value: 'add-channel',
-                            },
-                            {
-                                label: 'Add a custom role name and color',
-                                value: 'add-role',
-                            },
-                            {
-                                label: 'Add a custom soundboard sound',
-                                value: 'add-soundboard',
-                            },
-                            {
-                                label: 'Choose the next game',
-                                value: 'choose-game',
-                            },
-                        ],
+                        options: options_list,
                         placeholder: 'Select an option...',
                     },
                 ],

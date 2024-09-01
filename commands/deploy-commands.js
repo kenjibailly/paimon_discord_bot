@@ -125,7 +125,7 @@ async function registerCommands() {
           },
           {
             name: "Change someone's nickname",
-            value: 'role',
+            value: 'change-user-nickname',
           },
           {
             name: 'Add a custom server emoji',
@@ -222,12 +222,26 @@ async function registerCommands() {
 
   const SET_TOKEN_EMOJI_COMMAND = {
     name: 'set-token-emoji',
-    description: 'Sets the token emoji to your preferred emoji',
+    description: 'Set the token emoji to your preferred emoji',
     options: [
       {
         type: 3, // 3 corresponds to a STRING in Discord's API
         name: 'token_emoji',
         description: 'Token Emoji (e.g., 😃)',
+        required: true,
+      }
+    ],
+  };
+
+
+  const SET_BOT_CHANNEL_COMMAND = {
+    name: 'set-bot-channel',
+    description: 'Set the channel the bot should post updates in',
+    options: [
+      {
+        type: 7, // 7 corresponds to a CHANNEL in Discord's API
+        name: 'channel',
+        description: 'Choose a channel',
         required: true,
       }
     ],
@@ -243,7 +257,8 @@ async function registerCommands() {
     SET_REWARD_COMMAND,
     SET_ALL_REWARDS_COMMAND,
     SET_TEAMS_COMMAND,
-    SET_TOKEN_EMOJI_COMMAND
+    SET_TOKEN_EMOJI_COMMAND,
+    SET_BOT_CHANNEL_COMMAND
   ];
 
   // Fetch existing commands from Discord

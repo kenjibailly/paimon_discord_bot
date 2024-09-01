@@ -1,20 +1,32 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const getTokenEmoji = require('../helpers/get-token-emoji');
+const Rewards = require('../models/rewards');
 
 async function handleShopCommand(interaction, client) {
+    let rewards_options = "";
+    try {
+        const rewards = await Rewards.find();
+        rewards.forEach(reward => {
+            if (reward.enable === true) {
+                rewards_options += `- ${reward.description}\n`;
+            }
+        });
+    } catch (error) {
+        const title = "Error Rewards";
+        const description = `I could not find the rewards in the database. Pleae contact the administrator.`;
+        const embed = createEmbed(title, description, "");
+        return {
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                embeds: [embed],
+                flags: 64,
+            },
+        };
+    }
     const title = "Shop";
     const description = `
-Exchange your tokens for the following rewards:
-       
-- Change your nickname
-- Change someone's nickname
-- Add a custom server emoji
-- Add a custom channel
-- Add a custom role name and color
-- Add a custom soundboard sound
-- Choose the next game
-    `;
+Exchange your tokens for the following rewards: \n\n ${rewards_options}`;
     const embed = createEmbed(title, description, "");
 
     try {

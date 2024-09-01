@@ -2,5 +2,5 @@ const { handleChangeNickname, handleChangeUserNickname} = require('./change-nick
 
 module.exports = {
     'change-user-nickname': handleChangeUserNickname,
-    'change-nickname': handleChangeNickname,
+    'change-own-nickname': handleChangeNickname,
 };

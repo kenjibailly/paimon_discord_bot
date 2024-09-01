@@ -6,7 +6,7 @@ async function handleExchangeShopMenu(interaction, client) {
     const {data} = interaction;
     const name = data.values[0];
 
-    if (name == "change-nickname" || name == "change-user-nickname") {
+    if (name == "change-own-nickname" || name == "change-user-nickname") {
         const title = "Shop";
         let description;
         if (name == "change-user-nickname") {

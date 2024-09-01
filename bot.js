@@ -4,6 +4,7 @@ const express = require('express');
 const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('discord-interactions');
 const { handleSlashCommand, handleButtonClicks, handleMessageReplies } = require('./handlers.js');
 const botJoinsGuild = require("./bot_joins_guild");
+const checkRemoveRewards = require("./remove-rewards/index");
 
 const mongoose = require('mongoose');
 const mongodb_URI = require('./mongodb/URI');
@@ -28,6 +29,10 @@ const client = new Client({
 
 client.once(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}!`);
+
+  setInterval(() => {
+    checkRemoveRewards(client);
+  }, 5000);
 });
 
 client.on('guildCreate', async (guild) => {

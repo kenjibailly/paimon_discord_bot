@@ -7,6 +7,7 @@ const handleSetRewardCommand = require('./set-reward');
 const handleSetAllRewardsCommand = require('./set-all-rewards');
 const handleSetTeamsCommand = require('./set-teams');
 const handleSetTokenEmojiCommand = require('./set-token-emoji');
+const handleSetBotChannelCommand = require('./set-bot-channel');
 
 module.exports = {
     'award-team': handleAwardTeamCommand,
@@ -18,4 +19,5 @@ module.exports = {
     'set-all-rewards': handleSetAllRewardsCommand,
     'set-teams': handleSetTeamsCommand,
     'set-token-emoji': handleSetTokenEmojiCommand,
+    'set-bot-channel': handleSetBotChannelCommand,
 };

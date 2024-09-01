@@ -176,6 +176,9 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 - ✅ /set-token-emoji
     - Sets the token emoji to your preferred emoji, custom emoji are allowed, default: 🪙
     - Input: `emoji`
+- ✅ /set-bot-channel
+    - Sets the channel of the bot where updates are posted, like reset of awards
+    - Input: `channel`
 
 
 Rewards are automatically set to be all enabled and have a default price of 1 🪙;
