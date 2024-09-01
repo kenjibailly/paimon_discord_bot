@@ -36,6 +36,7 @@ async function handleUpdateGameCommand(interaction, client) {
     const updateFields = {};
     if (game_change_name) {
         updateFields.name = game_change_name;
+        updateFields.normalized_name = normalizeString(game_change_name);
     }
     if (game_change_description) {
         updateFields.description = game_change_description;
