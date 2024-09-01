@@ -32,7 +32,7 @@ client.once(Events.ClientReady, () => {
 
   setInterval(() => {
     checkRemoveRewards(client);
-  }, 5000);
+  }, 86400000); // 24 hours in milliseconds
 });
 
 client.on('guildCreate', async (guild) => {
