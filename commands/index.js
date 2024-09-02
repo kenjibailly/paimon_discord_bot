@@ -13,6 +13,7 @@ const handleGamesCommand = require('./games');
 const handleRemoveGameCommand = require('./remove-game');
 const handleUpdateGameCommand = require('./update-game');
 const handleResetTeamsCommand = require('./reset-teams');
+const handleSetStatusCommand = require('./set-status');
 
 module.exports = {
     'award-team': handleAwardTeamCommand,
@@ -30,4 +31,5 @@ module.exports = {
     'remove-game': handleRemoveGameCommand,
     'update-game': handleUpdateGameCommand,
     'reset-teams': handleResetTeamsCommand,
+    'set-status': handleSetStatusCommand,
 };

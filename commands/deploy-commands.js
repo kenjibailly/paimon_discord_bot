@@ -246,6 +246,19 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
     description: 'Remove all users from the set teams',
   };
 
+  const SET_STATUS_COMMAND = {
+    name: 'set-status',
+    description: 'Set a custom status for Paimon',
+    options: [
+      {
+        type: 3, // STRING
+        name: 'status',
+        description: 'Choose a status',
+        required: true,
+      },
+    ],
+  };
+
   // Conditionally create the REMOVE_GAME_COMMAND if there are games
   let REMOVE_GAME_COMMAND;
   let UPDATE_GAME_COMMAND;
@@ -306,6 +319,7 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
     ADD_GAME_COMMAND,
     GAMES_COMMAND,
     RESET_TEAMS_COMMAND,
+    SET_STATUS_COMMAND,
     ...(REMOVE_GAME_COMMAND ? [REMOVE_GAME_COMMAND] : []), // Add REMOVE_GAME_COMMAND only if it exists
     ...(UPDATE_GAME_COMMAND ? [UPDATE_GAME_COMMAND] : []), // Add UPDATE_GAME_COMMAND if it exists
   ];

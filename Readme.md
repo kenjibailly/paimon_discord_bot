@@ -166,6 +166,9 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 - ✅ /update-game
     - Removes game
     - Input: `game name list`
+- ✅ /set-status
+    - Sets custom status of the bot, this can't be set per server, this is a custom status for the bot on all servers, so becareful with this. If you want to disable this edit commands/deploy-commands.js and remove `SET_STATUS_COMMAND,` line in `const NEW_COMMANDS = [`
+    - Input: `status`
 
 #### ⚙️ Settings
 

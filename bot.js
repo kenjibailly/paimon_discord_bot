@@ -1,5 +1,5 @@
 require('dotenv/config');
-const { Client, GatewayIntentBits, Events, ActivityType } = require('discord.js');
+const { Client, GatewayIntentBits, Events } = require('discord.js');
 const express = require('express');
 const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('discord-interactions');
 const { handleSlashCommand, handleButtonClicks, handleMessageReplies } = require('./handlers.js');
@@ -29,11 +29,6 @@ const client = new Client({
 
 client.once(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}!`);
-
-  client.user.setPresence({
-    activities: [{ type: ActivityType.Custom, name: 'Planning Game Night 🎮🕹️!', state: '🧙‍♂️ Gnomes vs ⚔️ Knights! ' }], // Custom status message
-    status: 'online', // Bot status (can be 'online', 'idle', 'dnd', 'invisible')
-  });
 
   setInterval(() => {
     checkRemoveRewards(client);
