@@ -1,4 +1,4 @@
-version: "3"
+---
 services:
   discord_bot_paimon:
     build: ./
@@ -7,14 +7,14 @@ services:
     volumes: 
       - ./:/home/ubuntu/paimon/
     networks:
-      - swag
+      - docker_swag
 
   discord_bot_paimon_db:
     image: mongo
     container_name: discord_bot_paimon_db
     restart: unless-stopped
     ports:
-      - 27017:27017
+      - 27020:27017
     volumes:
       - ./mongodb/config/mongod.conf.orig:/etc/mongod.conf.orig
       - ./mongodb/db/:/data/db
@@ -26,7 +26,7 @@ services:
     env_file:
       - .env
     networks:
-      - swag
+      - docker_swag
 
 networks:
     docker_swag:

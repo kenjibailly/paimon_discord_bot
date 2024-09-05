@@ -55,7 +55,7 @@ Used in this project:
 
 Edit `docker-compose.yml`:
 
-> Network `swag` is the network you put your swag / nginx-proxy-manager / nginx container in, change to your own existing network. 
+> Network `docker_swag` is the network you put your swag / nginx-proxy-manager / nginx container in, change to your own existing network. 
 
 ```bash
 docker-compose up -d
