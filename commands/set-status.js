@@ -10,7 +10,6 @@ async function handleSetStatusCommand(interaction, client) {
     const statusOption = data.options.find(opt => opt.name === 'status');
 
     const status = statusOption ? statusOption.value : null;
-    console.log(status);
 
     try {
         client.user.setPresence({

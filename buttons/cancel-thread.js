@@ -1,7 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 
-async function handleCancelThread(interaction, client) {
+async function handleCancelThreadButton(interaction, client) {
     try {
         // Fetch the guild (server) using the guild_id from the interaction
         const guild = await client.guilds.fetch(interaction.guild_id);
@@ -47,4 +47,4 @@ async function handleCancelThread(interaction, client) {
     }
 }
 
-module.exports = handleCancelThread;
+module.exports = handleCancelThreadButton;

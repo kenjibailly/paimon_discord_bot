@@ -2,7 +2,7 @@ const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
 
-async function handleExchangeShopMenu(interaction, client) {
+async function handleExchangeShopMenuButton(interaction, client) {
     const {data} = interaction;
     const name = data.values[0];
 
@@ -47,4 +47,4 @@ async function handleExchangeShopMenu(interaction, client) {
 
 }
 
-module.exports = handleExchangeShopMenu;
+module.exports = handleExchangeShopMenuButton;

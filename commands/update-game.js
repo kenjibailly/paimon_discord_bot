@@ -78,7 +78,7 @@ async function handleUpdateGameCommand(interaction, client) {
                     games.forEach(game => {
                         const game_info = {
                             name: game.name,
-                            value: normalizeString(game.name),
+                            value: normalizeString(game.name), // ToDo: use game._id instead
                         }
                         games_list.push(game_info);
                     });

@@ -119,8 +119,8 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
         description: 'Select the reward type',
         required: true,
         choices: [
-          { name: 'Change your nickname', value: 'change-own-nickname' },
-          { name: "Change someone's nickname", value: 'change-user-nickname' },
+          { name: 'Choose your nickname', value: 'change-own-nickname' },
+          { name: "Choose someone's nickname", value: 'change-user-nickname' },
           { name: 'Add a custom server emoji', value: 'custom-emoji' },
           { name: 'Add a custom channel', value: 'custom-channel' },
           { name: 'Add a custom role name and color', value: 'custom-role' },
@@ -291,18 +291,72 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
         {
           type: 3, // STRING
           name: 'name',
-          description: 'Change name of the game',
+          description: 'Choose a name for the game',
           required: false,
         },
         {
           type: 3, // STRING
           name: 'description',
-          description: 'Change description of the game',
+          description: 'Choose a description for the game',
           required: false,
         },
       ],
     };
   }
+
+
+  const START_EVENT_COMMAND = {
+    name: 'start-event',
+    description: 'Start an event with team generation',
+    options: [
+      {
+        type: 3, // STRING
+        name: 'name',
+        description: 'Choose the name / title of your event',
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: 'description',
+        description: 'Choose the description of your event',
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: 'game',
+        description: 'Select a game',
+        required: false,
+        choices: games,
+      },
+      {
+        type: 4, // NUMBER
+        name: 'expiration',
+        description: 'Select the number of hours for team generation and signup deadline (default: 24 hours)',
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: 'image',
+        description: 'Add an image link to add to your event post',
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: 'color',
+        description: 'Select the color of the embed',
+        required: false,
+        choices: [
+          { name: 'purple', value: 'purple' },
+          { name: 'red', value: 'red' },
+          { name: 'yellow', value: 'yellow' },
+          { name: 'green', value: 'green' },
+          { name: 'cyan', value: 'cyan' },
+          { name: 'blue', value: 'blue' },
+          { name: 'pink', value: 'pink' },
+        ],
+      },
+    ],
+  };
 
   // Define new commands based on the presence of REMOVE_GAME_COMMAND
   const NEW_COMMANDS = [
@@ -320,6 +374,7 @@ async function registerCommands(client, guild_id, games, deleteRemoveCommand) {
     GAMES_COMMAND,
     RESET_TEAMS_COMMAND,
     SET_STATUS_COMMAND,
+    START_EVENT_COMMAND,
     ...(REMOVE_GAME_COMMAND ? [REMOVE_GAME_COMMAND] : []), // Add REMOVE_GAME_COMMAND only if it exists
     ...(UPDATE_GAME_COMMAND ? [UPDATE_GAME_COMMAND] : []), // Add UPDATE_GAME_COMMAND if it exists
   ];

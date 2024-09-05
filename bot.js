@@ -4,7 +4,8 @@ const express = require('express');
 const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('discord-interactions');
 const { handleSlashCommand, handleButtonClicks, handleMessageReplies } = require('./handlers.js');
 const botJoinsGuild = require("./bot_joins_guild");
-const checkRemoveRewards = require("./remove-rewards/index");
+const checkRemoveRewards = require("./check/remove-rewards");
+const checkTeamAssignment = require("./check/team-assignment");
 
 const mongoose = require('mongoose');
 const mongodb_URI = require('./mongodb/URI');
@@ -33,6 +34,11 @@ client.once(Events.ClientReady, () => {
   setInterval(() => {
     checkRemoveRewards(client);
   }, 86400000); // 24 hours in milliseconds
+
+  setInterval(() => {
+    checkTeamAssignment(client);
+  }, 300000); // 5 minutes in milliseconds 
+
 });
 
 client.on('guildCreate', async (guild) => {

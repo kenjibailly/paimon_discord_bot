@@ -6,7 +6,7 @@ const getTokenEmoji = require('../helpers/get-token-emoji');
 const handleCancelThread = require('./cancel-thread');
 const userExchangeData = require('../helpers/userExchangeData');
 
-async function handleExchangeChangeNickname(interaction, client) {
+async function handleExchangeChangeNicknameButton(interaction, client) {
     const user_exchange_data = userExchangeData.get(interaction.member.user.id);
     
     userExchangeData.delete(interaction.member.user.id);
@@ -221,4 +221,4 @@ async function handleExchangeChangeNickname(interaction, client) {
     }
 }
 
-module.exports = handleExchangeChangeNickname;
+module.exports = handleExchangeChangeNicknameButton;
