@@ -175,7 +175,7 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 - ❌ /remove-troll-mission
     - Creates a troll mission
     - Input: `name`
-- ❌ /cancel-event
+- ✅ /cancel-event
     - Cancels an ongoing event
     - Input: `list of ongoing events`
 
