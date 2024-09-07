@@ -1,10 +1,61 @@
 const Rewards = require('./models/rewards');
 const TokenEmoji = require('./models/token-emoji'); // Import the TokenEmoji model
-const registerCommands = require('./commands/deploy-commands');
+const deployCommands = require('./commands/deploy-commands');
+const Events = require('./models/events');
+const Games = require('./models/games');
 
 async function botJoinsGuild(client, guild) {
     const guildId = guild.id;
-    registerCommands(client, guild_id, null, null);
+    
+    try {
+        const events = Events.find({ guild_id: guildId });
+        const games = Games.find({ guild_id: guildId });
+
+        function createCommandInfo(items, itemKey) {
+            return items.map(item => ({
+              name: item.name,
+              value: item._id,
+            }));
+          }
+          
+          if (events && events.length > 0) {
+            const list_type = "events";
+            const eventsList = createCommandInfo(events, 'events');
+            await deployCommands(client, guildId, eventsList, false, list_type);
+          }
+          
+          if (games && games.length > 0) {
+            const list_type = "games";
+            const gamesList = createCommandInfo(games, 'games');
+            await deployCommands(client, guildId, gamesList, false, list_type);
+          }
+
+    } catch (error) {
+        console.log('Deploy Commands Error: ' + error);
+
+        const title = "Deploy Commands Error";
+        const description = `I could not deploy some slash commands, please contact your administrator.`;
+        const color = "error";
+        const embed = createEmbed(title, description, color);
+
+        try {
+            // Fetch the guild (server) using the guild ID
+            const guild = await client.guilds.fetch(guildId);
+        
+            // Fetch the owner of the guild
+            const owner = await guild.fetchOwner();
+        
+            // Send the embed as a direct message (DM) to the owner
+            await owner.send({
+                embeds: [embed],
+            });
+        
+            console.log('Message sent to the server owner successfully.');
+        } catch (error) {
+            console.error('Error sending message to the server owner:', error);
+        }
+    }
+
 
     // Define the rewards to add
     const rewardsToAdd = [

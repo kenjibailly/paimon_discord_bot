@@ -11,12 +11,10 @@ async function checkRemoveRewards(client) {
                 await removeNickname(client, reward);
                 await removeReward(client, reward);
                 break;
-
             case "change-user-nickname":
                 await removeNickname(client, reward);
                 await removeReward(client, reward);
                 break;
-
             default:
                 break;
         }
@@ -35,9 +33,9 @@ async function removeReward(client, reward) {
     } catch (error) {
         console.error('Error removing reward from database:', error);
 
-        const title = "Award Reset";
+        const title = "Award Reset Error";
         const description = `I could not remove reward with id \`${reward._id}\`, please contact your administrator.`;
-        const color = "#FF0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         try {

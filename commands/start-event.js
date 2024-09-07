@@ -3,6 +3,7 @@ const Games = require('../models/games');
 const Events = require('../models/events');
 const createEmbed = require('../helpers/embed'); // Assuming this is a helper function to create embeds
 const { EmbedBuilder } = require('discord.js');
+const deployCommands = require('../commands/deploy-commands');
 
 async function handleStartEventCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -41,7 +42,7 @@ async function handleStartEventCommand(interaction, client) {
         // Fetch game details from the database
         let gameDetails;
         if (game) {
-            gameDetails = await Games.findOne({ normalized_name: game });
+            gameDetails = await Games.findOne({ _id: game });
         }
 
         let color_embed = "#7f2aff";
@@ -90,6 +91,39 @@ async function handleStartEventCommand(interaction, client) {
             });
             const savedEvent = await newEvent.save();
 
+            const events = await Events.find({ guild_id: guild_id });
+
+            try {
+                const list_type = "events";
+                if(events){
+                    let events_list = [];
+                    events.forEach(event => {
+                        const event_info = {
+                            name: event.name,
+                            value: event._id,
+                        }
+                        events_list.push(event_info);
+                    });
+                    await deployCommands(client, guild_id, events_list, false, list_type);
+                } else {
+                    await deployCommands(client, guild_id, events_list, true, list_type);
+                }
+            } catch (error) {
+                console.log("Error Events Registering Commands: " + error);
+                const title = "Events Cancel Error";
+                const description = `Event couldn't be canceled because of the command register, please contact the administrator or try again later.`;
+                const color = "error";
+                const embed = createEmbed(title, description, color);
+        
+                return {
+                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                    data: {
+                        embeds: [embed],
+                        flags: 64,
+                    },
+                };
+            }
+
             if (!savedEvent) {
                 // If the result is falsy, throw an error
                 throw new Error('New event could not be saved.');
@@ -113,17 +147,27 @@ async function handleStartEventCommand(interaction, client) {
         }
 
         const gameName = gameDetails ? gameDetails.name : 'Unknown Game';
-        const gameDescription = gameDetails ? gameDetails.description : 'No description available';
+        const gameDescription = (gameDetails && gameDetails.description) ? gameDetails.description : 'No description available';
 
         const embed = new EmbedBuilder()
         .setTitle(event_name || 'Event Started!')
         .setDescription(event_description || 'No description provided')
-        .addFields(
-            { name: 'Game', value: gameName, inline: true },
-            { name: 'Game Description', value: gameDescription, inline: true }
-        )
         .setImage(image || undefined)
         .setColor(color_embed); // Customize the color
+    
+        // Initialize an array to store the fields
+        const fields = [];
+        
+        // Conditionally add the fields
+        if (gameName !== "Unknown Game") {
+            fields.push({ name: 'Game', value: gameName, inline: true }, { name: 'Game Description', value: gameDescription, inline: true });
+        }
+        
+        // Only add fields if the array is not empty
+        if (fields.length > 0) {
+            console.log("fields: "+fields);
+            embed.addFields(fields);
+        }
 
         const buttonComponent = {
             type: 2, // Button type

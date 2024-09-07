@@ -14,10 +14,6 @@ const gamesSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    normalized_name: {
-        type: String,
-        required: true,
-    },
 });
 
 // Create a compound unique index on guild_id and name

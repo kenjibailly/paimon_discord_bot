@@ -119,7 +119,7 @@ async function handleJoinTeamButton(interaction, client) {
     } catch (error) {
         console.log("Join Event Error: " + error);
         const title = "Join Event Error";
-        const description = `You could not join the event at this time, please try again later or contact the administrator.`;
+        const description = `You could not join the event at this time, the event might have ended already. Please try again later or contact the administrator.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
 

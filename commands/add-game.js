@@ -2,7 +2,6 @@ const { InteractionResponseType } = require('discord-interactions');
 const Games = require('../models/games');
 const createEmbed = require('../helpers/embed');
 const deployCommands = require('../commands/deploy-commands');
-const normalizeString = require('../helpers/normalize-string');
 
 async function handleAddGameCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -20,7 +19,6 @@ async function handleAddGameCommand(interaction, client) {
                 guild_id: guild_id,
                 name: game_name,
                 description: game_description,
-                normalized_name: normalizeString(game_name),
             });
             await game.save();
 
@@ -42,14 +40,28 @@ async function handleAddGameCommand(interaction, client) {
                     games.forEach(game => {
                         const game_info = {
                             name: game.name,
-                            value: normalizeString(game.name),
+                            value: game._id,
                         }
                         games_list.push(game_info);
                     });
-                    deployCommands(client, guild_id, games_list, null);
+                    const list_type = "games";
+                    await deployCommands(client, guild_id, games_list, false, list_type);
                 }
             } catch (error) {
-                console.log("Error Games Registering Commans: " + error);
+                console.log("Error Games Registering Commands: " + error);
+
+                const title = "Add Game Error";
+                const description = `Game couldn't be added because of the command register, please contact the administrator or try again later.`;
+                const color = "error";
+                const embed = createEmbed(title, description, color);
+        
+                return {
+                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                    data: {
+                        embeds: [embed],
+                        flags: 64,
+                    },
+                };
             }
     
             return {
