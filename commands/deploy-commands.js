@@ -358,6 +358,4 @@ async function registerCommands(guild_id) {
   }
 }
 
-registerCommands(); // ToDo delete this line
-
 module.exports = registerCommands;
