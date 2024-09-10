@@ -148,14 +148,16 @@ async function updateEmbedWithNewMember(interaction, client, user) {
         // Clone the existing embed if available
         const embed = new EmbedBuilder(message.embeds[0].toJSON());
 
-        // Find the "Applied Members" field if it exists
-        let appliedMembersField = embed.data.fields.find(field => field.name === 'Applied Members');
-
-        if (appliedMembersField) {
-            // Append new member to the existing list
-            appliedMembersField.value += `\n- **${user.global_name}**`;
+        if(embed.data.fields){
+            // Find the "Applied Members" field if it exists
+            let appliedMembersField = embed.data.fields.find(field => field.name === 'Applied Members');
+            if (appliedMembersField) {
+                // Append new member to the existing list
+                appliedMembersField.value += `\n- **${user.global_name}**`;
+            } else {
+                embed.addFields({ name: 'Applied Members', value: `- **${user.global_name}**` });
+            }
         } else {
-            // Create new field for Applied Members
             embed.addFields({ name: 'Applied Members', value: `- **${user.global_name}**` });
         }
 

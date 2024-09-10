@@ -7,65 +7,35 @@ const deployCommands = require('../commands/deploy-commands');
 async function handleCancelEventCommand(interaction, client) {
     const { data, guild_id } = interaction;
 
-    // Find each option by name
-    const eventOption = data.options.find(opt => opt.name === 'event');
-    const eventId = eventOption ? eventOption.value : null;
+    try {
+        const event = await Events.findOneAndDelete({ guild_id: guild_id });
+        await resetTeams(client, guild_id);
 
-    if (eventId) {
+        const title = "Event Canceled";
+        const description = `Event successfully canceled and teams have been reset.`;
+        const color = "";
+        const embed = createEmbed(title, description, color);
 
         try {
-            const event = await Events.findOneAndDelete({ _id: eventId });
-            await resetTeams(client, guild_id);
-
-            const title = "Event Canceled";
-            const description = `Event successfully canceled and teams have been reset.`;
-            const color = "";
-            const embed = createEmbed(title, description, color);
-
-            try {
-                const events = await Events.find({ guild_id: guild_id });
-                const list_type = "events";
-                if(events){
-                    let events_list = [];
-                    events.forEach(event => {
-                        const event_info = {
-                            name: event.name,
-                            value: event._id,
-                        }
-                        events_list.push(event_info);
-                    });
-                    await deployCommands(client, guild_id, events_list, false, list_type);
-                } else {
-                    await deployCommands(client, guild_id, events_list, true, list_type);
-                }
-            } catch (error) {
-                console.log("Error Events Registering Commands: " + error);
-                const title = "Event Remove Error";
-                const description = `Event couldn't be canceled because of the command register, please contact the administrator or try again later.`;
-                const color = "error";
-                const embed = createEmbed(title, description, color);
-        
-                return {
-                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                    data: {
-                        embeds: [embed],
-                        flags: 64,
-                    },
-                };
+            const events = await Events.find({ guild_id: guild_id });
+            const list_type = "events";
+            if(events){
+                let events_list = [];
+                events.forEach(event => {
+                    const event_info = {
+                        name: event.name,
+                        value: event._id,
+                    }
+                    events_list.push(event_info);
+                });
+                await deployCommands(client, guild_id, events_list, false, list_type);
+            } else {
+                await deployCommands(client, guild_id, events_list, true, list_type);
             }
-    
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
         } catch (error) {
-            console.log("Error Canceling Event: " + error);
-
-            const title = "Event Cancel Error";
-            const description = `Event couldn't be canceled, please contact the administrator or try again later.`;
+            console.log("Error Events Registering Commands: " + error);
+            const title = "Event Remove Error";
+            const description = `Event couldn't be canceled because of the command register, please contact the administrator or try again later.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
     
@@ -77,6 +47,29 @@ async function handleCancelEventCommand(interaction, client) {
                 },
             };
         }
+
+        return {
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                embeds: [embed],
+                flags: 64,
+            },
+        };
+    } catch (error) {
+        console.log("Error Canceling Event: " + error);
+
+        const title = "Event Cancel Error";
+        const description = `Event couldn't be canceled, please contact the administrator or try again later.`;
+        const color = "error";
+        const embed = createEmbed(title, description, color);
+
+        return {
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                embeds: [embed],
+                flags: 64,
+            },
+        };
     }
 }
 

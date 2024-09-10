@@ -12,7 +12,6 @@ async function fetchCommands() {
   }
 }
 
-
 async function deleteCommand(commandId) {
   const endpoint = `applications/${process.env.APP_ID}/commands/${commandId}`;
   try {
@@ -23,7 +22,7 @@ async function deleteCommand(commandId) {
   }
 }
 
-async function registerCommands(client, guild_id, list, shouldDeleteCommand, list_type) {
+async function registerCommands(guild_id) {
   // Define commands
   const AWARD_TEAM_COMMAND = {
     name: 'award-team',
@@ -260,194 +259,63 @@ async function registerCommands(client, guild_id, list, shouldDeleteCommand, lis
     ],
   };
 
-  // Conditionally create the REMOVE_GAME_COMMAND if there are games
-  let REMOVE_GAME_COMMAND;
-  let UPDATE_GAME_COMMAND;
-  if (list && list.length > 0 && list_type == "games") {
-    REMOVE_GAME_COMMAND = {
-      name: 'remove-game',
+  const MANAGE_GAMES_COMMAND = {
+      name: 'manage-games',
       description: 'Remove a game from the list',
-      options: [
-        {
-          type: 3, // STRING
-          name: 'game',
-          description: 'Select a game to remove',
-          required: true,
-          choices: list,
-        },
-      ],
-    };
+  };
 
-    UPDATE_GAME_COMMAND = {
-      name: 'update-game',
-      description: 'Updates a game from the list',
-      options: [
-        {
-          type: 3, // STRING
-          name: 'game',
-          description: 'Select a game to update',
-          required: true,
-          choices: list,
-        },
-        {
-          type: 3, // STRING
-          name: 'name',
-          description: 'Choose a name for the game',
-          required: false,
-        },
-        {
-          type: 3, // STRING
-          name: 'description',
-          description: 'Choose a description for the game',
-          required: false,
-        },
-      ],
-    };
-  }
+  const START_EVENT_COMMAND = {
+    name: 'start-event',
+    description: 'Start an event with team generation',
+    options: [
+      {
+        type: 3, // STRING
+        name: 'name',
+        description: 'Choose the name / title of your event',
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: 'description',
+        description: 'Choose the description of your event',
+        required: true,
+      },
+      {
+        type: 4, // NUMBER
+        name: 'expiration',
+        description: 'Select the number of hours for team generation and signup deadline (default: 24 hours)',
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: 'image',
+        description: 'Add an image link to add to your event post',
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: 'color',
+        description: 'Select the color of the embed',
+        required: false,
+        choices: [
+          { name: 'purple', value: 'purple' },
+          { name: 'red', value: 'red' },
+          { name: 'yellow', value: 'yellow' },
+          { name: 'green', value: 'green' },
+          { name: 'cyan', value: 'cyan' },
+          { name: 'blue', value: 'blue' },
+          { name: 'pink', value: 'pink' },
+        ],
+      },
+    ],
+  };
 
-  let START_EVENT_COMMAND;
-  if (list && list.length > 0 && list_type == "games") {
-    START_EVENT_COMMAND = {
-      name: 'start-event',
-      description: 'Start an event with team generation',
-      options: [
-        {
-          type: 3, // STRING
-          name: 'name',
-          description: 'Choose the name / title of your event',
-          required: true,
-        },
-        {
-          type: 3, // STRING
-          name: 'description',
-          description: 'Choose the description of your event',
-          required: true,
-        },
-        {
-          type: 3, // STRING
-          name: 'game',
-          description: 'Select a game',
-          required: false,
-          choices: list,
-        },
-        {
-          type: 4, // NUMBER
-          name: 'expiration',
-          description: 'Select the number of hours for team generation and signup deadline (default: 24 hours)',
-          required: false,
-        },
-        {
-          type: 3, // STRING
-          name: 'image',
-          description: 'Add an image link to add to your event post',
-          required: false,
-        },
-        {
-          type: 3, // STRING
-          name: 'color',
-          description: 'Select the color of the embed',
-          required: false,
-          choices: [
-            { name: 'purple', value: 'purple' },
-            { name: 'red', value: 'red' },
-            { name: 'yellow', value: 'yellow' },
-            { name: 'green', value: 'green' },
-            { name: 'cyan', value: 'cyan' },
-            { name: 'blue', value: 'blue' },
-            { name: 'pink', value: 'pink' },
-          ],
-        },
-      ],
-    };
-  } else {
-    START_EVENT_COMMAND = {
-      name: 'start-event',
-      description: 'Start an event with team generation',
-      options: [
-        {
-          type: 3, // STRING
-          name: 'name',
-          description: 'Choose the name / title of your event',
-          required: true,
-        },
-        {
-          type: 3, // STRING
-          name: 'description',
-          description: 'Choose the description of your event',
-          required: true,
-        },
-        {
-          type: 4, // NUMBER
-          name: 'expiration',
-          description: 'Select the number of hours for team generation and signup deadline (default: 24 hours)',
-          required: false,
-        },
-        {
-          type: 3, // STRING
-          name: 'image',
-          description: 'Add an image link to add to your event post',
-          required: false,
-        },
-        {
-          type: 3, // STRING
-          name: 'color',
-          description: 'Select the color of the embed',
-          required: false,
-          choices: [
-            { name: 'purple', value: 'purple' },
-            { name: 'red', value: 'red' },
-            { name: 'yellow', value: 'yellow' },
-            { name: 'green', value: 'green' },
-            { name: 'cyan', value: 'cyan' },
-            { name: 'blue', value: 'blue' },
-            { name: 'pink', value: 'pink' },
-          ],
-        },
-      ],
-    };
-  }
+  const CANCLE_EVENT_COMMAND = {
+    name: 'cancel-event',
+    description: 'Cancel current event',
+};
 
-  let CANCEL_EVENT_COMMAND;
-  if (list && list.length > 0 && list_type == "events") {
-    CANCEL_EVENT_COMMAND = {
-      name: 'cancel-event',
-      description: 'Cancel an event',
-      options: [
-        {
-          type: 3, // STRING
-          name: 'event',
-          description: 'Select an event to cancel',
-          required: true,
-          choices: list,
-        },
-      ]
-    };
-  }
-
-  // Define new commands based on the presence of REMOVE_GAME_COMMAND
-  // const NEW_COMMANDS = [
-  //   AWARD_TEAM_COMMAND,
-  //   WALLET_COMMAND,
-  //   DEDUCT_USER_COMMAND,
-  //   AWARD_USER_COMMAND,
-  //   SHOP_COMMAND,
-  //   SET_REWARD_COMMAND,
-  //   SET_ALL_REWARDS_COMMAND,
-  //   SET_TEAMS_COMMAND,
-  //   SET_TOKEN_EMOJI_COMMAND,
-  //   SET_BOT_CHANNEL_COMMAND,
-  //   ADD_GAME_COMMAND,
-  //   GAMES_COMMAND,
-  //   RESET_TEAMS_COMMAND,
-  //   SET_STATUS_COMMAND,
-  //   START_EVENT_COMMAND,
-  //   ...(CANCEL_EVENT_COMMAND ? [CANCEL_EVENT_COMMAND] : []), // Add CANCEL_EVENT_COMMAND only if it exists
-  //   ...(REMOVE_GAME_COMMAND ? [REMOVE_GAME_COMMAND] : []), // Add REMOVE_GAME_COMMAND only if it exists
-  //   ...(UPDATE_GAME_COMMAND ? [UPDATE_GAME_COMMAND] : []), // Add UPDATE_GAME_COMMAND if it exists
-  // ];
-
-  // Define always-present commands
-  const ALWAYS_PRESENT_COMMANDS = [
+  const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
     DEDUCT_USER_COMMAND,
@@ -458,28 +326,13 @@ async function registerCommands(client, guild_id, list, shouldDeleteCommand, lis
     SET_TEAMS_COMMAND,
     SET_TOKEN_EMOJI_COMMAND,
     SET_BOT_CHANNEL_COMMAND,
-    ADD_GAME_COMMAND,
     GAMES_COMMAND,
+    ADD_GAME_COMMAND,
     RESET_TEAMS_COMMAND,
     SET_STATUS_COMMAND,
     START_EVENT_COMMAND,
-  ];
-
-  // Conditional commands based on list_type
-  const CONDITIONAL_COMMANDS = [
-    ...(list && list.length > 0 && list_type == "games" ? [
-      REMOVE_GAME_COMMAND,
-      UPDATE_GAME_COMMAND,
-    ] : []),
-    ...(list && list.length > 0 && list_type == "events" ? [
-      CANCEL_EVENT_COMMAND,
-    ] : []),
-  ];
-
-  // Combine always-present commands with conditional commands
-  const NEW_COMMANDS = [
-    ...ALWAYS_PRESENT_COMMANDS,
-    ...CONDITIONAL_COMMANDS,
+    MANAGE_GAMES_COMMAND,
+    CANCLE_EVENT_COMMAND,
   ];
 
   // Fetch existing commands from Discord
@@ -495,100 +348,16 @@ async function registerCommands(client, guild_id, list, shouldDeleteCommand, lis
     await deleteCommand(command.id);
   }
 
-  async function deleteCommands(commandsToDeleteNames) {
-    for (const commandName of commandsToDeleteNames) {
-      const commandToDelete = existingCommands.find(
-        existingCommand => existingCommand.name === commandName.toLowerCase()
-      );
-    
-      if (commandToDelete) {
-        await deleteCommand(commandToDelete.id); // Again, assuming deleteCommand is your function
-        console.log(`Deleted command: ${commandName}`);
-      } else {
-        console.log(`Command ${commandName} not found.`);
-      }
-    }
-  }
-
-
-  // Call the function for games only if the corresponding variable is true
-  if (shouldDeleteCommand && list_type == "games") {
-    const commandsToDeleteGames = ['REMOVE_GAME_COMMAND', 'UPDATE_GAME_COMMAND'];
-    deleteCommands(commandsToDeleteGames);
-  }
-
-  // Call the function for cancel events only if the corresponding variable is true
-  if (shouldDeleteCommand && list_type == "events") {
-    const commandsToDeleteCancel = ['CANCEL_EVENT_COMMAND'];
-    deleteCommands(commandsToDeleteCancel);
-  }
-
-  // Create a map of existing command names to their IDs for quick lookup
-  const existingCommandMap = new Map(existingCommands.map(cmd => [cmd.name, cmd.id]));
-
-  // Prepare commands for registration/update
-  const finalCommandList = NEW_COMMANDS.map(cmd => {
-    const existingId = existingCommandMap.get(cmd.name);
-    return existingId ? { id: existingId, ...cmd } : cmd;
-  });
-
-  // Define a list to keep commands
-  let commandsToKeep = [];
-
-
-
-  if (!shouldDeleteCommand && list_type == "events" || !shouldDeleteCommand && list_type == "games") {
-    commandsToKeep = ['remove-game', 'update-game', 'cancel-event'];
-  }
-
-  // Add the commands to keep to the finalCommandList if they exist
-  if (commandsToKeep.length > 0) {
-    for (const commandName of commandsToKeep) {
-      // Find the existing command that matches the commandName
-      const filteredCommand = existingCommands.find(command => command.name === commandName);
-
-      if (filteredCommand) {
-        // Check if the command is already in finalCommandList
-        const existingCommand = finalCommandList.find(cmd => cmd.name === commandName);
-        if (!existingCommand) {
-          // Add the command to finalCommandList
-          finalCommandList.push({
-            // id: filteredCommand.id,
-            name: filteredCommand.name,
-            description: filteredCommand.description,
-            options: filteredCommand.options
-          });
-        }
-      }
-
-      const startEventCommand = existingCommands.find(command => command.name === "start-event");
-      if (startEventCommand) {
-        finalCommandList.find((command => command.name === "start-event")).options = startEventCommand.options;
-      }
-
-    }
-  }
-
-  // Register or update commands
+  // Register or update the existing commands
   try {
-    await InstallGlobalCommands(process.env.APP_ID, finalCommandList, guild_id);
+    // Pass guild_id to register commands for a specific guild
+    await InstallGlobalCommands(process.env.APP_ID, NEW_COMMANDS, guild_id);
     console.log('Successfully registered or updated commands.');
   } catch (error) {
     console.error('Error registering commands:', error);
   }
-
-  // Handle command deletion if required
-  if (shouldDeleteCommand) {
-    const commandsToDelete = existingCommands.filter(existingCommand =>
-      !NEW_COMMANDS.some(newCommand => newCommand.name === existingCommand.name)
-    );
-
-    console.log("Commands to Delete:", commandsToDelete);
-
-    for (const command of commandsToDelete) {
-      await deleteCommand(command.id);
-    }
-  }
 }
+
+registerCommands(); // ToDo delete this line
 
 module.exports = registerCommands;

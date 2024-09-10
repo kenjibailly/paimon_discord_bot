@@ -8,10 +8,8 @@ const handleSetAllRewardsCommand = require('./set-all-rewards');
 const handleSetTeamsCommand = require('./set-teams');
 const handleSetTokenEmojiCommand = require('./set-token-emoji');
 const handleSetBotChannelCommand = require('./set-bot-channel');
-const handleAddGameCommand = require('./add-game');
+const handleManageGamesCommand = require('./manage-games');
 const handleGamesCommand = require('./games');
-const handleRemoveGameCommand = require('./remove-game');
-const handleUpdateGameCommand = require('./update-game');
 const handleResetTeamsCommand = require('./reset-teams');
 const handleSetStatusCommand = require('./set-status');
 const handleStartEventCommand = require('./start-event');
@@ -28,10 +26,8 @@ module.exports = {
     'set-teams': handleSetTeamsCommand,
     'set-token-emoji': handleSetTokenEmojiCommand,
     'set-bot-channel': handleSetBotChannelCommand,
-    'add-game': handleAddGameCommand,
+    'manage-games': handleManageGamesCommand,
     'games': handleGamesCommand,
-    'remove-game': handleRemoveGameCommand,
-    'update-game': handleUpdateGameCommand,
     'reset-teams': handleResetTeamsCommand,
     'set-status': handleSetStatusCommand,
     'start-event': handleStartEventCommand,

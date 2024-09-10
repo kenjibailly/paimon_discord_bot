@@ -1,13 +1,14 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 
-async function handleCancelThreadButton(interaction, client) {
+async function handleCancelThread(guild_id, channel_id, client) {
+    // Fetch the guild (server) using the guild_id from the interaction
+    const guild = await client.guilds.fetch(guild_id);
+
+    // Fetch the thread channel using the channel_id from the interaction
+    const thread = await guild.channels.fetch(channel_id);
+
     try {
-        // Fetch the guild (server) using the guild_id from the interaction
-        const guild = await client.guilds.fetch(interaction.guild_id);
-        
-        // Fetch the thread channel using the channel_id from the interaction
-        const thread = await guild.channels.fetch(interaction.channel_id);
 
         // Send a confirmation message before closing the thread
         const title = "Exit";
@@ -29,22 +30,14 @@ async function handleCancelThreadButton(interaction, client) {
             thread.delete();
         }, 5000);
 
-        // Respond to the interaction to avoid the "This interaction failed" message
-        return {
-            type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
-        };
     } catch (error) {
         console.error('Failed to close the thread:', error);
-
-        // In case of failure, send an error message as a response
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                content: 'Failed to close the thread. Please try again.',
-                flags: 64,
-            },
-        };
+        const title = "Error Thread";
+        const description = `Failed to close the thread. Please close the thread manually.`;
+        const color = "error";
+        const embed = createEmbed(title, description, color);
+        await thread.send({ embeds: [embed] });
     }
 }
 
-module.exports = handleCancelThreadButton;
+module.exports = handleCancelThread;

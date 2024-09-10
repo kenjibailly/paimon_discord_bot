@@ -154,18 +154,14 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
     - Input: `user`, `amount`, optional: `reason`
 - ✅ /start-event
     - Creates event, users can apply to this event to be added to the team generation
-    - Input: `event name`, `description`, optional: `game`, optional: `expiration` optional: `image link`
+    - Input: `event name`, `description`, optional: `expiration` optional: `image link`
 - ✅ /reset-teams
     - Removes all users from the roles created for the team generation to start over
 - ✅ /add-game
     - Adds game to the list
     - Input: `game`
-- ✅ /remove-game
-    - Removes game
-    - Input: `game name list`
-- ✅ /update-game
-    - Removes game
-    - Input: `game name list`
+- ✅ /manage-games
+    - Remove or update a game
 - ✅ /set-status
     - Sets custom status of the bot, this can't be set per server, this is a custom status for the bot on all servers, so becareful with this. If you want to disable this edit commands/deploy-commands.js and remove `SET_STATUS_COMMAND,` line in `const NEW_COMMANDS = [`
     - Input: `status`
@@ -177,7 +173,6 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
     - Input: `name`
 - ✅ /cancel-event
     - Cancels an ongoing event
-    - Input: `list of ongoing events`
 
 #### ⚙️ Settings
 
