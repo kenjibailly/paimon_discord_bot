@@ -1,6 +1,6 @@
 const { InteractionResponseType } = require('discord-interactions');
-const createEmbed = require('../helpers/embed');
-const Rewards = require('../models/rewards');
+const createEmbed = require('../../helpers/embed');
+const Rewards = require('../../models/rewards');
 
 async function handleExchangeShopButton(interaction, client) {
     // Step 1: Create a thread

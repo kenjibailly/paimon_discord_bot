@@ -1,7 +1,8 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
-const getTokenEmoji = require('../helpers/get-token-emoji'); // Import getTokenEmoji
+const getTokenEmoji = require('../helpers/get-token-emoji');
+const getReward = require('../helpers/get-reward');
 
 async function handleChangeNickname(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
@@ -17,7 +18,7 @@ async function handleChangeNickname(message, client) {
         // Send a confirmation message before closing the thread
         const title = "Shop";
         const description = `${validationError}\nPlease try again.`;
-        const color = "#ff0000"; // Changed to hex code for red
+        const color = "error"; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
         await message.channel.send({
@@ -44,6 +45,23 @@ async function handleChangeNickname(message, client) {
         });
         return;
     }
+
+    let rewardName;
+    if(user_exchange_data.taggedUser) {
+        rewardName = "change-user-nickname";
+    } else {
+        rewardName = user_exchange_data.name;
+    }
+
+    // Fetch token emoji using the getTokenEmoji function
+    const reward = await getReward(message.guild.id, rewardName);
+    // Validation when tokenEmoji isn't set
+    if (reward.data) {
+        await message.channel.send({
+            embeds: [reward],
+        });
+        return;
+    }
     
     // Determine if the emoji is custom or normal
     const emojiDisplay = tokenEmoji.token_emoji_id 
@@ -53,11 +71,13 @@ async function handleChangeNickname(message, client) {
     const title = "Shop";
     const description = `
     Do you want to change ${user_text} nickname to **${messageContent}**?
-    This will deduct **1** ${emojiDisplay} from your wallet.`;
+    This will deduct **${reward.price}** ${emojiDisplay} from your wallet.`;
     const embed = createEmbed(title, description, "");
 
-    // Encode the message content to make it URL-safe
-    const encodedContent = encodeURIComponent(messageContent);
+    user_exchange_data.nickname = messageContent;
+    user_exchange_data.rewardPrice = reward.price;
+    user_exchange_data.tokenEmoji = tokenEmoji;
+    userExchangeData.set(message.author.id, user_exchange_data);
 
     // Construct the button component
     const buttonComponent = {
@@ -68,7 +88,7 @@ async function handleChangeNickname(message, client) {
             name: tokenEmoji.token_emoji_name, // Use the emoji name
             id: tokenEmoji.token_emoji_id // Include the ID if it's a custom emoji
         },
-        custom_id: `exchange-change-nickname:${encodedContent}`
+        custom_id: `exchange-change-nickname`
     };
 
     // Send the message

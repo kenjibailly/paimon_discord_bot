@@ -1,26 +1,26 @@
-const TokenEmoji = require('../models/token-emoji');
+const Rewards = require('../models/rewards');
 const createEmbed = require('../helpers/embed');
 
-async function getTokenEmoji(guild_id) {
+async function getReward(guild_id, name) {
     try {
-        const token_emoji = await TokenEmoji.findOne({ guild_id: guild_id });
-        if (!token_emoji) {
+        const reward = await Rewards.findOne({ guild_id: guild_id, name: name });
+        if (!reward) {
             const title = "Error";
-            const description = "There was an error retrieving the token emoji. Please try again later.";
+            const description = "There was an error retrieving the reward. Please try again later.";
             const color = "error";
             const embed = createEmbed(title, description, color);
             return embed;
         }
-        return token_emoji;
+        return reward;
     } catch (error) {
         console.error(`Error fetching token emoji:`, error);
         // Return an error embed for response
         const title = "Error";
-        const description = "There was an error retrieving the token emoji. Please try again later.";
+        const description = "There was an error retrieving the reward. Please try again later.";
         const color = "error";
         const embed = createEmbed(title, description, color);
         return embed;
     }
 }
 
-module.exports = getTokenEmoji;
+module.exports = getReward;

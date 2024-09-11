@@ -1,22 +1,15 @@
 const { InteractionResponseType } = require('discord-interactions');
-const createEmbed = require('../helpers/embed');
-const Wallet = require('../models/wallet');
-const AwardedReward = require('../models/awarded-reward');
-const getTokenEmoji = require('../helpers/get-token-emoji');
-const handleCancelThread = require('./cancel-thread');
-const userExchangeData = require('../helpers/userExchangeData');
+const createEmbed = require('../../../helpers/embed');
+const Wallet = require('../../../models/wallet');
+const AwardedReward = require('../../../models/awarded-reward');
+const getTokenEmoji = require('../../../helpers/get-token-emoji');
+const handleCancelThread = require('../../cancel-thread');
+const userExchangeData = require('../../../helpers/userExchangeData');
 
 async function handleExchangeChangeNicknameButton(interaction, client) {
     const user_exchange_data = userExchangeData.get(interaction.member.user.id);
     
     userExchangeData.delete(interaction.member.user.id);
-    // Extract the encoded content from the custom_id
-    const customIdParts = interaction.data.custom_id.split(':');
-    const customId = customIdParts[0];
-    const encodedContent = customIdParts[1]; // The second part is the encoded message content
-
-    // Decode the content
-    const messageContent = decodeURIComponent(encodedContent);
 
     let wallet;
     let member;
@@ -41,25 +34,11 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
             };
         }
 
-        // Fetch the token emoji using getTokenEmoji function
-        const tokenEmoji = await getTokenEmoji(interaction.guild_id);
-
-        // Check if tokenEmoji is an embed (error case)
-        if (tokenEmoji.data) {
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [tokenEmoji],
-                    flags: 64,
-                },
-            };
-        }
-
         // Check wallet balance
-        if (wallet.amount < 1) {
+        if (wallet.amount < Number(user_exchange_data.rewardPrice)) {
             const title = "Wallet";
-            const description = `You don't have enough ${tokenEmoji.token_emoji} to make this exchange.
-            You currently have **${wallet.amount}** ${tokenEmoji.token_emoji} and you need **1** ${tokenEmoji.token_emoji}`;
+            const description = `You don't have enough ${user_exchange_data.tokenEmoji.token_emoji} to make this exchange.
+            You currently have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} and you need **1** ${user_exchange_data.tokenEmoji.token_emoji}`;
             const color = "#ff0000";
             const embed = createEmbed(title, description, color);
             guild = await client.guilds.fetch(interaction.guild_id);
@@ -80,7 +59,7 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
         if (!botMember.permissions.has('MANAGE_NICKNAMES')) {
             const title = "Permissions Error";
             const description = `I don't have permission to change nicknames in this server. Please contact a server admin.`;
-            const color = "#ff0000";
+            const color = "error";
             const embed = createEmbed(title, description, color);
 
             return {
@@ -111,7 +90,7 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
                     {
                         awarded_user_id: user_exchange_data.taggedUser,
                         user_id: interaction.member.user.id,
-                        value: messageContent,
+                        value: user_exchange_data.nickname,
                         reward: reward,
                         date: new Date(),
                     },
@@ -133,7 +112,7 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
                     },
                     {
                         user_id: interaction.member.user.id,
-                        value: messageContent,
+                        value: user_exchange_data.nickname,
                         reward: reward,
                         date: new Date(),
                     },
@@ -162,14 +141,14 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
         }
 
         
-        await member.setNickname(messageContent);
+        await member.setNickname(user_exchange_data.nickname);
 
         // Deduct from the wallet
-        wallet.amount -= 1;
+        wallet.amount -= Number(user_exchange_data.rewardPrice);
         await wallet.save();
         const title = "Shop";
-        const description = `**${member.user.globalName}**'s nickname has been changed to **${messageContent}**.
-        You now have **${wallet.amount}** ${tokenEmoji.token_emoji} in your wallet.`;
+        const description = `**${member.user.globalName}**'s nickname has been changed to **${user_exchange_data.nickname}**.
+        You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
         const embed = createEmbed(title, description, "");
 
         thread = await guild.channels.fetch(interaction.channel_id);
@@ -209,7 +188,7 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
             Your wallet has not been affected.`;
         }
 
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {
