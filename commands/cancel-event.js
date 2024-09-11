@@ -2,7 +2,6 @@ const { InteractionResponseType } = require('discord-interactions');
 const Events = require('../models/events');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
-const deployCommands = require('../commands/deploy-commands');
 
 async function handleCancelEventCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -28,14 +27,14 @@ async function handleCancelEventCommand(interaction, client) {
                     }
                     events_list.push(event_info);
                 });
-                await deployCommands(client, guild_id, events_list, false, list_type);
             } else {
-                await deployCommands(client, guild_id, events_list, true, list_type);
+                throw new Error("Could not find event");
+                
             }
         } catch (error) {
-            console.log("Error Events Registering Commands: " + error);
-            const title = "Event Remove Error";
-            const description = `Event couldn't be canceled because of the command register, please contact the administrator or try again later.`;
+            console.log("Error Finding Event: " + error);
+            const title = "Event Error";
+            const description = `Event could not be cancelled because I could not find any event.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
     
