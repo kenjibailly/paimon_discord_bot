@@ -110,7 +110,6 @@ Under the `OAuth2` tab, find `OAuth2 URL Generator` and check `bot` under the sc
 <summary>✅ Information</summary>
 
 The slash commands are automatically registered when the bot enters the server. 
-When a game is being added or removed from the list, this specific slash command is being added, updated or removed.
 
 > The Discord client has to be refreshed before the change in the slash command(s) get updated. `ctrl + R` on windows. Restart app on mobile.
 
@@ -202,7 +201,7 @@ When opening the shop, the user can click a button to start interacting with the
 #### 🏆 Rewards:
 - ✅ Change your nickname
 - ✅ Change someone's nickname
-- ❌ Add a custom server emoji
+- ✅ Add a custom server emoji
 - ❌ Add a custom channel
 - ❌ Add a custom role name and color
 - ❌ Add a custom soundboard sound
