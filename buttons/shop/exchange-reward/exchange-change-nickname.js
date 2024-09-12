@@ -67,6 +67,20 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
                     }
                 );
 
+                if (!awardedReward){
+                    let title = "Reward Database Error";
+                    let description = `I could not not find the reward to be awarded. Please contact the administrator.`;
+                    const color = "error";
+                    const embed = createEmbed(title, description, color);
+    
+                    return {
+                        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                        data: {
+                            embeds: [embed],
+                        },
+                    };
+                }
+
             } else {
                 const reward = "change-own-nickname"; // Example reward value
 
@@ -89,6 +103,10 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
                     }
                 );
 
+                if (!awardedReward){
+                    throw new Error("Could not find add awarded reward to database");
+                }
+
             }
         } catch (error) {
             console.error('Error adding reward to DB:', error);
@@ -106,17 +124,36 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
             };
         }
 
+        try {
+            // Deduct from the wallet
+            wallet.amount -= Number(user_exchange_data.rewardPrice);
+            await wallet.save();
+        } catch (error) {
+            console.error("Failed to save wallet:", error);
+            
+            const title = "Transaction Error";
+            const description = "There was an error while processing your wallet transaction. Please try again later.";
+            const color = "error"; // Assuming you have a color constant for errors
+            const embed = createEmbed(title, description, color);
+            
+            handleCancelThread(interaction, client);
+
+            return {
+                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                    embeds: [embed],
+                },
+            }
+        }
+
         
         await member.setNickname(user_exchange_data.nickname);
-
-        // Deduct from the wallet
-        wallet.amount -= Number(user_exchange_data.rewardPrice);
-        await wallet.save();
         const title = "Shop";
         const description = `**${member.user.globalName}**'s nickname has been changed to **${user_exchange_data.nickname}**.
         You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
         const embed = createEmbed(title, description, "");
 
+        // Send success message before canceling the thread message
         await thread.send({ embeds: [embed] });
 
         await handleCancelThread(interaction, client);

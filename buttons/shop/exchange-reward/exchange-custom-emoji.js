@@ -74,9 +74,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
         }
 
         const emojiName = user_exchange_data.emojiName;
-
         const existingEmojis = guild.emojis.cache;
-
         // Check if an emoji with the given name already exists
         const emojiExists = existingEmojis.some(emoji => emoji.name === emojiName);
 
@@ -115,6 +113,11 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
                     setDefaultsOnInsert: true // Apply default values on insert if defined
                 }
             );
+
+            if (!awardedReward){
+                throw new Error("Could not find add awarded reward to database");
+            }
+
         } catch (error) {
             console.error('Error adding reward to DB:', error);
 
@@ -131,19 +134,18 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             };
         }
 
-        try {            
-            // Upload the custom emoji
-            const newEmoji = await guild.emojis.create({
-                attachment: user_exchange_data.processedImage,
-                name: emojiName,
-            });
-
-            // Send a success message once the emoji is added
-            const title = "Emoji Added";
-            const description = `The emoji **:${newEmoji.name}:** has been successfully added to the server!`;
-            const color = "";
+        try {
+            // Deduct from the wallet
+            wallet.amount -= Number(user_exchange_data.rewardPrice);
+            await wallet.save();
+        } catch (error) {
+            console.error("Failed to save wallet:", error);
+            
+            const title = "Transaction Error";
+            const description = "There was an error while processing your wallet transaction. Please try again later.";
+            const color = "error"; // Assuming you have a color constant for errors
             const embed = createEmbed(title, description, color);
-
+            
             handleCancelThread(interaction, client);
 
             return {
@@ -151,7 +153,49 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
                 data: {
                     embeds: [embed],
                 },
-            };
+            }
+        }
+
+        try {
+            // Upload the custom emoji
+            const newEmoji = await guild.emojis.create({
+                attachment: user_exchange_data.processedImage,
+                name: emojiName,
+            });
+
+            if (newEmoji) {
+                // Send a success message once the emoji is added
+                const title = "Emoji Added";
+                const description = `The emoji **:${newEmoji.name}:** has been successfully added to the server!
+                You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
+                const color = "";
+                const embed = createEmbed(title, description, color);
+
+                // Send success message before canceling the thread message
+                await thread.send({ embeds: [embed] });
+
+                handleCancelThread(interaction, client);
+
+                // Send message to the parent channel if available
+                const parentChannel = thread.parent;
+                if (parentChannel) {
+                    const parentTitle = "Shop";
+                    const parentDescription = `<@${interaction.member.user.id}> has added emoji: **:${newEmoji.name}:** to the server.`;
+                    const parentEmbed = createEmbed(parentTitle, parentDescription, "");
+                    
+                    await parentChannel.send({
+                        embeds: [parentEmbed],
+                    });
+                }
+
+                return {
+                    type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
+                };
+
+            
+            } else {
+                throw new Error("Error wile uploading emoji to Discord");
+            }
 
         } catch (error) {
             console.log("Emoji Upload Error: ", error);

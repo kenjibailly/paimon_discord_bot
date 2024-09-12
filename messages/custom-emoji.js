@@ -70,6 +70,7 @@ async function handleCustomEmoji(message, client) {
     // user_exchange_data.attachment = attachment;
     user_exchange_data.emojiName = messageContent;
     user_exchange_data.rewardPrice = reward.price;
+    user_exchange_data.tokenEmoji = tokenEmoji;
 
     userExchangeData.set(message.author.id, user_exchange_data);
 
