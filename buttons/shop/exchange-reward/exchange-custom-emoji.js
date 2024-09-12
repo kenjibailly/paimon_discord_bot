@@ -1,11 +1,10 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../../helpers/embed');
-const Wallet = require('../../../models/wallet');
 const AwardedReward = require('../../../models/awarded-reward');
-const getTokenEmoji = require('../../../helpers/get-token-emoji');
 const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
+const checkPermissions = require('../../../helpers/check-permissions');
 
 async function handleExchangeCustomEmojiButton(interaction, client) {
     try {
@@ -24,24 +23,17 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
         }
 
         
-        const botMember = await guild.members.fetch(client.user.id);
-
         // Check bot permissions
-        if (!botMember.permissions.has('MANAGE_EMOJIS_AND_STICKERS')) {
-            const title = "Permissions Error";
-            const description = `I don't have permission to manage custom emojis in this server. Please contact a server admin.`;
-            const color = "error";
-            const embed = createEmbed(title, description, color);
-
-            handleCancelThread(interaction, client);
-
+        const permissionCheck = await checkPermissions(interaction, client, 'MANAGE_EMOJIS_AND_STICKERS', guild);
+        if (permissionCheck) {
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {
-                    embeds: [embed],
+                    embeds: [permissionCheck],
                 },
             };
         }
+
 
         // Get the current number of emojis and the max allowed based on the server's Nitro level
         const currentEmojis = guild.emojis.cache.size;

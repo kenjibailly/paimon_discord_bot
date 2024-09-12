@@ -1,11 +1,10 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../../helpers/embed');
-const Wallet = require('../../../models/wallet');
 const AwardedReward = require('../../../models/awarded-reward');
-const getTokenEmoji = require('../../../helpers/get-token-emoji');
 const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
+const checkPermissions = require('../../../helpers/check-permissions');
 
 async function handleExchangeChangeNicknameButton(interaction, client) {
         
@@ -24,25 +23,20 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
             };
         }
 
-        const botMember = await guild.members.fetch(client.user.id);
-
         // Check bot permissions
-        if (!botMember.permissions.has('MANAGE_NICKNAMES')) {
-            const title = "Permissions Error";
-            const description = `I don't have permission to change nicknames in this server. Please contact a server admin.`;
-            const color = "error";
-            const embed = createEmbed(title, description, color);
-
+        const permissionCheck = await checkPermissions(interaction, client, 'MANAGE_NICKNAMES', guild);
+        if (permissionCheck) {
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {
-                    embeds: [embed],
+                    embeds: [permissionCheck],
                 },
             };
         }
 
+
+        // Fetch member who's nickname should be changed
         let member;
-        // Fetch the member and attempt to change the nickname
         if (user_exchange_data.taggedUser) {
             member = await guild.members.fetch(user_exchange_data.taggedUser);
         } else {
