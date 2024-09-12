@@ -62,6 +62,8 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
+            handleCancelThread(interaction, client);
+
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {
@@ -98,6 +100,8 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             const color = "error"; // Assuming you have color constants, adjust accordingly
             const embed = createEmbed(title, description, color);
 
+            handleCancelThread(interaction, client);
+
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {
@@ -106,26 +110,65 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             };
         }
 
-        // const attachmentUrl = user_exchange_data.attachment.url;
         const emojiName = user_exchange_data.emojiName;
 
+        const existingEmojis = guild.emojis.cache;
+
+        // Check if an emoji with the given name already exists
+        const emojiExists = existingEmojis.some(emoji => emoji.name === emojiName);
+
+        if (emojiExists) {
+            const title = "Emoji Name Taken";
+            const description = `An emoji with the name "${emojiName}" already exists. Please choose a different name.`;
+            const color = "error"; // Assuming you have a color constant for errors
+            const embed = createEmbed(title, description, color);
+
+            return {
+                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                    embeds: [embed],
+                },
+            };
+        }
 
         try {
-            // Check if the bot has permission to manage emojis
-            if (!botMember.permissions.has('MANAGE_EMOJIS_AND_STICKERS')) {
-                const title = "Permissions Error";
-                const description = `I don't have permission to manage custom emojis in this server. Please contact a server admin.`;
-                const color = "error";
-                const embed = createEmbed(title, description, color);
+            const reward = "custom-emoji"; // Example reward value
+            const awardedReward = await AwardedReward.findOneAndUpdate(
+                {
+                    guild_id: interaction.guild_id,
+                    awarded_user_id: interaction.member.user.id,
+                    reward: { $in: reward } // Match if reward is in the specified array
+                },
+                {
+                    awarded_user_id: interaction.member.user.id,
+                    user_id: interaction.member.user.id,
+                    value: emojiName,
+                    reward: reward,
+                    date: new Date(),
+                },
+                {
+                    upsert: true, // Create a new document if one doesn't exist
+                    new: true, // Return the updated document
+                    setDefaultsOnInsert: true // Apply default values on insert if defined
+                }
+            );
+        } catch (error) {
+            console.error('Error adding reward to DB:', error);
 
-                return {
-                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                    data: {
-                        embeds: [embed],
-                    },
-                };
-            }
+            let title = "Reward Database Error";
+            let description = `I could not add the reward to the database. Please contact the administrator.`;
+            const color = "error";
+            const embed = createEmbed(title, description, color);
 
+            return {
+                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                    embeds: [embed],
+                },
+            };
+        }
+
+        try {            
             // Upload the custom emoji
             const newEmoji = await guild.emojis.create({
                 attachment: user_exchange_data.processedImage,
@@ -137,6 +180,8 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             const description = `The emoji **:${newEmoji.name}:** has been successfully added to the server!`;
             const color = "";
             const embed = createEmbed(title, description, color);
+
+            handleCancelThread(interaction, client);
 
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,

@@ -1,4 +1,5 @@
 const removeNickname = require('./remove-nickname');
+const removeCustomEmoji = require('./remove-custom-emoji');
 const createEmbed = require('../helpers/embed');
 const AwardedReward = require('../models/awarded-reward');
 const Rewards = require('../models/rewards');
@@ -13,6 +14,10 @@ async function checkRemoveRewards(client) {
                 break;
             case "change-user-nickname":
                 await removeNickname(client, reward);
+                await removeReward(client, reward);
+                break;
+            case "custom-emoji":
+                await removeCustomEmoji(client, reward);
                 await removeReward(client, reward);
                 break;
             default:

@@ -129,7 +129,7 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
 
             let title = "Reward Database Error";
             let description = `I could not add the reward to the database. Please contact the administrator.`;
-            const color = "#ff0000";
+            const color = "error";
             const embed = createEmbed(title, description, color);
 
             return {
