@@ -3,56 +3,27 @@ const createEmbed = require('../../../helpers/embed');
 const Wallet = require('../../../models/wallet');
 const AwardedReward = require('../../../models/awarded-reward');
 const getTokenEmoji = require('../../../helpers/get-token-emoji');
+const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 
 async function handleExchangeCustomEmojiButton(interaction, client) {
-    const user_exchange_data = userExchangeData.get(interaction.member.user.id);
-    
-    userExchangeData.delete(interaction.member.user.id);
-
-    let wallet;
-    let member;
-    let guild;
-    let thread;
-    
     try {
-        // Fetch the wallet
-        wallet = await Wallet.findOne({ user_id: interaction.member.user.id, guild_id: interaction.guild_id });
-        if (!wallet) {
-            const title = "Wallet";
-            const description = `I could not find your wallet.`;
-            const color = "error";
-            const embed = createEmbed(title, description, color);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
-        }
+        const user_exchange_data = userExchangeData.get(interaction.member.user.id);
+        userExchangeData.delete(interaction.member.user.id);
 
-        // Check wallet balance
-        if (wallet.amount < Number(user_exchange_data.rewardPrice)) {
-            const title = "Wallet";
-            const description = `You don't have enough ${user_exchange_data.tokenEmoji.token_emoji} to make this exchange.
-            You currently have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} and you need **1** ${user_exchange_data.tokenEmoji.token_emoji}`;
-            const color = "#ff0000";
-            const embed = createEmbed(title, description, color);
-            guild = await client.guilds.fetch(interaction.guild_id);
-            thread = await guild.channels.fetch(interaction.channel_id);
-            await thread.send({ embeds: [embed] });
-
-            handleCancelThread(interaction, client);
+        const guild = await client.guilds.fetch(interaction.guild_id);
+        const thread = await guild.channels.fetch(interaction.channel_id);
+    
+        const wallet = await checkRequiredBalance(interaction, client, user_exchange_data.rewardPrice, thread);
+        if(!wallet) { // if wallet has return error message
             return {
                 type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
             };
         }
 
-        // Fetch the guild
-        guild = await client.guilds.fetch(interaction.guild_id);
+        
         const botMember = await guild.members.fetch(client.user.id);
 
         // Check bot permissions
@@ -220,6 +191,8 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
 
         const color = "error";
         const embed = createEmbed(title, description, color);
+
+        handleCancelThread(interaction, client);
 
         return {
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,

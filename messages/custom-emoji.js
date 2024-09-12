@@ -64,14 +64,17 @@ async function handleCustomEmoji(message, client) {
         return;
     }
 
+
+    const reward = await getReward(message.guild.id, user_exchange_data.name);
+
     // user_exchange_data.attachment = attachment;
     user_exchange_data.emojiName = messageContent;
+    user_exchange_data.rewardPrice = reward.price;
 
     userExchangeData.set(message.author.id, user_exchange_data);
 
-    // Fetch token emoji using the getTokenEmoji function
-    const reward = await getReward(message.guild.id, user_exchange_data.name);
-    // Validation when tokenEmoji isn't set
+
+
     if (reward.data) {
         await message.channel.send({
             embeds: [reward],
