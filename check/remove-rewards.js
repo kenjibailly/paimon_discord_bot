@@ -1,5 +1,6 @@
-const removeNickname = require('./remove-nickname');
-const removeCustomEmoji = require('./remove-custom-emoji');
+const removeNickname = require('./remove-reward/remove-nickname');
+const removeCustomEmoji = require('./remove-reward/remove-custom-emoji');
+const removeCustomRole = require('./remove-reward/remove-custom-role');
 const createEmbed = require('../helpers/embed');
 const AwardedReward = require('../models/awarded-reward');
 const Rewards = require('../models/rewards');
@@ -18,6 +19,10 @@ async function checkRemoveRewards(client) {
                 break;
             case "custom-emoji":
                 await removeCustomEmoji(client, reward);
+                await removeReward(client, reward);
+                break;
+            case "custom-role":
+                await removeCustomRole(client, reward);
                 await removeReward(client, reward);
                 break;
             default:

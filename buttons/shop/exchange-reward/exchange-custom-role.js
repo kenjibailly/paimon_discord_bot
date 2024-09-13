@@ -37,30 +37,18 @@ async function handleExchangeCustomRole(interaction, client) {
 
 
         try {
-            const reward = "custom-channel"; // Example reward value
-            const awardedReward = await AwardedReward.findOneAndUpdate(
-                {
-                    guild_id: interaction.guild_id,
-                    awarded_user_id: interaction.member.user.id,
-                    reward: { $in: reward } // Match if reward is in the specified array
-                },
-                {
-                    awarded_user_id: interaction.member.user.id,
-                    user_id: interaction.member.user.id,
-                    value: user_exchange_data.roleName,
-                    reward: reward,
-                    date: new Date(),
-                },
-                {
-                    upsert: true, // Create a new document if one doesn't exist
-                    new: true, // Return the updated document
-                    setDefaultsOnInsert: true // Apply default values on insert if defined
-                }
-            );
+            const reward = "custom-role"; // Example reward value
 
-            if (!awardedReward){
-                throw new Error("Could not find add awarded reward to database");
-            }
+            const awardedReward = new AwardedReward({
+                guild_id: interaction.guild_id,
+                awarded_user_id: interaction.member.user.id,
+                user_id: interaction.member.user.id,
+                value: user_exchange_data.roleName,
+                reward: reward,
+                date: new Date(),
+            });
+
+            await awardedReward.save();
 
         } catch (error) {
             console.error('Error adding reward to DB:', error);
@@ -106,6 +94,7 @@ async function handleExchangeCustomRole(interaction, client) {
                 name: user_exchange_data.roleName,
                 color: user_exchange_data.roleColor,
                 reason: `Claimed shop reward from user: ${interaction.member.user.id}`,
+                hoist: true // This will make the role appear separately in the member list
             });
 
             // Get the list of roles in the guild
@@ -113,7 +102,9 @@ async function handleExchangeCustomRole(interaction, client) {
 
             // Set the new role's position to be above the existing highest role
             const highestRole = roles.sort((a, b) => b.position - a.position).first();
-            await newRole.setPosition(highestRole.position + 1);
+            if (highestRole) {
+                await newRole.setPosition(highestRole.rawPosition);
+            }
 
             // Assign the role to the user
             const member = await guild.members.fetch(interaction.member.user.id);

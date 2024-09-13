@@ -1,5 +1,5 @@
-const createEmbed = require('../helpers/embed');
-const getBotChannel = require('../helpers/get-bot-channel');
+const createEmbed = require('../../helpers/embed');
+const getBotChannel = require('../../helpers/get-bot-channel');
 
 async function removeNickname(client, reward) {
     try {

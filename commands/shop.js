@@ -46,10 +46,6 @@ async function handleShopCommand(interaction, client) {
 
     try {
 
-        // Use tokenEmoji from the result
-        const tokenEmojiName = tokenEmoji.token_emoji_name;
-        const tokenEmojiId = tokenEmoji.token_emoji_id;
-
         const buttonComponent = {
             type: 2, // Button type
             style: 1, // Primary style

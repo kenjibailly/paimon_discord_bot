@@ -94,29 +94,16 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
 
         try {
             const reward = "custom-emoji"; // Example reward value
-            const awardedReward = await AwardedReward.findOneAndUpdate(
-                {
-                    guild_id: interaction.guild_id,
-                    awarded_user_id: interaction.member.user.id,
-                    reward: { $in: reward } // Match if reward is in the specified array
-                },
-                {
-                    awarded_user_id: interaction.member.user.id,
-                    user_id: interaction.member.user.id,
-                    value: emojiName,
-                    reward: reward,
-                    date: new Date(),
-                },
-                {
-                    upsert: true, // Create a new document if one doesn't exist
-                    new: true, // Return the updated document
-                    setDefaultsOnInsert: true // Apply default values on insert if defined
-                }
-            );
+            const awardedReward = new AwardedReward({
+                guild_id: interaction.guild_id,
+                awarded_user_id: interaction.member.user.id,
+                user_id: interaction.member.user.id,
+                value: emojiName,
+                reward: reward,
+                date: new Date(),
+            });
 
-            if (!awardedReward){
-                throw new Error("Could not find add awarded reward to database");
-            }
+            await awardedReward.save();
 
         } catch (error) {
             console.error('Error adding reward to DB:', error);

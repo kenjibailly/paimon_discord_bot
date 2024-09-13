@@ -1,30 +1,30 @@
-const createEmbed = require('../helpers/embed');
-const getBotChannel = require('../helpers/get-bot-channel');
+const createEmbed = require('../../helpers/embed');
+const getBotChannel = require('../../helpers/get-bot-channel');
 
-async function removeCustomEmoji(client, reward) {
+async function removeCustomRole(client, reward) {
     try {
         const guild = await client.guilds.fetch(reward.guild_id);
         
-        const emojiName = reward.value;
+        const roleName = reward.value;
 
-        const emoji = guild.emojis.cache.find(e => e.name === emojiName);
+        const role = guild.roles.cache.find(e => e.name === roleName);
 
-        if (!emoji) {
-            console.log("Emoji not found to remove")
+        if (!role) {
+            console.log("Role not found to remove")
             return;
         }
 
-        // Try to delete the emoji
+        // Try to delete the role
         try {
-            await emoji.delete();
+            await role.delete();
         } catch (error) {
             // Handle any errors that occur during deletion
-            console.error('Failed to delete emoji:', error);
+            console.error('Failed to delete role:', error);
         }
 
 
         const title = "Award Reset";
-        const description = `Emoji created by <@${reward.user_id}> **:${emojiName}:** has been removed. **${reward.time} days** have passed.`;
+        const description = `Role "**${roleName}**" created by <@${reward.user_id}> has been removed. **${reward.time} days** have passed.`;
         const color = "";
         const embed = createEmbed(title, description, color);
         const bot_channel = await getBotChannel(reward.guild_id);
@@ -45,9 +45,9 @@ async function removeCustomEmoji(client, reward) {
             return; // Exit function if the bot channel is not found
         }
     } catch (error) {
-        console.error(`Error resetting nickname:`, error);
+        console.error(`Error removing the role:`, error);
         return; // Exit function if there's an error in the try-catch block
     }
 }
 
-module.exports = removeCustomEmoji;
+module.exports = removeCustomRole;
