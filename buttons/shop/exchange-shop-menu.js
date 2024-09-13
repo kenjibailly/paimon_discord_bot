@@ -1,5 +1,7 @@
 const handleChangeNickname = require('./menu-handler/handle-change-nickname');
 const handleCustomEmoji = require('./menu-handler/handle-custom-emoji');
+const handleCustomChannel = require('./menu-handler/handle-custom-channel');
+const handleCustomRole = require('./menu-handler/handle-custom-role');
 
 async function handleExchangeShopMenuButton(interaction, client) {
     const {data} = interaction;
@@ -12,6 +14,10 @@ async function handleExchangeShopMenuButton(interaction, client) {
             return await handleChangeNickname(name, interaction);
         case "custom-emoji":
             return await handleCustomEmoji(name, interaction);
+        case "custom-channel":
+            return await handleCustomChannel(name, interaction);
+        case "custom-role":
+            return await handleCustomRole(name, interaction);
         default:
             break;
     }

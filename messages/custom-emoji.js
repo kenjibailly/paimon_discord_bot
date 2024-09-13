@@ -67,13 +67,13 @@ async function handleCustomEmoji(message, client) {
 
     const reward = await getReward(message.guild.id, user_exchange_data.name);
 
-    // user_exchange_data.attachment = attachment;
-    user_exchange_data.emojiName = messageContent;
-    user_exchange_data.rewardPrice = reward.price;
-    user_exchange_data.tokenEmoji = tokenEmoji;
-
-    userExchangeData.set(message.author.id, user_exchange_data);
-
+    // Update or add new values to the existing data
+    userExchangeData.set(message.author.id, {
+        ...user_exchange_data, // Spread the existing data to keep it intact
+        emojiName: messageContent,
+        rewardPrice: reward.price ,
+        tokenEmoji: tokenEmoji,
+    });
 
 
     if (reward.data) {

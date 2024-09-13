@@ -6,6 +6,8 @@ const handleJoinTeamButton = require('./join-team');
 const { handleManageGamesButton, handleUpdateGameNameButton, handleUpdateGameDescriptionButton } = require('./manage/manage-games');
 const { handleStartEventAddGameButton, handleStartEventNoGameButton } = require('./start-event');
 const handleExchangeCustomEmojiButton = require('./shop/exchange-reward/exchange-custom-emoji');
+const handleExchangeCustomChannel = require('./shop/exchange-reward/exchange-custom-channel');
+const handleExchangeCustomRole = require('./shop/exchange-reward/exchange-custom-role');
 
 module.exports = {
     'exchange-shop': handleExchangeShopButton,
@@ -20,4 +22,6 @@ module.exports = {
     'update-game-description': handleUpdateGameDescriptionButton,
     'start-event-add-game': handleStartEventAddGameButton,
     'start-event-no-game': handleStartEventNoGameButton,
+    'exchange-custom-channel': handleExchangeCustomChannel,
+    'exchange-custom-role': handleExchangeCustomRole,
 };

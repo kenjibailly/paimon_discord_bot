@@ -72,6 +72,8 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
                     let description = `I could not not find the reward to be awarded. Please contact the administrator.`;
                     const color = "error";
                     const embed = createEmbed(title, description, color);
+
+                    handleCancelThread(interaction, client);
     
                     return {
                         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -114,7 +116,9 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
             let title = "Reward Database Error";
             let description = `I could not add the reward to the database. Please contact the administrator.`;
             const color = "error";
-            const embed = createEmbed(title, description, color);
+            const embed = createEmbed(title, description, color);f
+
+            handleCancelThread(interaction, client);
 
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,

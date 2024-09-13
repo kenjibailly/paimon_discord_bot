@@ -74,11 +74,15 @@ async function handleChangeNickname(message, client) {
     This will deduct **${reward.price}** ${emojiDisplay} from your wallet.`;
     const embed = createEmbed(title, description, "");
 
-    user_exchange_data.nickname = messageContent;
-    user_exchange_data.rewardPrice = reward.price;
-    user_exchange_data.tokenEmoji = tokenEmoji;
-    userExchangeData.set(message.author.id, user_exchange_data);
+    // Update or add new values to the existing data
+    userExchangeData.set(message.author.id, {
+        ...user_exchange_data, // Spread the existing data to keep it intact
+        nickname: messageContent,
+        rewardPrice: reward.price ,
+        tokenEmoji: tokenEmoji,
+    });
 
+    
     // Construct the button component
     const buttonComponent = {
         type: 2, // Button type

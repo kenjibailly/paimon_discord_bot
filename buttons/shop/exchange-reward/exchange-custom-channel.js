@@ -6,7 +6,7 @@ const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
 
-async function handleExchangeCustomEmojiButton(interaction, client) {
+async function handleExchangeCustomChannel(interaction, client) {
     try {
 
         const user_exchange_data = userExchangeData.get(interaction.member.user.id);
@@ -35,65 +35,12 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
         }
 
 
-        // Get the current number of emojis and the max allowed based on the server's Nitro level
-        const currentEmojis = guild.emojis.cache.size;
-        // Determine maximum emojis based on the server's premium tier
-        let maxEmojis;
-        switch (guild.premiumTier) {
-            case 0:
-                maxEmojis = 50;
-                break;
-            case 1:
-                maxEmojis = 100;
-                break;
-            case 2:
-                maxEmojis = 150;
-                break;
-            case 3:
-                maxEmojis = 250;
-                break;
-            default:
-                maxEmojis = 50; // Default to the lowest tier if something is wrong
-        }
+        // Code here
 
-        // Check if there is space to add a custom emoji
-        if (currentEmojis >= maxEmojis) {
-            const title = "Emoji Limit Reached";
-            const description = `This server has reached its custom emoji limit (${maxEmojis}). Please remove some emojis or upgrade the server to add more.`;
-            const color = "error"; // Assuming you have color constants, adjust accordingly
-            const embed = createEmbed(title, description, color);
 
-            handleCancelThread(interaction, client);
-
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                },
-            };
-        }
-
-        const emojiName = user_exchange_data.emojiName;
-        const existingEmojis = guild.emojis.cache;
-        // Check if an emoji with the given name already exists
-        const emojiExists = existingEmojis.some(emoji => emoji.name === emojiName);
-
-        if (emojiExists) {
-            const title = "Emoji Name Taken";
-            const description = `An emoji with the name "${emojiName}" already exists. Please choose a different name.`;
-            const color = "error"; // Assuming you have a color constant for errors
-            const embed = createEmbed(title, description, color);
-
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                },
-            };
-        }
 
         try {
-            const reward = "custom-emoji"; // Example reward value
+            const reward = "custom-channel"; // Example reward value
             const awardedReward = await AwardedReward.findOneAndUpdate(
                 {
                     guild_id: interaction.guild_id,
@@ -126,8 +73,6 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            handleCancelThread(interaction, client);
-
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {
@@ -159,11 +104,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
         }
 
         try {
-            // Upload the custom emoji
-            const newEmoji = await guild.emojis.create({
-                attachment: user_exchange_data.processedImage,
-                name: emojiName,
-            });
+            // Create channel here
 
             if (newEmoji) {
                 // Send a success message once the emoji is added
@@ -244,4 +185,4 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
 
 }
 
-module.exports = handleExchangeCustomEmojiButton;
+module.exports = handleExchangeCustomChannel;

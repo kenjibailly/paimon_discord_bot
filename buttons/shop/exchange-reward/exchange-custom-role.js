@@ -6,7 +6,7 @@ const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
 
-async function handleExchangeCustomEmojiButton(interaction, client) {
+async function handleExchangeCustomRole(interaction, client) {
     try {
 
         const user_exchange_data = userExchangeData.get(interaction.member.user.id);
@@ -24,7 +24,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
 
         
         // Check bot permissions
-        const permissionCheck = await checkPermissions(interaction, client, 'MANAGE_EMOJIS_AND_STICKERS', guild);
+        const permissionCheck = await checkPermissions(interaction, client, 'MANAGE_ROLES', guild);
         if (permissionCheck) {
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -35,65 +35,9 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
         }
 
 
-        // Get the current number of emojis and the max allowed based on the server's Nitro level
-        const currentEmojis = guild.emojis.cache.size;
-        // Determine maximum emojis based on the server's premium tier
-        let maxEmojis;
-        switch (guild.premiumTier) {
-            case 0:
-                maxEmojis = 50;
-                break;
-            case 1:
-                maxEmojis = 100;
-                break;
-            case 2:
-                maxEmojis = 150;
-                break;
-            case 3:
-                maxEmojis = 250;
-                break;
-            default:
-                maxEmojis = 50; // Default to the lowest tier if something is wrong
-        }
-
-        // Check if there is space to add a custom emoji
-        if (currentEmojis >= maxEmojis) {
-            const title = "Emoji Limit Reached";
-            const description = `This server has reached its custom emoji limit (${maxEmojis}). Please remove some emojis or upgrade the server to add more.`;
-            const color = "error"; // Assuming you have color constants, adjust accordingly
-            const embed = createEmbed(title, description, color);
-
-            handleCancelThread(interaction, client);
-
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                },
-            };
-        }
-
-        const emojiName = user_exchange_data.emojiName;
-        const existingEmojis = guild.emojis.cache;
-        // Check if an emoji with the given name already exists
-        const emojiExists = existingEmojis.some(emoji => emoji.name === emojiName);
-
-        if (emojiExists) {
-            const title = "Emoji Name Taken";
-            const description = `An emoji with the name "${emojiName}" already exists. Please choose a different name.`;
-            const color = "error"; // Assuming you have a color constant for errors
-            const embed = createEmbed(title, description, color);
-
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                },
-            };
-        }
 
         try {
-            const reward = "custom-emoji"; // Example reward value
+            const reward = "custom-channel"; // Example reward value
             const awardedReward = await AwardedReward.findOneAndUpdate(
                 {
                     guild_id: interaction.guild_id,
@@ -103,7 +47,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
                 {
                     awarded_user_id: interaction.member.user.id,
                     user_id: interaction.member.user.id,
-                    value: emojiName,
+                    value: user_exchange_data.roleName,
                     reward: reward,
                     date: new Date(),
                 },
@@ -125,8 +69,6 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             let description = `I could not add the reward to the database. Please contact the administrator.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-
-            handleCancelThread(interaction, client);
 
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -159,16 +101,28 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
         }
 
         try {
-            // Upload the custom emoji
-            const newEmoji = await guild.emojis.create({
-                attachment: user_exchange_data.processedImage,
-                name: emojiName,
+            // Create the role and store it in 'newRole'
+            const newRole = await guild.roles.create({
+                name: user_exchange_data.roleName,
+                color: user_exchange_data.roleColor,
+                reason: `Claimed shop reward from user: ${interaction.member.user.id}`,
             });
 
-            if (newEmoji) {
+            // Get the list of roles in the guild
+            const roles = guild.roles.cache;
+
+            // Set the new role's position to be above the existing highest role
+            const highestRole = roles.sort((a, b) => b.position - a.position).first();
+            await newRole.setPosition(highestRole.position + 1);
+
+            // Assign the role to the user
+            const member = await guild.members.fetch(interaction.member.user.id);
+            await member.roles.add(newRole.id);
+
+            if (newRole) {
                 // Send a success message once the emoji is added
-                const title = "Emoji Added";
-                const description = `The emoji **:${newEmoji.name}:** has been successfully added to the server!
+                const title = "Role Added";
+                const description = `You have successfully created the new role: <@&${newRole.id}> and it has been granted to you!
                 You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
                 const color = "";
                 const embed = createEmbed(title, description, color);
@@ -182,7 +136,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
                 const parentChannel = thread.parent;
                 if (parentChannel) {
                     const parentTitle = "Shop";
-                    const parentDescription = `<@${interaction.member.user.id}> has added emoji: **:${newEmoji.name}:** to the server.`;
+                    const parentDescription = `<@${interaction.member.user.id}> has claimed a new role: <@&${newRole.id}>.`;
                     const parentEmbed = createEmbed(parentTitle, parentDescription, "");
                     
                     await parentChannel.send({
@@ -196,14 +150,14 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
 
             
             } else {
-                throw new Error("Error wile uploading emoji to Discord");
+                throw new Error("Error wile creating the role");
             }
 
         } catch (error) {
-            console.log("Emoji Upload Error: ", error);
+            console.log("Role Creation Error: ", error);
             
-            const title = "Emoji Upload Failed";
-            const description = `There was an issue adding the emoji to the server. Please try again later.`;
+            const title = "Role Creation Failed";
+            const description = `There was an issue creating the role. Please try again later.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
 
@@ -244,4 +198,4 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
 
 }
 
-module.exports = handleExchangeCustomEmojiButton;
+module.exports = handleExchangeCustomRole;
