@@ -203,7 +203,7 @@ When opening the shop, the user can click a button to start interacting with the
 - ✅ Change someone's nickname
 - ✅ Add a custom server emoji
 - ❌ Add a custom channel
-- ❌ Add a custom role name and color
+- ✅ Add a custom role name and color
 - ❌ Add a custom soundboard sound
 - ❌ Choose the next game
 - ❌ Troll user
