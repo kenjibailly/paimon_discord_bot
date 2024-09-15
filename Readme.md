@@ -190,6 +190,8 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
 - ✅ /set-bot-channel
     - Sets the channel of the bot where updates are posted, like reset of awards
     - Input: `channel`
+- ✅ /set-channel-name-configuration
+    - Configures the channel name options for the custom channel reward
 
 
 Rewards are automatically set to be all enabled and have a default price of 1 🪙;

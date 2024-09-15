@@ -1,34 +1,13 @@
 const Rewards = require('./models/rewards');
 const TokenEmoji = require('./models/token-emoji'); // Import the TokenEmoji model
 const deployCommands = require('./commands/deploy-commands');
-const Events = require('./models/events');
-const Games = require('./models/games');
+const ChannelNameConfig = require('./models/channel-name-config');
 
 async function botJoinsGuild(client, guild) {
     const guildId = guild.id;
     
     try {
-        const events = Events.find({ guild_id: guildId });
-        const games = Games.find({ guild_id: guildId });
-
-        function createCommandInfo(items, itemKey) {
-            return items.map(item => ({
-              name: item.name,
-              value: item._id,
-            }));
-          }
-          
-          if (events && events.length > 0) {
-            const list_type = "events";
-            const eventsList = createCommandInfo(events, 'events');
-            await deployCommands(client, guildId, eventsList, false, list_type);
-          }
-          
-          if (games && games.length > 0) {
-            const list_type = "games";
-            const gamesList = createCommandInfo(games, 'games');
-            await deployCommands(client, guildId, gamesList, false, list_type);
-          }
+        deployCommands(guildId);
 
     } catch (error) {
         console.log('Deploy Commands Error: ' + error);
@@ -100,6 +79,22 @@ async function botJoinsGuild(client, guild) {
 
     } catch (error) {
         console.error(`Error processing rewards or token emoji for guild ${guildId}:`, error);
+    }
+
+    try {
+        const ChannelNameConfigEntry = await ChannelNameConfig.findOne({ guild_id: guildId });
+
+        if (!ChannelNameConfigEntry) {
+            // Create a new entry with the default emoji 🪙
+            await ChannelNameConfig.create({
+                guild_id: guildId,
+            });
+            console.log(`Default channel name configuration set for guild ${guildId}`);
+        } else {
+            console.log(`Channel Name Configuration already set for guild ${guildId}`);
+        }
+    } catch (error) {
+        console.error(`Error processing channel name configuration for guild ${guildId}:`, error);
     }
 }
 

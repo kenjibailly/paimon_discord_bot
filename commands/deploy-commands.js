@@ -313,7 +313,12 @@ async function registerCommands(guild_id) {
   const CANCLE_EVENT_COMMAND = {
     name: 'cancel-event',
     description: 'Cancel current event',
-};
+  };
+
+  const SET_CHANNEL_NAME_CONFIGURATION_COMMAND = {
+    name: 'set-channel-name-configuration',
+    description: 'Set the channel name configuration for the channel creation reward.',
+  };
 
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
@@ -333,6 +338,7 @@ async function registerCommands(guild_id) {
     START_EVENT_COMMAND,
     MANAGE_GAMES_COMMAND,
     CANCLE_EVENT_COMMAND,
+    SET_CHANNEL_NAME_CONFIGURATION_COMMAND,
   ];
 
   // Fetch existing commands from Discord

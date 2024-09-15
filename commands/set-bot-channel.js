@@ -36,7 +36,7 @@ async function handleSetBotChannelCommand (interaction, client) {
         console.log(error);
         const title = "Bot Channel Error";
         const description = `Something went wrong while setting the bot channel, please try again later.`;
-        const color = "#FF0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {

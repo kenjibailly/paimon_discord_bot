@@ -8,6 +8,7 @@ const { handleStartEventAddGameButton, handleStartEventNoGameButton } = require(
 const handleExchangeCustomEmojiButton = require('./shop/exchange-reward/exchange-custom-emoji');
 const handleExchangeCustomChannel = require('./shop/exchange-reward/exchange-custom-channel');
 const handleExchangeCustomRole = require('./shop/exchange-reward/exchange-custom-role');
+const { handleChannelNameConfiguration, handleChannelNameConfigurationFinish } = require('./channel-name-configuration');
 
 module.exports = {
     'exchange-shop': handleExchangeShopButton,
@@ -24,4 +25,7 @@ module.exports = {
     'start-event-no-game': handleStartEventNoGameButton,
     'exchange-custom-channel': handleExchangeCustomChannel,
     'exchange-custom-role': handleExchangeCustomRole,
+    'channel-name-config-emoji-yes': handleChannelNameConfiguration,
+    'channel-name-config-emoji-no': handleChannelNameConfiguration,
+    'channel-name-config-separator-no': handleChannelNameConfigurationFinish,
 };

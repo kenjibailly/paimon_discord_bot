@@ -3,6 +3,8 @@ const handleCustomEmoji = require('./custom-emoji');
 const { handleManageGames, handleUpdateGameName, handleUpdateGameDescription } = require('./manage-games');
 const handleStartEventChooseGame = require('./start-event-choose-game');
 const { handleCustomRole, handleCustomRoleColor } = require('./custom-role');
+const { handleCustomChannel, handleCustomChannelCategory } = require('./custom-channel');
+const handleChannelNameConfiguration = require('./channel-name-config');
 
 module.exports = {
     'change-user-nickname': handleChangeUserNickname,
@@ -14,4 +16,7 @@ module.exports = {
     'custom-emoji': handleCustomEmoji,
     'custom-role': handleCustomRole,
     'custom-role-color': handleCustomRoleColor,
+    'custom-channel': handleCustomChannel,
+    'custom-channel-category': handleCustomChannelCategory,
+    'channel-name-config': handleChannelNameConfiguration,
 };

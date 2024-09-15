@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Define the TokenEmoji schema
+// Define the BotChannel schema
 const botChannelSchema = new mongoose.Schema({
     guild_id: {
         type: String,

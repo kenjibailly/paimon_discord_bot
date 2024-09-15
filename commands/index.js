@@ -14,6 +14,7 @@ const handleResetTeamsCommand = require('./reset-teams');
 const handleSetStatusCommand = require('./set-status');
 const handleStartEventCommand = require('./start-event');
 const handleCancelEventCommand = require('./cancel-event');
+const handleChannelNameConfiguration = require('./set-channel-name-configuration');
 
 module.exports = {
     'award-team': handleAwardTeamCommand,
@@ -32,4 +33,5 @@ module.exports = {
     'set-status': handleSetStatusCommand,
     'start-event': handleStartEventCommand,
     'cancel-event': handleCancelEventCommand,
+    'set-channel-name-configuration': handleChannelNameConfiguration,
 };

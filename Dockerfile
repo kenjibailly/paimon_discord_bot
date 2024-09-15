@@ -21,7 +21,7 @@ RUN npm install -g --force nodemon && \
 # RUN npm run register
 
 # Set the default command to run your bot
-CMD ["nodemon", "bot.js"]
+CMD ["npm", "start"]
 
 # Expose port 3000 if your bot uses it for an HTTP server
 EXPOSE 3000
