@@ -6,7 +6,7 @@ const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
 
-async function handleExchangeCustomChannel(interaction, client) {
+async function handleExchangeCustomSoundboard(interaction, client) {
     try {
 
         const user_exchange_data = userExchangeData.get(interaction.member.user.id);
@@ -24,7 +24,7 @@ async function handleExchangeCustomChannel(interaction, client) {
 
         
         // Check bot permissions
-        const permissionCheck = await checkPermissions(interaction, client, 'MANAGE_CHANNELS', guild);
+        const permissionCheck = await checkPermissions(interaction, client, 'MANAGE_ROLES', guild);
         if (permissionCheck) {
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -35,37 +35,13 @@ async function handleExchangeCustomChannel(interaction, client) {
         }
 
 
-        // Check if bot can manage channels under the chosen category
-        const category = guild.channels.cache.get(user_exchange_data.category.id);
-        if (category) {
-            const botMember = guild.members.cache.get(client.user.id);
-            const hasPermissionInCategory = category.permissionsFor(botMember).has('MANAGE_CHANNELS');
-
-            if (!hasPermissionInCategory) {
-                let title = "Permission Error";
-                let description = `The bot does not have permission to manage channels in the selected category.`;
-                const color = "error";
-                const embed = createEmbed(title, description, color);
-
-                return {
-                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                    data: {
-                        embeds: [embed],
-                    },
-                };
-            }
-        }
-
-
-
         try {
             
-            const reward = "custom-channel"; // Example reward value
+            const reward = "troll-user"; // Example reward value
             const awardedReward = new AwardedReward({
                 guild_id: interaction.guild_id,
                 awarded_user_id: interaction.member.user.id,
                 user_id: interaction.member.user.id,
-                value: user_exchange_data.channelName,
                 reward: reward,
                 date: new Date(),
             });
@@ -113,15 +89,10 @@ async function handleExchangeCustomChannel(interaction, client) {
         try {
 
             try {
-                // Create the channel in the guild
-                const createdChannel = await guild.channels.create({
-                    name: user_exchange_data.channelName,
-                    type: 0, // 0 for a text channel
-                    parent: user_exchange_data.category.id, // Assign category if it exists, otherwise null
-                });
+                // troll user code here
 
-                const title = "Channel Added";
-                const description = `The channel <#${createdChannel.id}> has been successfully added to the server!
+                const title = "Soundboard Sound Added";
+                const description = `The soundboard sound ${user_exchange_data.soundboardName} has been successfully added to the server!
                 You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
                 const color = "";
                 const embed = createEmbed(title, description, color);
@@ -135,7 +106,7 @@ async function handleExchangeCustomChannel(interaction, client) {
                 const parentChannel = thread.parent;
                 if (parentChannel) {
                     const parentTitle = "Shop";
-                    const parentDescription = `<@${interaction.member.user.id}> has added channel: <#${createdChannel.id}> to the server.`;
+                    const parentDescription = `<@${interaction.member.user.id}> has added soundboard sound: **${user_exchange_data.soundboardName}** to the server.`;
                     const parentEmbed = createEmbed(parentTitle, parentDescription, "");
                     
                     await parentChannel.send({
@@ -148,10 +119,10 @@ async function handleExchangeCustomChannel(interaction, client) {
                 };
                 
             } catch (error) {
-                console.error("Error creating channel:", error);
+                console.error("Error creating soundboard:", error);
                 
-                const title = "Creating Channel Failed";
-                const description = `There was an issue adding the channel to the server. Please try again later.`;
+                const title = "Creating Soundboard Sound Failed";
+                const description = `There was an issue adding the soundboard sound to the server. Please try again later.`;
                 const color = "error";
                 const embed = createEmbed(title, description, color);
 
@@ -166,10 +137,10 @@ async function handleExchangeCustomChannel(interaction, client) {
             }
 
         } catch (error) {
-            console.log("Channel Creation Error: ", error);
+            console.log("Soundboard Sound Creation Error: ", error);
             
-            const title = "Channel Creation Failed";
-            const description = `There was an issue adding the channel to the server. Please try again later.`;
+            const title = "Soundboard Sound Creation Failed";
+            const description = `There was an issue adding the soundboard sound to the server. Please try again later.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
 
@@ -184,14 +155,14 @@ async function handleExchangeCustomChannel(interaction, client) {
         }
 
     } catch (error) {
-        console.error('Error adding custom channel:', error);
+        console.error('Error adding soundboard sound:', error);
 
-        let title = "Add Custom Channel Error";
-        let description = `I could not add a custom channel. Your wallet has not been affected.`;
+        let title = "Add Custom Soundboard Sound Error";
+        let description = `I could not add a custom soundboard sound. Your wallet has not been affected.`;
 
         if (error.code === 50013) {
             title = "Permission Error";
-            description = `I don't have permission to add a custom channel.
+            description = `I don't have permission to add a custom soundboard sound.
             Your wallet has not been affected.`;
         }
 
@@ -210,4 +181,4 @@ async function handleExchangeCustomChannel(interaction, client) {
 
 }
 
-module.exports = handleExchangeCustomChannel;
+module.exports = handleExchangeCustomSoundboard;

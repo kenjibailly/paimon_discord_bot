@@ -1,28 +1,8 @@
 require('dotenv/config');
-const { InstallGlobalCommands, DiscordRequest } = require('../utilities/utils.js');
+const { InstallGuildCommands } = require('../utilities/utils.js');
 
-async function fetchCommands() {
-  const endpoint = `applications/${process.env.APP_ID}/commands`;
-  try {
-    const res = await DiscordRequest(endpoint, { method: 'GET' });
-    return res.json();
-  } catch (err) {
-    console.error('Error fetching commands:', err);
-    return [];
-  }
-}
-
-async function deleteCommand(commandId) {
-  const endpoint = `applications/${process.env.APP_ID}/commands/${commandId}`;
-  try {
-    await DiscordRequest(endpoint, { method: 'DELETE' });
-    console.log(`Deleted command with ID: ${commandId}`);
-  } catch (err) {
-    console.error('Error deleting command:', err);
-  }
-}
-
-async function registerCommands(guild_id) {
+async function registerCommands(guildId) {
+  const defaultManageGuildPermission = 0x0000000000000020; // MANAGE_GUILD permission
   // Define commands
   const AWARD_TEAM_COMMAND = {
     name: 'award-team',
@@ -47,6 +27,8 @@ async function registerCommands(guild_id) {
         required: false,
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const WALLET_COMMAND = {
@@ -77,6 +59,8 @@ async function registerCommands(guild_id) {
         required: false,
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const AWARD_USER_COMMAND = {
@@ -102,6 +86,8 @@ async function registerCommands(guild_id) {
         required: false,
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const SHOP_COMMAND = {
@@ -151,6 +137,8 @@ async function registerCommands(guild_id) {
         ],
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const SET_ALL_REWARDS_COMMAND = {
@@ -170,6 +158,8 @@ async function registerCommands(guild_id) {
         required: false,
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const SET_TEAMS_COMMAND = {
@@ -189,6 +179,8 @@ async function registerCommands(guild_id) {
         required: true,
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const SET_TOKEN_EMOJI_COMMAND = {
@@ -202,6 +194,8 @@ async function registerCommands(guild_id) {
         required: true,
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const SET_BOT_CHANNEL_COMMAND = {
@@ -215,6 +209,8 @@ async function registerCommands(guild_id) {
         required: true,
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const ADD_GAME_COMMAND = {
@@ -234,6 +230,8 @@ async function registerCommands(guild_id) {
         required: false,
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const GAMES_COMMAND = {
@@ -244,6 +242,8 @@ async function registerCommands(guild_id) {
   const RESET_TEAMS_COMMAND = {
     name: 'reset-teams',
     description: 'Remove all users from the set teams',
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const SET_STATUS_COMMAND = {
@@ -257,11 +257,15 @@ async function registerCommands(guild_id) {
         required: true,
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const MANAGE_GAMES_COMMAND = {
-      name: 'manage-games',
-      description: 'Remove a game from the list',
+    name: 'manage-games',
+    description: 'Remove a game from the list',
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const START_EVENT_COMMAND = {
@@ -308,16 +312,22 @@ async function registerCommands(guild_id) {
         ],
       },
     ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
-  const CANCLE_EVENT_COMMAND = {
+  const CANCEL_EVENT_COMMAND = {
     name: 'cancel-event',
     description: 'Cancel current event',
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const SET_CHANNEL_NAME_CONFIGURATION_COMMAND = {
     name: 'set-channel-name-configuration',
     description: 'Set the channel name configuration for the channel creation reward.',
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const NEW_COMMANDS = [
@@ -337,27 +347,14 @@ async function registerCommands(guild_id) {
     SET_STATUS_COMMAND,
     START_EVENT_COMMAND,
     MANAGE_GAMES_COMMAND,
-    CANCLE_EVENT_COMMAND,
+    CANCEL_EVENT_COMMAND,
     SET_CHANNEL_NAME_CONFIGURATION_COMMAND,
   ];
 
-  // Fetch existing commands from Discord
-  const existingCommands = await fetchCommands();
-
-  // Find commands that need to be deleted (those that are in Discord but not in NEW_COMMANDS)
-  const commandsToDelete = existingCommands.filter(existingCommand => 
-    !NEW_COMMANDS.some(newCommand => newCommand.name === existingCommand.name)
-  );
-
-  // Delete outdated commands
-  for (const command of commandsToDelete) {
-    await deleteCommand(command.id);
-  }
-
   // Register or update the existing commands
   try {
-    // Pass guild_id to register commands for a specific guild
-    await InstallGlobalCommands(process.env.APP_ID, NEW_COMMANDS, guild_id);
+    // Pass guildId to register commands for a specific guild
+    await InstallGuildCommands(process.env.APP_ID, NEW_COMMANDS, guildId);
     console.log('Successfully registered or updated commands.');
   } catch (error) {
     console.error('Error registering commands:', error);

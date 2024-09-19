@@ -20,18 +20,14 @@ async function DiscordRequest(endpoint, options) {
   return res;
 }
 
-async function InstallGlobalCommands(appId, commands) {
-  const endpoint = `applications/${appId}/commands`;
-
+async function InstallGuildCommands(appId, commands, guildId) {
+  const endpoint = `applications/${appId}/guilds/${guildId}/commands`;
   try {
     await DiscordRequest(endpoint, { method: 'PUT', body: commands });
+    console.log('Commands registered or updated successfully.');
   } catch (err) {
-    console.error(err);
+    console.error('Error registering commands:', err);
   }
 }
 
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-module.exports = { DiscordRequest, InstallGlobalCommands, capitalize };
+module.exports = { DiscordRequest, InstallGuildCommands };

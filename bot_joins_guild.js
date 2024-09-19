@@ -44,8 +44,8 @@ async function botJoinsGuild(client, guild) {
         { guild_id: guildId, name: 'custom-emoji', description: 'Add a custom server emoji' },
         { guild_id: guildId, name: 'custom-channel', description: 'Add a custom channel'},
         { guild_id: guildId, name: 'custom-role', description: 'Add a custom role name and color'},
-        { guild_id: guildId, name: 'custom-soundboard', description: 'Add a custom soundboard sound'},
         { guild_id: guildId, name: 'choose-game', description: 'Choose the next game'},
+        { guild_id: guildId, name: 'troll-user', description: `Troll someone: this person won't see any channels in the server until a mission on the list is completed. This person can choose their own mission from the list of missions. To see all missions use the \`/troll-missions\` command`},
     ];
 
     try {

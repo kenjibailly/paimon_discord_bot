@@ -139,6 +139,8 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
     - Checks your wallet balance
 - ✅ /games
     - Lists the upcoming games
+- ❌ /troll-missions
+    - Lists all the troll missions
 
 #### 🧑‍💼 Staff functions
 
