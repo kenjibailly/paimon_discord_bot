@@ -30,7 +30,6 @@ async function handleCustomChannel(name, interaction) {
                     ]
                 }
             ],
-            flags: 64,
         },
     };
 

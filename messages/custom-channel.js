@@ -1,4 +1,5 @@
 const { InteractionResponseType } = require('discord-interactions');
+const { ChannelType } = require('discord.js');
 const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
 const getTokenEmoji = require('../helpers/get-token-emoji');
@@ -57,9 +58,18 @@ async function handleCustomChannel(message, client) {
 
     const reward = await getReward(message.guild.id, user_exchange_data.name);
 
-    // Get existing categories from the guild
-    const categories = guild.channels.cache.filter(channel => channel.type === 'GUILD_CATEGORY');
-    const categoriesArray = categories.map(category => ({
+    // Filter for category channels
+    const categories = guild.channels.cache.filter(channel => channel.type === ChannelType.GuildCategory);
+
+    // Filter categories that contain at least one text channel
+    const validCategories = categories.filter(category => 
+        guild.channels.cache.some(channel => 
+            channel.parentId === category.id && channel.type === ChannelType.GuildText
+        )
+    );
+
+    // Map the valid categories into an array of objects with id and name
+    const categoriesArray = validCategories.map(category => ({
         id: category.id,
         name: category.name,
     }));
@@ -84,7 +94,7 @@ async function handleCustomChannel(message, client) {
     }
 
     // Convert categories into a numbered list with a line break
-    const categoryList = categories.map((category, index) => `${index + 1}. ${category.name}`).join('\n');
+    const categoryList = categoriesArray.map((category, index) => `${index + 1}. **${category.name}**`).join('\n');
 
 
     const title = "Shop";
@@ -92,11 +102,9 @@ async function handleCustomChannel(message, client) {
     Please reply with the according number next to the already existing categories listed below.\n\n${categoryList}`;
     const embed = createEmbed(title, description, "");
 
-
-    // Send the message
-    await message.channel.send({
-        embeds: [embed],
-        components: [
+    let buttonComponent = [];
+    if (categoriesArray.length < 0) {
+        buttonComponent = [
             {
                 type: 1, // Action row type
                 components: [
@@ -109,14 +117,25 @@ async function handleCustomChannel(message, client) {
                 ]
             }
         ]
+    }
+
+
+    // Send the message
+    await message.channel.send({
+        embeds: [embed],
+        components: buttonComponent,
     });
+
+
+    if (categoriesArray.length < 1) {
+        await handleCustomChannelCategory(message, client);
+    }
 
 }
 
 async function handleCustomChannelCategory(message, client) {
     const messageContent = message.content;
     const user_exchange_data = userExchangeData.get(message.author.id);
-
     const validationError = validateNumber(messageContent, user_exchange_data.categories);
 
     if (validationError) {
@@ -137,14 +156,15 @@ async function handleCustomChannelCategory(message, client) {
     delete user_exchange_data.categories;
     userExchangeData.set(message.author.id, user_exchange_data);
 
+
     // Determine if the emoji is custom or normal
     const emojiDisplay = user_exchange_data.tokenEmoji.token_emoji_id 
     ? `<:${user_exchange_data.tokenEmoji.token_emoji_name}:${user_exchange_data.tokenEmoji.token_emoji_id}>` 
     : user_exchange_data.tokenEmoji.token_emoji;
 
-    let channel_name_config;
+    let channel_name_config = "\n";
     try {
-        channel_name_config = await ChannelNameConfig.findOne({ guild_id: guild_id });
+        channel_name_config = await ChannelNameConfig.findOne({ guild_id: message.guild.id });
     } catch (error) {
         console.log("Error getting Channel Name Configuration from the database" + error);
         // Send a confirmation message before closing the thread
@@ -162,8 +182,7 @@ async function handleCustomChannelCategory(message, client) {
     const title = "Shop";
     const description = `
     Do you want to add this custom channel?\n
-    Channel name: **${user_exchange_data.channelName}**
-    Channel category: **${user_exchange_data.category.name}**\n
+    Channel name: **${user_exchange_data.channelName}**\nChannel category: **${user_exchange_data.category.name}**\n
     This will deduct **${user_exchange_data.rewardPrice}** ${emojiDisplay} from your wallet.`;
     const embed = createEmbed(title, description, "");
 
