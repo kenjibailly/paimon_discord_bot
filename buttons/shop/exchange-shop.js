@@ -25,7 +25,7 @@ async function handleExchangeShopButton(interaction, client) {
         rewards.forEach(reward => {
             if (reward.enable === true) {
                 const add_reward = {
-                    label: reward.description,
+                    label: reward.short_description,
                     value: reward.name,
                 }
                 options_list.push(add_reward);

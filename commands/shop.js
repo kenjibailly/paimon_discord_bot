@@ -24,7 +24,7 @@ async function handleShopCommand(interaction, client) {
         const rewards = await Rewards.find();
         rewards.forEach(reward => {
             if (reward.enable === true) {
-                rewards_options += `- **${reward.description}** - **${reward.price}** ${tokenEmoji.token_emoji}\n`;
+                rewards_options += `- **${reward.short_description}** ${reward.long_description ? `: ${reward.long_description}` : ''} - **${reward.price}** ${tokenEmoji.token_emoji}\n`;
             }
         });
     } catch (error) {

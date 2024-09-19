@@ -39,13 +39,13 @@ async function botJoinsGuild(client, guild) {
     // Define the rewards to add
     const rewardsToAdd = [
         // { guild_id: guildId, name: 'change-nickname' },
-        { guild_id: guildId, name: 'change-own-nickname', description: 'Change your nickname' },
-        { guild_id: guildId, name: 'change-user-nickname', description: 'Change someone\'s nickname' },
-        { guild_id: guildId, name: 'custom-emoji', description: 'Add a custom server emoji' },
-        { guild_id: guildId, name: 'custom-channel', description: 'Add a custom channel'},
-        { guild_id: guildId, name: 'custom-role', description: 'Add a custom role name and color'},
-        { guild_id: guildId, name: 'choose-game', description: 'Choose the next game'},
-        { guild_id: guildId, name: 'troll-user', description: `Troll someone: this person won't see any channels in the server until a mission on the list is completed. This person can choose their own mission from the list of missions. To see all missions use the \`/troll-missions\` command`},
+        { guild_id: guildId, name: 'change-own-nickname', short_description: 'Change your nickname' },
+        { guild_id: guildId, name: 'change-user-nickname', short_description: 'Change someone\'s nickname' },
+        { guild_id: guildId, name: 'custom-emoji', short_description: 'Add a custom server emoji' },
+        { guild_id: guildId, name: 'custom-channel', short_description: 'Add a custom channel'},
+        { guild_id: guildId, name: 'custom-role', short_description: 'Add a custom role name and color'},
+        { guild_id: guildId, name: 'choose-game', short_description: 'Choose the next game'},
+        { guild_id: guildId, name: 'troll-user', short_description: `Troll someone`, long_description: `This person won't see any channels in the server until a mission on the list is completed. This person can choose their own mission from the list of missions. To see all missions use the \`/troll-missions\` command`},
     ];
 
     try {
