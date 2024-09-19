@@ -123,7 +123,7 @@ The slash commands are automatically registered when the bot enters the server.
 
 Go to `Server Settings` > `Roles` and move the bot's role to the top of the hierarchy or it will have permissions issues.
 
-Change the permissions of the commands of the bot. Go to `Server Settings` > `Integrations`, find the bot under `Bots and Apps` and click on `Manage`. Configure each command's permissions to your preference.
+Optional: Change the permissions of the commands of the bot. Go to `Server Settings` > `Integrations`, find the bot under `Bots and Apps` and click on `Manage`. Configure each command's permissions to your preference.
 
 </details>
 
@@ -143,6 +143,10 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
     - Lists all the troll missions
 
 #### 🧑‍💼 Staff functions
+
+These commands have a standard permission. All users who have the `Manage Server` permission can use these.
+
+Optional: Change the permissions of the commands of the bot. Go to `Server Settings` > `Integrations`, find the bot under `Bots and Apps` and click on `Manage`. Configure each command's permissions to your preference.
 
 - ✅  /award-team
     - Awards a role 🪙
@@ -176,6 +180,10 @@ Change the permissions of the commands of the bot. Go to `Server Settings` > `In
     - Cancels an ongoing event
 
 #### ⚙️ Settings
+
+These commands have a standard permission. All users who have the `Manage Server` permission can use these.
+
+Optional: Change the permissions of the commands of the bot. Go to `Server Settings` > `Integrations`, find the bot under `Bots and Apps` and click on `Manage`. Configure each command's permissions to your preference.
 
 - ✅ /set-teams
     - Choose 2 roles to be assigned as teams for the team generation
