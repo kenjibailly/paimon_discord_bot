@@ -33,7 +33,7 @@ client.once(Events.ClientReady, () => {
 
   setInterval(() => {
     checkRemoveRewards(client);
-  }, 10000); // 24 hours in milliseconds 86400000
+  }, 86400000); // 24 hours in milliseconds 86400000
 
   setInterval(() => {
     checkTeamAssignment(client);
