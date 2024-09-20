@@ -40,11 +40,6 @@ Used in this project:
     cp .env.example .env
     ```
 
-3. Run the Docker Compose
-
-    ```bash
-    docker-compose up -d
-    ```
 </details>
 
 ### ⚓ Docker
@@ -78,12 +73,6 @@ And add a CNAME for your sub domain if used.
 
 Go to the [Discord Developer Portal](https://discord.com/developers/applications/) and create a `New Application`.
 
-Under the `General Information` tab, find `Interactions Endpoint URL` and add your url you proxied ending in `/interactions`.
-Example:
-```
-https://sub.domain.com/interactions
-```
-
 Under the `Installation` tab, find `Guild Install` at the bottom, add `bot` to scopes and add `Administrator` to permissions.
 
 Under the `Bot` tab, find `Privileged Gateway Intents` and enable:
@@ -99,6 +88,18 @@ Now we will fill in the .env file we created.
 
 Now invite your Discord bot to your server.
 Under the `OAuth2` tab, find `OAuth2 URL Generator` and check `bot` under the scopes, then check `Administrator` under the bot permissions. Now find `Generated URL` at the bottom of the page and copy the link. Open the link in your browser and invite the Discord Bot to your server.
+
+After completing your .env file please restart the docker container, if you don't do this you won't be able to add the interactions endpoint URL in the next step. Discord will give you an error.
+
+```bash
+docker restart discord_bot_paimon
+```
+
+Now go back to the Discord Developer Portal. Under the `General Information` tab, find `Interactions Endpoint URL` and add your url you proxied ending in `/interactions`.
+Example:
+```
+https://sub.domain.com/interactions
+```
 
 </details>
 
@@ -127,13 +128,6 @@ Optional: Change the permissions of the commands of the bot. Go to `Server Setti
 
 </details>
 
-### ♻️ Restart Docker Container
-
-> After completing your .env file please make sure you restart the container
-
-```bash
-docker restart discord_bot_paimon
-```
 
 # Functionality
 
