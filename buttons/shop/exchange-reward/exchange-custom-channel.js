@@ -7,7 +7,7 @@ const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
 
 
-async function handleExchangeCustomChannel(interaction, client) {
+async function handleExchangeCustomChannelButton(interaction, client) {
     try {
 
         const user_exchange_data = userExchangeData.get(interaction.member.user.id);
@@ -211,4 +211,4 @@ async function handleExchangeCustomChannel(interaction, client) {
 
 }
 
-module.exports = handleExchangeCustomChannel;
+module.exports = handleExchangeCustomChannelButton;

@@ -1,6 +1,6 @@
 const { handleChangeNickname, handleChangeUserNickname} = require('./change-nickname');
 const handleCustomEmoji = require('./custom-emoji');
-const { handleManageGames, handleUpdateGameName, handleUpdateGameDescription } = require('./manage-games');
+const { handleManageGames, handleAddGameName, handleAddGameDescription, handleUpdateGameName, handleUpdateGameDescription } = require('./manage-games');
 const handleStartEventChooseGame = require('./start-event-choose-game');
 const { handleCustomRole, handleCustomRoleColor } = require('./custom-role');
 const { handleCustomChannel, handleCustomChannelCategory } = require('./custom-channel');
@@ -11,6 +11,8 @@ module.exports = {
     'change-user-nickname': handleChangeUserNickname,
     'change-own-nickname': handleChangeNickname,
     'manage-games': handleManageGames,
+    'add-game-name': handleAddGameName,
+    'add-game-description': handleAddGameDescription,
     'update-game-name': handleUpdateGameName,
     'update-game-description': handleUpdateGameDescription,
     'start-event-choose-game': handleStartEventChooseGame,

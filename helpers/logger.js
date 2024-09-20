@@ -6,6 +6,7 @@ class Logger {
     log(...args) {
         process.stdout.write(`${this.stat}: `);
         this._writeMessage(...args); // print message
+        process.stdout.write(`\n`);
     }
   
     success(...args) {

@@ -34,6 +34,13 @@ async function handleManageGamesCommand(interaction, client) {
                 components: [
                     {
                         type: 2, // Button
+                        style: 3, // Green style (for adding a game)
+                        label: "Add",
+                        emoji: { name: "➕" }, // Emoji for add
+                        custom_id: "add-game-name"
+                    },
+                    {
+                        type: 2, // Button
                         style: 1, // Primary style (for updating a game)
                         label: "Update",
                         emoji: { name: "🖊️" }, // Pencil emoji for updating

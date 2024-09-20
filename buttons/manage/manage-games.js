@@ -5,6 +5,83 @@ const userExchangeData = require('../../helpers/userExchangeData');
 const cancelThread = require('../cancel-thread');
 
 
+async function handleAddGameNameButton(interaction, client) {
+    // Store interaction data for the specific user
+    userExchangeData.set(interaction.member.user.id, {
+        threadId: interaction.channel_id,
+        name: "add-game-name",
+    });
+
+    const title = `Add Game`;
+    const description = `Please reply with the new name of your game.`;
+    const embed = createEmbed(title, description, "");
+    return {
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+            embeds: [embed],
+            components: [
+                {
+                    type: 1, // Action Row
+                    components: [
+                        {
+                            type: 2, // Button
+                            style: 4, // Danger style (for removing a game)
+                            label: "Cancel",
+                            custom_id: "cancel-thread"
+                        }
+                    ],
+                },
+            ],
+        },
+    };
+}
+
+async function handleAddGameWithoutDescriptionButton (interaction, client) {
+    const user_exchange_data = userExchangeData.get(interaction.member.user.id);
+
+    try {
+        const newGame = new Games({
+            guild_id: interaction.guild_id,
+            name: user_exchange_data.new_game_name,
+        });
+        await newGame.save();
+    } catch (error) {
+        logger.error("Error Adding Game To Database:", error);
+
+        const title = `Add Game Error`;
+        const description = `Couldn't add game, please try again later.`;
+        const color = "error"; // Changed to hex code for red
+        const embed = createEmbed(title, description, color);
+
+        userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+        cancelThread(interaction, client);
+    
+        return {
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                embeds: [embed],
+            },
+        };
+    }
+
+
+    const title = `Add Game`;
+    const description = `New game added: 
+    Name: **${user_exchange_data.new_game_name}**`;
+    const color = ""; // Changed to hex code for red
+    const embed = createEmbed(title, description, color);
+
+    userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+    cancelThread(interaction, client);
+
+    return {
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+            embeds: [embed],
+        },
+    };
+}
+
 async function handleManageGamesButton(interaction, client) {
     try {
         const games = await Games.find({ guild_id: interaction.guild_id });
@@ -53,9 +130,8 @@ async function handleManageGamesButton(interaction, client) {
                             ],
                         },
                     ],
-                    flags: 64,
                 },
-        };
+            };
         } else {
             const title = "No games found";
             const description = `I couldn't find any games, please add one first using the \`/add-game\` command.`;
@@ -99,7 +175,6 @@ async function handleManageGamesButton(interaction, client) {
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             data: {
                 embeds: [embed],
-                flags: 64,
             },
         };
     }
@@ -218,4 +293,4 @@ async function handleUpdateGameDescriptionButton(interaction, client) {
     return;
 }
 
-module.exports = { handleManageGamesButton, handleUpdateGameNameButton, handleUpdateGameDescriptionButton };
+module.exports = { handleAddGameNameButton, handleAddGameWithoutDescriptionButton, handleManageGamesButton, handleUpdateGameNameButton, handleUpdateGameDescriptionButton };

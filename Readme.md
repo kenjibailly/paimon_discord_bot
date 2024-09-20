@@ -171,20 +171,14 @@ Optional: Change the permissions of the commands of the bot. Go to `Server Setti
     - Input: `event name`, `description`, optional: `expiration` optional: `image link`
 - ✅ /reset-teams
     - Removes all users from the roles created for the team generation to start over
-- ✅ /add-game
-    - Adds game to the list
     - Input: `game`
 - ✅ /manage-games
-    - Remove or update a game
+    - Add, remove or update a game
 - ✅ /set-status
     - Sets custom status of the bot, this can't be set per server, this is a custom status for the bot on all servers, so becareful with this. If you want to disable this edit commands/deploy-commands.js and remove `SET_STATUS_COMMAND,` line in `const NEW_COMMANDS = [`
     - Input: `status`
-- ❌ /add-troll-mission
-    - Creates a troll mission
-    - Input: `name`, `description`
-- ❌ /remove-troll-mission
-    - Creates a troll mission
-    - Input: `name`
+- ❌ /manage-troll-missions
+    - Add, remove or update a troll mission
 - ✅ /cancel-event
     - Cancels an ongoing event
 

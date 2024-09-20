@@ -5,7 +5,7 @@ const userExchangeData = require('../helpers/userExchangeData');
 const cancelThread = require('./cancel-thread');
 
 
-async function handleChannelNameConfiguration(interaction, client) {
+async function handleChannelNameConfigurationButton(interaction, client) {
     try {
         let emoji;
         if(interaction.data.custom_id == "channel-name-config-emoji-yes") {
@@ -71,7 +71,7 @@ async function handleChannelNameConfiguration(interaction, client) {
     }
 }
 
-async function handleChannelNameConfigurationFinish(interaction, client) {
+async function handleChannelNameConfigurationFinishButton(interaction, client) {
 
     try {
         // Store interaction data for the specific user
@@ -125,4 +125,4 @@ async function handleChannelNameConfigurationFinish(interaction, client) {
     }
 }
 
-module.exports = { handleChannelNameConfiguration,  handleChannelNameConfigurationFinish };
+module.exports = { handleChannelNameConfigurationButton,  handleChannelNameConfigurationFinishButton };

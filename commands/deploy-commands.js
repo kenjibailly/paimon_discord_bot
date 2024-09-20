@@ -214,27 +214,6 @@ async function registerCommands(guildId) {
     dm_permission: false, // Command can’t be used in DMs
   };
 
-  const ADD_GAME_COMMAND = {
-    name: 'add-game',
-    description: 'Add a game to the list',
-    options: [
-      {
-        type: 3, // STRING
-        name: 'name',
-        description: 'Name of the game',
-        required: true,
-      },
-      {
-        type: 3, // STRING
-        name: 'description',
-        description: 'Description of the game',
-        required: false,
-      },
-    ],
-    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
-    dm_permission: false, // Command can’t be used in DMs
-  };
-
   const GAMES_COMMAND = {
     name: 'games',
     description: 'Show a list of all the games',
@@ -264,7 +243,7 @@ async function registerCommands(guildId) {
 
   const MANAGE_GAMES_COMMAND = {
     name: 'manage-games',
-    description: 'Remove a game from the list',
+    description: 'Add, remove a game from the list',
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
     dm_permission: false, // Command can’t be used in DMs
   };
@@ -331,6 +310,18 @@ async function registerCommands(guildId) {
     dm_permission: false, // Command can’t be used in DMs
   };
 
+  const TROLL_MISSIONS_COMMAND = {
+    name: 'troll-missions',
+    description: 'Show a list of all the troll missions',
+  };
+
+  const MANAGE_TROLL_MISSIONS_COMMAND = {
+    name: 'manage-troll-missions',
+    description: 'Add, remove or update a troll mission',
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -343,13 +334,14 @@ async function registerCommands(guildId) {
     SET_TOKEN_EMOJI_COMMAND,
     SET_BOT_CHANNEL_COMMAND,
     GAMES_COMMAND,
-    ADD_GAME_COMMAND,
     RESET_TEAMS_COMMAND,
     SET_STATUS_COMMAND,
     START_EVENT_COMMAND,
     MANAGE_GAMES_COMMAND,
     CANCEL_EVENT_COMMAND,
     SET_CHANNEL_NAME_CONFIGURATION_COMMAND,
+    TROLL_MISSIONS_COMMAND,
+    MANAGE_TROLL_MISSIONS_COMMAND,
   ];
 
   // Register or update the existing commands

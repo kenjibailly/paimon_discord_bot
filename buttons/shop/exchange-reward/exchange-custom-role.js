@@ -7,7 +7,7 @@ const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
 
 
-async function handleExchangeCustomRole(interaction, client) {
+async function handleExchangeCustomRoleButton(interaction, client) {
     try {
 
         const user_exchange_data = userExchangeData.get(interaction.member.user.id);
@@ -190,4 +190,4 @@ async function handleExchangeCustomRole(interaction, client) {
 
 }
 
-module.exports = handleExchangeCustomRole;
+module.exports = handleExchangeCustomRoleButton;

@@ -5,9 +5,9 @@ const cancelThread = require('../helpers/cancel-thread');
 const Games = require('../models/games');
 const validateNumber = require('../helpers/validate-number');
 
-
 async function handleManageGames(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
+
     if (user_exchange_data.action !== "update-game" && user_exchange_data.action !== "remove-game") {
         return;
     }    
@@ -32,8 +32,8 @@ async function handleManageGames(message, client) {
     if (user_exchange_data.action == "update-game") {
         const title = "Update Game";
         const description = `Update Game Name: **${user_exchange_data.games[Number(messageContent) - 1].name}**\n\nPlease reply with the new name of your game, if you don't want to change it press the ✅ button. We will then proceed to change the description.`
-        let color = "";
-        const embed = createEmbed(title, description, "");
+        const color = "";
+        const embed = createEmbed(title, description, color);
         // Send a confirmation message before closing the thread
         await message.channel.send({
             embeds: [embed],
@@ -75,6 +75,89 @@ async function handleManageGames(message, client) {
         }
         return;
     }
+}
+
+async function handleAddGameName (message, client) {
+    const user_exchange_data = userExchangeData.get(message.author.id);
+    const messageContent = message.content;
+
+    user_exchange_data.name = "add-game-description";
+    user_exchange_data.new_game_name = messageContent;
+    // Store the updated object back into userExchangeData
+    userExchangeData.set(message.author.id, user_exchange_data);
+
+    const title = "Add Game";
+    const description = `Please reply with the new description of your game. If you don't want to add a description press the ✅ button`;
+    const color = "";
+    const embed = createEmbed(title, description, color);
+    // Send a confirmation message before closing the thread
+    await message.channel.send({
+        embeds: [embed],
+        components: [
+            {
+                type: 1, // Action Row
+                components: [
+                    {
+                        type: 2, // Button
+                        style: 3, // Green style
+                        label: "Proceed",
+                        emoji: { name: "✅" },
+                        custom_id: "add-game-without-description"
+                    },
+                    {
+                        type: 2, // Button
+                        style: 4, // Danger style (for removing a game)
+                        label: "Cancel",
+                        custom_id: "cancel-thread"
+                    }
+                ],
+            },
+        ],
+    });
+}
+
+async function handleAddGameDescription (message, client) {
+    const user_exchange_data = userExchangeData.get(message.author.id);
+
+    const messageContent = message.content;
+
+    try {
+        const newGame = new Games({
+            guild_id: message.guildId,
+            name: user_exchange_data.new_game_name,
+            description: messageContent,
+        });
+        await newGame.save();
+    } catch (error) {
+        logger.error("Error Adding Game To Database:", error);
+
+        const title = `Add Game Error`;
+        const description = `Couldn't add game, please try again later.`;
+        const color = "error"; // Changed to hex code for red
+        const embed = createEmbed(title, description, color);
+    
+        await message.channel.send({
+            embeds: [embed],
+        });
+
+        userExchangeData.delete(message.author.id); // Remove the user's data entirely
+        cancelThread(message.guildId, message.channelId, client);
+    }
+
+
+    const title = `Add Game`;
+    const description = `New game added: 
+    Name: **${user_exchange_data.name}** 
+    Description: **${messageContent}**.\n\n`;
+    const color = ""; // Changed to hex code for red
+    const embed = createEmbed(title, description, color);
+
+    await message.channel.send({
+        embeds: [embed],
+    });
+
+    userExchangeData.delete(message.author.id); // Remove the user's data entirely
+    cancelThread(message.guildId, message.channelId, client);
 }
 
 async function removeGame(game, client, message) {
@@ -232,4 +315,4 @@ async function handleUpdateGameDescription(message, client) {
     return;
 }
 
-module.exports = { handleManageGames, handleUpdateGameName, handleUpdateGameDescription };
+module.exports = { handleManageGames, handleAddGameName, handleAddGameDescription, handleUpdateGameName, handleUpdateGameDescription };
