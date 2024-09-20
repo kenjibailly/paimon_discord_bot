@@ -4,11 +4,11 @@
 
 The idea is that game events will be held outside of Discord. One team goes against the other. The winning team gets awarded tokens through a slash command performed by the staff.
 
-Those who wants to join the game event can react to a message and will be added towards the random team generation. A total of 2 teams will be randomly generated.
+Those who want to join the game event can react to a message and will be added towards the random team generation. A total of 2 teams will be randomly generated.
 
 Award tokens to roles, all users in that said role will get their tokens. Users can then use their tokens for various rewards using the shop.
 
-After X amount of time, the reward will be removed and can be configured in the settings, or all rewards can be removed with a command, for example when a game event has started/ended.
+After X amount of time, the reward will be removed and can be configured in the settings.
 
 </div>
 
@@ -55,6 +55,13 @@ Edit `docker-compose.yml`:
 ```bash
 docker-compose up -d
 ```
+</details>
+
+### 🛜 Proxy
+
+<details>
+
+<summary>🛠️ Open for installation steps</summary>
 
 Create a proxy to your (sub)domain with swag / nginx-proxy-manager / nginx. 
 ```
