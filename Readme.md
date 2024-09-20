@@ -148,7 +148,7 @@ Optional: Change the permissions of the commands of the bot. Go to `Server Setti
     - Checks your wallet balance
 - ✅ /games
     - Lists the upcoming games
-- ❌ /troll-missions
+- ✅ /troll-missions
     - Lists all the troll missions
 
 #### 🧑‍💼 Staff functions
@@ -177,7 +177,7 @@ Optional: Change the permissions of the commands of the bot. Go to `Server Setti
 - ✅ /set-status
     - Sets custom status of the bot, this can't be set per server, this is a custom status for the bot on all servers, so becareful with this. If you want to disable this edit commands/deploy-commands.js and remove `SET_STATUS_COMMAND,` line in `const NEW_COMMANDS = [`
     - Input: `status`
-- ❌ /manage-troll-missions
+- ✅ /manage-troll-missions
     - Add, remove or update a troll mission
 - ✅ /cancel-event
     - Cancels an ongoing event
