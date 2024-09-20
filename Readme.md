@@ -21,7 +21,7 @@ Used in this project:
 
 ## 💾 How to install
 
-### 💻 Local
+### 💻 Get Files
 <details>
 
 <summary>🛠️ Open for installation steps</summary>
@@ -126,6 +126,10 @@ Go to `Server Settings` > `Roles` and move the bot's role to the top of the hier
 Optional: Change the permissions of the commands of the bot. Go to `Server Settings` > `Integrations`, find the bot under `Bots and Apps` and click on `Manage`. Configure each command's permissions to your preference.
 
 </details>
+
+> After completing your .env file please make sure you restarted the container
+
+```docker restart discord_bot_paimon```
 
 # Functionality
 
