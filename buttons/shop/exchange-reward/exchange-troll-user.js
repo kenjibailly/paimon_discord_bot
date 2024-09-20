@@ -5,8 +5,7 @@ const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
-const Logger = require("../../../helpers/logger");
-const logger = new Logger("Bot");
+
 
 async function handleExchangeTrollUser(interaction, client) {
     try {
@@ -187,8 +186,6 @@ async function handleExchangeTrollUser(interaction, client) {
 
 async function trollUser (interaction, client, user_exchange_data) {
     try {
-        logger.success("Success: ")
-        // throw new Error("TESTING");
         
     } catch (error) {
         logger.error("Error trolling user:", error);

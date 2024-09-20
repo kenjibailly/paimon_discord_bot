@@ -5,8 +5,7 @@ const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
-const Logger = require("../../../helpers/logger");
-const logger = new Logger("Bot");
+
 
 async function handleExchangeCustomRole(interaction, client) {
     try {

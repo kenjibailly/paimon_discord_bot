@@ -1,7 +1,6 @@
 const createEmbed = require('../../helpers/embed');
 const getBotChannel = require('../../helpers/get-bot-channel');
-const Logger = require("../../helpers/logger");
-const logger = new Logger("Bot");
+
 
 async function removeCustomRole(client, reward) {
     try {

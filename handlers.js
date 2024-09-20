@@ -4,8 +4,7 @@ const buttonHandlers = require('./buttons');
 const messageHandlers = require('./messages');
 const createEmbed = require("./helpers/embed");
 const userExchangeData = require('./helpers/userExchangeData');
-const Logger = require("./helpers/logger");
-const logger = new Logger("Bot");
+
 
 async function handleSlashCommand(res, client) {
     const { data } = res;

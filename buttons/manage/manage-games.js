@@ -3,8 +3,7 @@ const createEmbed = require('../../helpers/embed');
 const Games = require('../../models/games');
 const userExchangeData = require('../../helpers/userExchangeData');
 const cancelThread = require('../cancel-thread');
-const Logger = require("../../helpers/logger");
-const logger = new Logger("Bot");
+
 
 async function handleManageGamesButton(interaction, client) {
     try {

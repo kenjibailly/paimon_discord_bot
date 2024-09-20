@@ -2,8 +2,7 @@ const Rewards = require('./models/rewards');
 const TokenEmoji = require('./models/token-emoji'); // Import the TokenEmoji model
 const deployCommands = require('./commands/deploy-commands');
 const ChannelNameConfig = require('./models/channel-name-config');
-const Logger = require("./helpers/logger");
-const logger = new Logger("Bot");
+
 
 async function botJoinsGuild(client, guild) {
     const guildId = guild.id;
