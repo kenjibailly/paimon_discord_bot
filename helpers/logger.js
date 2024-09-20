@@ -25,7 +25,10 @@ class Logger {
   
     _writeMessage(...args) {
       args.forEach(arg => {
-        if (typeof arg === 'object') {
+        if (arg instanceof Error) {
+            // If it's an Error, print its message and stack
+            process.stdout.write(`${arg.message}\n${arg.stack} `);
+        } else if (typeof arg === 'object') {
           // If it's an object, print it as a JSON string
           process.stdout.write(`\n${JSON.stringify(arg, null, 2)} \n`);
         } else {

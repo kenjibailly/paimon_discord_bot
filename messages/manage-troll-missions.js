@@ -2,18 +2,18 @@ const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
 const cancelThread = require('../helpers/cancel-thread');
-const Games = require('../models/games');
+const TrollMissions = require('../models/troll-missions');
 const validateNumber = require('../helpers/validate-number');
 
-async function handleManageGames(message, client) {
+async function handleManageTrollMissions(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
 
-    if (user_exchange_data.action !== "update-game" && user_exchange_data.action !== "remove-game") {
+    if (user_exchange_data.action !== "update-troll-mission" && user_exchange_data.action !== "remove-troll-mission") {
         return;
     }    
 
     const messageContent = message.content;
-    const validationError = validateNumber(messageContent, user_exchange_data.games);
+    const validationError = validateNumber(messageContent, user_exchange_data.troll_missions);
 
     if (validationError) {
         logger.error("Validation Error:", validationError);
@@ -29,9 +29,9 @@ async function handleManageGames(message, client) {
         return;
     }
 
-    if (user_exchange_data.action == "update-game") {
-        const title = "Update Game";
-        const description = `Update Game Name: **${user_exchange_data.games[Number(messageContent) - 1].name}**\n\nPlease reply with the new name of your game, if you don't want to change it press the ✅ button. We will then proceed to change the description.`
+    if (user_exchange_data.action == "update-troll-mission") {
+        const title = "Update Troll Mission";
+        const description = `Update Troll Mission Name: **${user_exchange_data.troll_missions[Number(messageContent) - 1].name}**\n\nPlease reply with the new name of your troll mission, if you don't want to change it press the ✅ button. We will then proceed to change the description.`
         const color = "";
         const embed = createEmbed(title, description, color);
         // Send a confirmation message before closing the thread
@@ -46,11 +46,11 @@ async function handleManageGames(message, client) {
                             style: 3, // Green style
                             label: "Proceed",
                             emoji: { name: "✅" },
-                            custom_id: "update-game-name"
+                            custom_id: "update-troll-mission-name"
                         },
                         {
                             type: 2, // Button
-                            style: 4, // Danger style (for removing a game)
+                            style: 4, // Danger style (for removing a troll mission)
                             label: "Cancel",
                             custom_id: "cancel-thread"
                         }
@@ -60,16 +60,16 @@ async function handleManageGames(message, client) {
         });
 
 
-        user_exchange_data.name = "update-game-name";
-        user_exchange_data.game = user_exchange_data.games[Number(messageContent) - 1];
+        user_exchange_data.name = "update-troll-mission-name";
+        user_exchange_data.troll_mission = user_exchange_data.troll_missions[Number(messageContent) - 1];
         delete user_exchange_data.action;
-        delete user_exchange_data.games;
+        delete user_exchange_data.troll_missions;
         // Store the updated object back into userExchangeData
         userExchangeData.set(message.author.id, user_exchange_data);
         return;
-    } else if (user_exchange_data.action == "remove-game") {
-        const gameRemoved = await removeGame(user_exchange_data.games[Number(messageContent) - 1], client, message);
-        if(gameRemoved) {
+    } else if (user_exchange_data.action == "remove-troll-mission") {
+        const trollMissionRemoved = await removeTrollMission(user_exchange_data.troll_missions[Number(messageContent) - 1], client, message);
+        if(trollMissionRemoved) {
             userExchangeData.delete(message.author.id); // Remove the user's data entirely
             cancelThread(message.guildId, message.channelId, client);
         }
@@ -77,17 +77,17 @@ async function handleManageGames(message, client) {
     }
 }
 
-async function handleAddGameName (message, client) {
+async function handleAddTrollMissionName (message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
     const messageContent = message.content;
 
-    user_exchange_data.name = "add-game-description";
-    user_exchange_data.new_game_name = messageContent;
+    user_exchange_data.name = "add-troll-mission-description";
+    user_exchange_data.new_troll_mission_name = messageContent;
     // Store the updated object back into userExchangeData
     userExchangeData.set(message.author.id, user_exchange_data);
 
-    const title = "Add Game";
-    const description = `Please reply with the new description of your game. If you don't want to add a description press the ✅ button`;
+    const title = "Add Troll Mission";
+    const description = `Please reply with the new description of your troll mission. If you don't want to add a description press the ✅ button`;
     const color = "";
     const embed = createEmbed(title, description, color);
     // Send a confirmation message before closing the thread
@@ -102,11 +102,11 @@ async function handleAddGameName (message, client) {
                         style: 3, // Green style
                         label: "Proceed",
                         emoji: { name: "✅" },
-                        custom_id: "add-game-without-description"
+                        custom_id: "add-troll-mission-without-description"
                     },
                     {
                         type: 2, // Button
-                        style: 4, // Danger style (for removing a game)
+                        style: 4, // Danger style (for removing a troll mission)
                         label: "Cancel",
                         custom_id: "cancel-thread"
                     }
@@ -116,23 +116,23 @@ async function handleAddGameName (message, client) {
     });
 }
 
-async function handleAddGameDescription (message, client) {
+async function handleAddTrollMissionDescription (message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
 
     const messageContent = message.content;
 
     try {
-        const newGame = new Games({
+        const newTrollMission = new TrollMissions({
             guild_id: message.guildId,
-            name: user_exchange_data.new_game_name,
+            name: user_exchange_data.new_troll_mission_name,
             description: messageContent,
         });
-        await newGame.save();
+        await newTrollMission.save();
     } catch (error) {
-        logger.error("Error Adding Game To Database:", error);
+        logger.error("Error Adding Troll Mission To Database:", error);
 
-        const title = `Add Game Error`;
-        const description = `Couldn't add game, please try again later.`;
+        const title = `Add Troll Mission Error`;
+        const description = `Couldn't add troll mission, please try again later.`;
         const color = "error"; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
     
@@ -145,8 +145,8 @@ async function handleAddGameDescription (message, client) {
     }
 
 
-    const title = `Add Game`;
-    const description = `New game added: 
+    const title = `Add Troll Mission`;
+    const description = `New troll mission added: 
     Name: **${user_exchange_data.name}** 
     Description: **${messageContent}**.\n\n`;
     const color = ""; // Changed to hex code for red
@@ -160,14 +160,14 @@ async function handleAddGameDescription (message, client) {
     cancelThread(message.guildId, message.channelId, client);
 }
 
-async function removeGame(game, client, message) {
+async function removeTrollMission(troll_mission, client, message) {
     try {
-        const deletedGame = await Games.findByIdAndDelete(game._id);
-            // Check if the game was deleted
-        if (deletedGame) {
-            // Game was successfully deleted
-            const title = `Game Removed`;
-            const description = `The game "**${game.name}**" has been successfully removed.`;
+        const deletedTrollMission = await TrollMissions.findByIdAndDelete(troll_mission._id);
+            // Check if the troll mission was deleted
+        if (deletedTrollMission) {
+            // Troll mission was successfully deleted
+            const title = `Troll Mission Removed`;
+            const description = `The troll mission "**${troll_mission.name}**" has been successfully removed.`;
             const color = "";
             const embed = createEmbed(title, description, color);
 
@@ -176,14 +176,14 @@ async function removeGame(game, client, message) {
             });
             return true;
         } else {
-            throw new Error("Database error, can't delete game.");
+            throw new Error("Database error, can't delete troll mission.");
         }
 
     } catch (error) {
-        logger.error("Remove Game Error:", error);
+        logger.error("Remove Troll Mission Error:", error);
         // Send a confirmation message before closing the thread
-        const title = `Remove Game Error`;
-        const description = `I could not remove the game, please try again later.`;
+        const title = `Remove Troll Mission Error`;
+        const description = `I could not remove the troll mission, please try again later.`;
         const color = "error"; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
@@ -199,24 +199,24 @@ async function removeGame(game, client, message) {
 }
 
 
-async function handleUpdateGameName(message, client) {
+async function handleUpdateTrollMissionName(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
-    if (user_exchange_data.name !== "update-game-name") {
+    if (user_exchange_data.name !== "update-troll-mission-name") {
         return;
     }
 
     const messageContent = message.content;
 
-    user_exchange_data.name = "update-game-description";
-    user_exchange_data.new_game_name = messageContent;
+    user_exchange_data.name = "update-troll-mission-description";
+    user_exchange_data.new_troll_mission_name = messageContent;
     // Store the updated object back into userExchangeData
     userExchangeData.set(message.author.id, user_exchange_data);
 
 
-    const title = `Update Game`;
-    const description = `New name: **${messageContent}** for **${user_exchange_data.game.name}**.\n\n` +
-    `Please reply with the new description of your game, if you don't want to change it press the ✅ button to confirm the update.` +
-    (user_exchange_data.game.description ? `\n\nCurrent game description: **${user_exchange_data.game.description}**` : `\n\nYou currently don't have any description set for this game.`); // Append current_game_description only if it's not empty
+    const title = `Update Troll Mission`;
+    const description = `New name: **${messageContent}** for **${user_exchange_data.troll_mission.name}**.\n\n` +
+    `Please reply with the new description of your troll mission, if you don't want to change it press the ✅ button to confirm the update.` +
+    (user_exchange_data.troll_mission.description ? `\n\nCurrent troll mission description: **${user_exchange_data.troll_mission.description}**` : `\n\nYou currently don't have any description set for this troll mission.`); // Append current_troll_mission_description only if it's not empty
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);
 
@@ -231,11 +231,11 @@ async function handleUpdateGameName(message, client) {
                         style: 3, // Green style
                         label: "Proceed",
                         emoji: { name: "✅" },
-                        custom_id: "update-game-description"
+                        custom_id: "update-troll-mission-description"
                     },
                     {
                         type: 2, // Button
-                        style: 4, // Danger style (for removing a game)
+                        style: 4, // Danger style (for removing a troll mission)
                         label: "Cancel",
                         custom_id: "cancel-thread"
                     }
@@ -247,42 +247,42 @@ async function handleUpdateGameName(message, client) {
 }
 
 
-async function handleUpdateGameDescription(message, client) {
+async function handleUpdateTrollMissionDescription(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
-    if (user_exchange_data.name !== "update-game-description") {
+    if (user_exchange_data.name !== "update-troll-mission-description") {
         return;
     }
 
-    const new_game_description = message.content;
+    const new_troll_mission_description = message.content;
 
     try {
 
         // Construct the update object conditionally
-        const updateFields = { description: new_game_description }; // Always update description
+        const updateFields = { description: new_troll_mission_description }; // Always update description
 
         // Only include name if it exists in user_exchange_data
-        if (user_exchange_data.new_game_name) {
-            updateFields.name = user_exchange_data.new_game_name;
+        if (user_exchange_data.new_troll_mission_name) {
+            updateFields.name = user_exchange_data.new_troll_mission_name;
         }
 
-        const updatedGame = await Games.findOneAndUpdate(
-            { _id: user_exchange_data.game._id },
+        const updatedTrollMission = await TrollMissions.findOneAndUpdate(
+            { _id: user_exchange_data.troll_mission._id },
             updateFields,
             { new: true } // Option to return the updated document
         );
 
-        if(updatedGame) {
-            const title = `Update Game`;
+        if(updatedTrollMission) {
+            const title = `Update Troll Mission`;
             // Start with the base description
-            let description = `Game **${user_exchange_data.game.name}** has been updated with:\n\n`;
+            let description = `Troll Mission **${user_exchange_data.troll_mission.name}** has been updated with:\n\n`;
 
             // Conditionally add the name if it exists
-            if (user_exchange_data.new_game_name) {
-                description += `Name: **${user_exchange_data.new_game_name}**\n`;
+            if (user_exchange_data.new_troll_mission_name) {
+                description += `Name: **${user_exchange_data.new_troll_mission_name}**\n`;
             }
 
             // Always include the description
-            description += `Description: **${new_game_description}**.`;
+            description += `Description: **${new_troll_mission_description}**.`;
             const color = ""; // Changed to hex code for red
             const embed = createEmbed(title, description, color);
         
@@ -293,14 +293,14 @@ async function handleUpdateGameDescription(message, client) {
             userExchangeData.delete(message.author.id); // Remove the user's data entirely
             cancelThread(message.guildId, message.channelId, client);
         } else {
-            throw new Error("Couldn't update game to database");
+            throw new Error("Couldn't update troll mission to database");
         }
 
     } catch (error) {
-        logger.error("Error Updating Game To Database:", error);
+        logger.error("Error Updating Troll Mission To Database:", error);
 
-        const title = `Update Game Error`;
-        const description = `Couldn't update game, please try again later.`;
+        const title = `Update Troll Mission Error`;
+        const description = `Couldn't update troll mission, please try again later.`;
         const color = "error"; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
     
@@ -315,4 +315,4 @@ async function handleUpdateGameDescription(message, client) {
     return;
 }
 
-module.exports = { handleManageGames, handleAddGameName, handleAddGameDescription, handleUpdateGameName, handleUpdateGameDescription };
+module.exports = { handleManageTrollMissions, handleAddTrollMissionName, handleAddTrollMissionDescription, handleUpdateTrollMissionName, handleUpdateTrollMissionDescription };

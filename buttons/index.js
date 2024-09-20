@@ -4,12 +4,13 @@ const handleCancelThreadButton = require('./cancel-thread');
 const handleExchangeChangeNicknameButton = require('./shop/exchange-reward/exchange-change-nickname');
 const handleJoinTeamButton = require('./join-team');
 const { handleAddGameNameButton, handleAddGameWithoutDescriptionButton, handleManageGamesButton, handleUpdateGameNameButton, handleUpdateGameDescriptionButton } = require('./manage/manage-games');
+const { handleAddTrollMissionNameButton, handleAddTrollMissionWithoutDescriptionButton, handleManageTrollMissionsButton, handleUpdateTrollMissionNameButton, handleUpdateTrollMissionDescriptionButton } = require('./manage/manage-troll-missions');
 const { handleStartEventAddGameButton, handleStartEventNoGameButton } = require('./start-event');
 const handleExchangeCustomEmojiButton = require('./shop/exchange-reward/exchange-custom-emoji');
 const handleExchangeCustomChannelButton = require('./shop/exchange-reward/exchange-custom-channel');
-const handleExchangeCustomRole = require('./shop/exchange-reward/exchange-custom-role');
-const handleExchangeTrollUser = require('./shop/exchange-reward/exchange-troll-user');
-const { handleChannelNameConfiguration, handleChannelNameConfigurationFinish } = require('./channel-name-configuration');
+const handleExchangeCustomRoleButton = require('./shop/exchange-reward/exchange-custom-role');
+const handleExchangeTrollUserButton = require('./shop/exchange-reward/exchange-troll-user');
+const { handleChannelNameConfigurationButton, handleChannelNameConfigurationFinishButton } = require('./channel-name-configuration');
 
 module.exports = {
     'exchange-shop': handleExchangeShopButton,
@@ -24,13 +25,19 @@ module.exports = {
     'remove-game': handleManageGamesButton,
     'update-game-name': handleUpdateGameNameButton,
     'update-game-description': handleUpdateGameDescriptionButton,
+    'add-troll-mission-name': handleAddTrollMissionNameButton,
+    'add-troll-mission-without-description': handleAddTrollMissionWithoutDescriptionButton,
+    'update-troll-mission': handleManageTrollMissionsButton,
+    'remove-troll-mission': handleManageTrollMissionsButton,
+    'update-troll-mission-name': handleUpdateTrollMissionNameButton,
+    'update-troll-mission-description': handleUpdateTrollMissionDescriptionButton,
     'start-event-add-game': handleStartEventAddGameButton,
     'start-event-no-game': handleStartEventNoGameButton,
     'exchange-custom-channel': handleExchangeCustomChannelButton,
-    'exchange-custom-role': handleExchangeCustomRole,
-    'channel-name-config-emoji-yes': handleChannelNameConfiguration,
-    'channel-name-config-emoji-no': handleChannelNameConfiguration,
-    'channel-name-config-separator-no': handleChannelNameConfigurationFinish,
-    'exchange-troll-user': handleExchangeTrollUser,
-    'exchange-troll-user': handleExchangeTrollUser,
+    'exchange-custom-role': handleExchangeCustomRoleButton,
+    'channel-name-config-emoji-yes': handleChannelNameConfigurationButton,
+    'channel-name-config-emoji-no': handleChannelNameConfigurationButton,
+    'channel-name-config-separator-no': handleChannelNameConfigurationFinishButton,
+    'exchange-troll-user': handleExchangeTrollUserButton,
+    'exchange-troll-user': handleExchangeTrollUserButton,
 };

@@ -1,7 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 
-async function handleManageGamesCommand(interaction, client) {
+async function handleManageTrollMissionsCommand(interaction, client) {
     const { guild_id, channel_id } = interaction;
 
     const guild = await client.guilds.fetch(guild_id);
@@ -9,9 +9,9 @@ async function handleManageGamesCommand(interaction, client) {
 
     // Create a private thread that is only visible to the user who clicked the button
     const thread = await channel.threads.create({
-        name: `Manage Games - ${interaction.member.user.global_name}`, // Ensure you use the correct user property
+        name: `Manage Troll Missions - ${interaction.member.user.global_name}`, // Ensure you use the correct user property
         autoArchiveDuration: 60, // Archive the thread after 60 minutes of inactivity
-        reason: 'User initiated manage games interaction',
+        reason: 'User initiated manage troll missions interaction',
         invitable: false, // Don't allow other users to join the thread
         type: 12, // Private Thread (only visible to members who are added)
     });
@@ -20,8 +20,8 @@ async function handleManageGamesCommand(interaction, client) {
     await thread.members.add(interaction.member.user.id);
 
     // Post the message in the thread
-    let title = "Manage Games";
-    let description = `Do you want to create, update or remove a game?`;
+    let title = "Manage Troll Missions";
+    let description = `Do you want to create, update or remove a troll mission?`;
     let embed = createEmbed(title, description, "");
 
     // Send the message to the thread
@@ -33,28 +33,28 @@ async function handleManageGamesCommand(interaction, client) {
                 components: [
                     {
                         type: 2, // Button
-                        style: 3, // Green style (for adding a game)
+                        style: 3, // Green style (for adding a troll mission)
                         label: "Add",
                         emoji: { name: "➕" }, // Emoji for add
-                        custom_id: "add-game-name"
+                        custom_id: "add-troll-mission-name"
                     },
                     {
                         type: 2, // Button
-                        style: 1, // Primary style (for updating a game)
+                        style: 1, // Primary style (for updating a troll mission)
                         label: "Update",
                         emoji: { name: "🖊️" }, // Pencil emoji for updating
-                        custom_id: "update-game"
+                        custom_id: "update-troll-mission"
                     },
                     {
                         type: 2, // Button
-                        style: 4, // Danger style (for removing a game)
+                        style: 4, // Danger style (for removing a troll mission)
                         label: "Remove",
                         emoji: { name: "🗑️" }, // Trash bin emoji for removing
-                        custom_id: "remove-game"
+                        custom_id: "remove-troll-mission"
                     },
                     {
                         type: 2, // Button
-                        style: 4, // Danger style (for removing a game)
+                        style: 4, // Danger style (for removing a troll mission)
                         label: "Cancel",
                         custom_id: "cancel-thread"
                     }
@@ -65,7 +65,7 @@ async function handleManageGamesCommand(interaction, client) {
     
 
 
-    title = "Manage Games";
+    title = "Manage Troll Missions";
     description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
     embed = createEmbed(title, description, "");
     return {
@@ -77,4 +77,4 @@ async function handleManageGamesCommand(interaction, client) {
     };
 }
 
-module.exports = handleManageGamesCommand;
+module.exports = handleManageTrollMissionsCommand;

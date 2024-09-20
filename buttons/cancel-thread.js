@@ -15,7 +15,10 @@ async function handleCancelThreadButton(interaction, client) {
         const description = `This thread will be closed shortly.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        await thread.send({ embeds: [embed] });
+
+        setTimeout(async () => {
+            await thread.send({ embeds: [embed] });
+        }, 1000);
 
         const members = await thread.members.fetch(); // Get all members of the thread
 

@@ -9,7 +9,9 @@ const handleSetTeamsCommand = require('./set-teams');
 const handleSetTokenEmojiCommand = require('./set-token-emoji');
 const handleSetBotChannelCommand = require('./set-bot-channel');
 const handleManageGamesCommand = require('./manage-games');
+const handleManageTrollMissionsCommand = require('./manage-troll-missions');
 const handleGamesCommand = require('./games');
+const handleTrollMissionsCommand = require('./troll-missions');
 const handleResetTeamsCommand = require('./reset-teams');
 const handleSetStatusCommand = require('./set-status');
 const handleStartEventCommand = require('./start-event');
@@ -28,7 +30,9 @@ module.exports = {
     'set-token-emoji': handleSetTokenEmojiCommand,
     'set-bot-channel': handleSetBotChannelCommand,
     'manage-games': handleManageGamesCommand,
+    'manage-troll-missions': handleManageTrollMissionsCommand,
     'games': handleGamesCommand,
+    'troll-missions': handleTrollMissionsCommand,
     'reset-teams': handleResetTeamsCommand,
     'set-status': handleSetStatusCommand,
     'start-event': handleStartEventCommand,
