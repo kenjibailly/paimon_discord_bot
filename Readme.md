@@ -127,6 +127,8 @@ Optional: Change the permissions of the commands of the bot. Go to `Server Setti
 
 </details>
 
+### ♻️ Restart Docker Container
+
 > After completing your .env file please make sure you restarted the container
 
 ```docker restart discord_bot_paimon```
