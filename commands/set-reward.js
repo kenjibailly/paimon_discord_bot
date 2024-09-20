@@ -2,7 +2,7 @@ const { InteractionResponseType } = require('discord-interactions');
 const Rewards = require('../models/rewards');
 const TokenEmoji = require('../models/token-emoji');
 const createEmbed = require('../helpers/embed');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleSetRewardCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -73,7 +73,7 @@ async function handleSetRewardCommand(interaction, client) {
             // Handle the case where the reward was not found
             const title = "Reward Not Found";
             const description = `The reward **${rewardName}** was not found for this guild.`;
-            const color = "#ff0000";
+            const color = "error";
             const embed = createEmbed(title, description, color);
 
             return {
@@ -86,7 +86,7 @@ async function handleSetRewardCommand(interaction, client) {
         }
 
     } catch (error) {
-        console.error(consoleColors("red"), 'Error updating reward:', error);
+        logger.error('Error updating reward:', error);
 
         const title = "Error";
         const description = `An error occurred while updating the reward. Please try again later.`;

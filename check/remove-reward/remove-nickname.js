@@ -1,6 +1,7 @@
 const createEmbed = require('../../helpers/embed');
 const getBotChannel = require('../../helpers/get-bot-channel');
-const consoleColors = require('../../helpers/console-colors');
+const Logger = require("../../helpers/logger");
+const logger = new Logger("Bot");
 
 async function removeNickname(client, reward) {
     try {
@@ -21,22 +22,22 @@ async function removeNickname(client, reward) {
                     const channel = await client.channels.fetch(bot_channel.channel);
                     await channel.send({ embeds: [embed] });
                     
-                    console.log(consoleColors("green"), 'Message sent to the bot channel successfully.');
+                    logger.success('Message sent to the bot channel successfully.');
                     return; // Ensure the function exits here
                 } catch (error) {
-                    console.error(consoleColors("red"), 'Error sending message to the bot channel:', error);
+                    logger.error('Error sending message to the bot channel:', error);
                     return; // Exit function if there's an error
                 }
             } else {
-                console.error(consoleColors("red"), 'Bot channel not found or not set.');
+                logger.error('Bot channel not found or not set.');
                 return; // Exit function if the bot channel is not found
             }
         } else {
-            console.error(consoleColors("red"), `Member with ID ${reward.awarded_user_id} not found.`);
+            logger.error(`Member with ID ${reward.awarded_user_id} not found.`);
             return; // Exit function if the member is not found
         }
     } catch (error) {
-        console.error(consoleColors("red"), `Error resetting nickname:`, error);
+        logger.error(`Error resetting nickname:`, error);
         return; // Exit function if there's an error in the try-catch block
     }
 }

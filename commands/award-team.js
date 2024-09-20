@@ -2,7 +2,7 @@ const { InteractionResponseType } = require('discord-interactions');
 const Wallet = require('../models/wallet');
 const createEmbed = require('../helpers/embed');
 const getTokenEmoji = require('../helpers/get-token-emoji');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleAwardTeamCommand(interaction, client) {
     const { data, member, guild_id } = interaction;
@@ -58,7 +58,7 @@ async function handleAwardTeamCommand(interaction, client) {
             },
         };
     } catch (error) {
-        console.error(consoleColors("red"), 'Error during bulkWrite:', error);
+        logger.error('Error during bulkWrite:', error);
 
         const title = "Tokens";
         const description = `Failed to add tokens to the database, please try again.`;

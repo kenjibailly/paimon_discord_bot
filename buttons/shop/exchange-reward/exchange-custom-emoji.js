@@ -5,7 +5,8 @@ const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
-const consoleColors = require('../../../helpers/console-colors');
+const Logger = require("../../../helpers/logger");
+const logger = new Logger("Bot");
 
 async function handleExchangeCustomEmojiButton(interaction, client) {
     try {
@@ -107,7 +108,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             await awardedReward.save();
 
         } catch (error) {
-            console.error(consoleColors("red"), 'Error adding reward to DB:', error);
+            logger.error('Error adding reward to DB:', error);
 
             let title = "Reward Database Error";
             let description = `I could not add the reward to the database. Please contact the administrator.`;
@@ -129,7 +130,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             wallet.amount -= Number(user_exchange_data.rewardPrice);
             await wallet.save();
         } catch (error) {
-            console.error(consoleColors("red"), "Failed to save wallet:", error);
+            logger.error("Failed to save wallet:", error);
             
             const title = "Transaction Error";
             const description = "There was an error while processing your wallet transaction. Please try again later.";
@@ -188,7 +189,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             }
 
         } catch (error) {
-            console.error(consoleColors("red"), "Emoji Upload Error: ", error);
+            logger.error("Emoji Upload Error: ", error);
             
             const title = "Emoji Upload Failed";
             const description = `There was an issue adding the emoji to the server. Please try again later.`;
@@ -206,7 +207,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
         }
 
     } catch (error) {
-        console.error(consoleColors("red"), 'Error adding custom server emoji:', error);
+        logger.error('Error adding custom server emoji:', error);
 
         let title = "Add Custom Server Emoji Error";
         let description = `I could not add a custom server emoji. Your wallet has not been affected.`;

@@ -1,6 +1,7 @@
 const createEmbed = require('../../helpers/embed');
 const getBotChannel = require('../../helpers/get-bot-channel');
-const consoleColors = require('../../helpers/console-colors');
+const Logger = require("../../helpers/logger");
+const logger = new Logger("Bot");
 
 async function removeCustomEmoji(client, reward) {
     try {
@@ -11,7 +12,7 @@ async function removeCustomEmoji(client, reward) {
         const emoji = guild.emojis.cache.find(e => e.name === emojiName);
 
         if (!emoji) {
-            console.error(consoleColors("red"), "Emoji not found to remove with name:", emojiName);
+            logger.error("Emoji not found to remove with name:", emojiName);
             return;
         }
 
@@ -20,7 +21,7 @@ async function removeCustomEmoji(client, reward) {
             await emoji.delete();
         } catch (error) {
             // Handle any errors that occur during deletion
-            console.error(consoleColors("red"), 'Failed to delete emoji:', error);
+            logger.error('Failed to delete emoji:', error);
         }
 
 
@@ -35,18 +36,18 @@ async function removeCustomEmoji(client, reward) {
                 const channel = await client.channels.fetch(bot_channel.channel);
                 await channel.send({ embeds: [embed] });
                 
-                console.log(consoleColors("green"), 'Message sent to the bot channel successfully.');
+                logger.success('Message sent to the bot channel successfully.');
                 return; // Ensure the function exits here
             } catch (error) {
-                console.error(consoleColors("red"), 'Error sending message to the bot channel:', error);
+                logger.error('Error sending message to the bot channel:', error);
                 return; // Exit function if there's an error
             }
         } else {
-            console.error('Bot channel not found or not set.');
+            logger.error('Bot channel not found or not set.');
             return; // Exit function if the bot channel is not found
         }
     } catch (error) {
-        console.error(consoleColors("red"), `Error resetting nickname:`, error);
+        logger.error(`Error resetting nickname:`, error);
         return; // Exit function if there's an error in the try-catch block
     }
 }

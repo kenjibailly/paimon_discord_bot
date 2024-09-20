@@ -3,7 +3,7 @@ const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
 const getTokenEmoji = require('../helpers/get-token-emoji');
 const getReward = require('../helpers/get-reward');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleCustomRole(message, client) {
 
@@ -13,7 +13,7 @@ async function handleCustomRole(message, client) {
     const contentValidationError = validateRoleName(messageContent);
     if (contentValidationError) {
         // Handle message content validation error
-        console.error(consoleColors("red"), "Validation Error:", contentValidationError);
+        logger.error("Validation Error:", contentValidationError);
         const title = "Shop";
         const description = `${contentValidationError}\nPlease try again.`;
         const color = "error";
@@ -106,7 +106,7 @@ async function handleCustomRoleColor(message, client) {
     const contentValidationError = validateColor(messageContent);
     if (contentValidationError) {
         // Handle message content validation error
-        console.error(consoleColors("red"), "Validation Error", contentValidationError);
+        logger.error("Validation Error", contentValidationError);
         const title = "Shop";
         const description = `${contentValidationError}\nPlease try again.`;
         const color = "error";

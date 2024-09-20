@@ -5,7 +5,7 @@ const getTokenEmoji = require('../helpers/get-token-emoji');
 const getReward = require('../helpers/get-reward');
 const sharp = require('sharp');
 const axios = require('axios');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleCustomEmoji(message, client) {
 
@@ -39,7 +39,7 @@ async function handleCustomEmoji(message, client) {
     const contentValidationError = validateMessageContent(messageContent);
     if (contentValidationError) {
         // Handle message content validation error
-        console.error(consoleColors("red"), "Validation Error:", contentValidationError);
+        logger.error("Validation Error:", contentValidationError);
         const title = "Shop";
         const description = `${contentValidationError}\nPlease try again.`;
         const color = "error";
@@ -152,7 +152,7 @@ async function validateAndProcessPicture(message) {
     let processedImageBuffer = imageBuffer;
 
     if (imageMetadata.width > maxDimensions.width || imageMetadata.height > maxDimensions.height) {
-        // console.log("Image is too large, resizing...");
+        // logger.log("Image is too large, resizing...");
 
         // Resize the image
         processedImageBuffer = await sharp(imageBuffer)
@@ -161,19 +161,19 @@ async function validateAndProcessPicture(message) {
             })
             .toBuffer();
 
-        // console.log("Image has been resized.");
+        // logger.log("Image has been resized.");
     }
 
     // After resizing, check if the file is too large
     if (processedImageBuffer.length > maxSizeInBytes) {
-        // console.log("Resized image is too large, compressing...");
+        // logger.log("Resized image is too large, compressing...");
         
         // Compress the image to reduce size
         processedImageBuffer = await sharp(processedImageBuffer)
             .jpeg({ quality: 80 }) // Adjust compression level as needed
             .toBuffer();
 
-        // console.log("Image has been compressed.");
+        // logger.log("Image has been compressed.");
     }
 
     // Final size check after processing

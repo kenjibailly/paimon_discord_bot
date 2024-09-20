@@ -6,7 +6,8 @@ const { handleSlashCommand, handleButtonClicks, handleMessageReplies } = require
 const botJoinsGuild = require("./bot_joins_guild");
 const checkRemoveRewards = require("./check/remove-rewards");
 const checkTeamAssignment = require("./check/team-assignment");
-const consoleColors = require('./helpers/console-colors');
+const Logger = require("./helpers/logger");
+global.logger = new Logger("Bot");
 
 const mongoose = require('mongoose');
 const mongodb_URI = require('./mongodb/URI');
@@ -14,10 +15,10 @@ const mongodb_URI = require('./mongodb/URI');
 
 mongoose.connect(mongodb_URI)
 .then(() => {
-  console.log(consoleColors("green"), 'DB connected!')
+  logger.success('DB connected!')
 })
 .catch((err) => {
-  console.error(consoleColors("red"), err);
+  logger.error(err);
 })
 
 const client = new Client({
@@ -30,7 +31,7 @@ const client = new Client({
 });
 
 client.once(Events.ClientReady, () => {
-  console.log(consoleColors("green"), `Logged in as ${client.user.tag}!`);
+  logger.success(`Logged in as ${client.user.tag}!`);
 
   setInterval(() => {
     checkRemoveRewards(client);
@@ -51,7 +52,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async function (req, res) {
-    // console.log('Received interaction:', req.body);
+    // logger.log('Received interaction:', req.body);
 
     const { type } = req.body;
 
@@ -78,7 +79,17 @@ client.on('messageCreate', async message => {
 
 
 app.listen(PORT, () => {
-  console.log(consoleColors("green"), 'Express server listening on port: ' + PORT);
+  const test = [
+    {
+    name: "test",
+    number: 6,
+    },
+    {
+      name: "yeet",
+      number: 9,
+    }
+  ]
+  logger.success('Express server listening on port:', PORT);
 });
 
 client.login(process.env.DISCORD_TOKEN);

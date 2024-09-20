@@ -6,7 +6,7 @@ const getTokenEmoji = require('../helpers/get-token-emoji');
 const getReward = require('../helpers/get-reward');
 const validateNumber = require('../helpers/validate-number');
 const ChannelNameConfig = require('../models/channel-name-config');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleCustomChannel(message, client) {
 
@@ -16,7 +16,7 @@ async function handleCustomChannel(message, client) {
     const contentValidationError = validateChannelName(messageContent);
     if (contentValidationError) {
         // Handle message content validation error
-        console.error(consoleColors("red"), "Validation Error:", contentValidationError);
+        logger.error("Validation Error:", contentValidationError);
         const title = "Shop";
         const description = `${contentValidationError}\nPlease try again.`;
         const color = "error";
@@ -140,7 +140,7 @@ async function handleCustomChannelCategory(message, client) {
     const validationError = validateNumber(messageContent, user_exchange_data.categories);
 
     if (validationError) {
-        console.error(consoleColors("red"), "Validation Error:", validationError);
+        logger.error("Validation Error:", validationError);
         // Send a confirmation message before closing the thread
         const title = `Input Error`;
         const description = `${validationError}\nPlease try again.`;
@@ -167,7 +167,7 @@ async function handleCustomChannelCategory(message, client) {
     try {
         channel_name_config = await ChannelNameConfig.findOne({ guild_id: message.guild.id });
     } catch (error) {
-        console.log("Error getting Channel Name Configuration from the database" + error);
+        logger.error("Error getting Channel Name Configuration from the database" + error);
         // Send a confirmation message before closing the thread
         const title = `Channel Name Configuration Error`;
         const description = `I could not find the channel name configuration in the database, please try again later or contact your administrator.`;

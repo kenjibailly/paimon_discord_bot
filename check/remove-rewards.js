@@ -5,7 +5,7 @@ const removeCustomChannel = require('./remove-reward/remove-custom-channel');
 const createEmbed = require('../helpers/embed');
 const AwardedReward = require('../models/awarded-reward');
 const Rewards = require('../models/rewards');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function checkRemoveRewards(client) {
     const old_rewards = await findOldRewards();
@@ -42,12 +42,12 @@ async function removeReward(client, reward) {
         // Await the findOneAndDelete operation
         const removed_reward = await AwardedReward.findOneAndDelete({ _id: reward._id });
         if (removed_reward) {
-            console.log(consoleColors("green"), "Reward removed from database");
+            logger.success("Reward removed from database");
         } else {
-            console.error(consoleColors("red"), "No reward found with ID", reward._id);
+            logger.error("No reward found with ID", reward._id);
         }
     } catch (error) {
-        console.error('Error removing reward from database:', error);
+        logger.error('Error removing reward from database:', error);
 
         const title = "Award Reset Error";
         const description = `I could not remove reward with id \`${reward._id}\`, please contact your administrator.`;
@@ -66,9 +66,9 @@ async function removeReward(client, reward) {
                 embeds: [embed],
             });
         
-            console.log(consoleColors("green"), 'Message sent to the server owner successfully.');
+            logger.success('Message sent to the server owner successfully.');
         } catch (error) {
-            console.error(consoleColors("red"), 'Error sending message to the server owner:', error);
+            logger.error('Error sending message to the server owner:', error);
         }
     }
 }
@@ -110,7 +110,7 @@ async function findOldRewards() {
 
         return oldAwardedRewards;
     } catch (error) {
-        console.error(consoleColors("red"), 'Error finding old rewards:', error);
+        logger.error('Error finding old rewards:', error);
         // Handle error appropriately
     }
 }

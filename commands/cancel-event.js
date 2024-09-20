@@ -2,7 +2,7 @@ const { InteractionResponseType } = require('discord-interactions');
 const Events = require('../models/events');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleCancelEventCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -33,7 +33,7 @@ async function handleCancelEventCommand(interaction, client) {
                 
             }
         } catch (error) {
-            console.error(consoleColors("red"), "Error Finding Event: " + error);
+            logger.error("Error Finding Event:", error);
             const title = "Event Error";
             const description = `Event could not be cancelled because I could not find any event.`;
             const color = "error";
@@ -56,7 +56,7 @@ async function handleCancelEventCommand(interaction, client) {
             },
         };
     } catch (error) {
-        console.error(consoleColors("red"), "Error Canceling Event: " + error);
+        logger.error("Error Canceling Event:", error);
 
         const title = "Event Cancel Error";
         const description = `Event couldn't be canceled, please contact the administrator or try again later.`;
@@ -92,7 +92,7 @@ async function resetTeams(client, guild_id) {
         }
         return;
     } catch (error) {
-        console.error(consoleColors("red"), "Error Reset Teams: " + error);
+        logger.error("Error Reset Teams:", error);
     }
 }
 

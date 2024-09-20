@@ -2,7 +2,8 @@ const Rewards = require('./models/rewards');
 const TokenEmoji = require('./models/token-emoji'); // Import the TokenEmoji model
 const deployCommands = require('./commands/deploy-commands');
 const ChannelNameConfig = require('./models/channel-name-config');
-const consoleColors = require('./helpers/console-colors');
+const Logger = require("./helpers/logger");
+const logger = new Logger("Bot");
 
 async function botJoinsGuild(client, guild) {
     const guildId = guild.id;
@@ -11,7 +12,7 @@ async function botJoinsGuild(client, guild) {
         deployCommands(guildId);
 
     } catch (error) {
-        console.error(consoleColors("red"), 'Deploy Commands Error: ' + error);
+        logger.error('Deploy Commands Error: ' + error);
 
         const title = "Deploy Commands Error";
         const description = `I could not deploy some slash commands, please contact your administrator.`;
@@ -30,9 +31,9 @@ async function botJoinsGuild(client, guild) {
                 embeds: [embed],
             });
         
-            console.log(consoleColors("green"), 'Message sent to the server owner successfully.');
+            logger.success('Message sent to the server owner successfully.');
         } catch (error) {
-            console.error('Error sending message to the server owner:', error);
+            logger.error('Error sending message to the server owner:', error);
         }
     }
 
@@ -56,9 +57,9 @@ async function botJoinsGuild(client, guild) {
 
             if (!exists) {
                 await Rewards.create(reward);
-                console.log(consoleColors("green"), `Reward "${reward.name}" added for guild ${guildId}`);
+                logger.success(`Reward "${reward.name}" added for guild ${guildId}`);
             } else {
-                console.log(`Reward "${reward.name}" already exists for guild ${guildId}`);
+                logger.log(`Reward "${reward.name}" already exists for guild ${guildId}`);
             }
         }
 
@@ -73,13 +74,13 @@ async function botJoinsGuild(client, guild) {
                 token_emoji_name: "🪙",
                 token_emoji_id: null,
             });
-            console.log(consoleColors("green"), `Default token emoji set for guild ${guildId}`);
+            logger.success(`Default token emoji set for guild ${guildId}`);
         } else {
-            console.log(`Token emoji already set for guild ${guildId}`);
+            logger.log(`Token emoji already set for guild ${guildId}`);
         }
 
     } catch (error) {
-        console.error(`Error processing rewards or token emoji for guild ${guildId}:`, error);
+        logger.error(`Error processing rewards or token emoji for guild ${guildId}:`, error);
     }
 
     try {
@@ -90,12 +91,12 @@ async function botJoinsGuild(client, guild) {
             await ChannelNameConfig.create({
                 guild_id: guildId,
             });
-            console.log(consoleColors("green"), `Default channel name configuration set for guild ${guildId}`);
+            logger.success(`Default channel name configuration set for guild ${guildId}`);
         } else {
-            console.log(`Channel Name Configuration already set for guild ${guildId}`);
+            logger.log(`Channel Name Configuration already set for guild ${guildId}`);
         }
     } catch (error) {
-        console.error(`Error processing channel name configuration for guild ${guildId}:`, error);
+        logger.error(`Error processing channel name configuration for guild ${guildId}:`, error);
     }
 }
 

@@ -1,6 +1,6 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleCancelThreadButton(interaction, client) {
     try {
@@ -35,7 +35,7 @@ async function handleCancelThreadButton(interaction, client) {
             type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
         };
     } catch (error) {
-        console.error(consoleColors("red"), 'Failed to close the thread:', error);
+        logger.error('Failed to close the thread:', error);
 
         // In case of failure, send an error message as a response
         return {

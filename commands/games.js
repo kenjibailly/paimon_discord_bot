@@ -1,7 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const Games = require('../models/games');
 const createEmbed = require('../helpers/embed');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleGamesCommand(interaction, client) {
     const { guild_id } = interaction;
@@ -12,7 +12,7 @@ async function handleGamesCommand(interaction, client) {
         if(games.length === 0) {
             const title = "Games";
             const description = `I couldn't find any games.`;
-            const color = "#FF0000";
+            const color = "error";
             const embed = createEmbed(title, description, color);
             return {
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -43,11 +43,11 @@ async function handleGamesCommand(interaction, client) {
         };
 
     } catch (error) {
-        console.error(consoleColors("red"), 'Games error: ' + error);
+        logger.error('Games error: ' + error);
 
         const title = "Games Error";
         const description = `Something went wrong while trying to get the games list, please contact the administrator.`;
-        const color = "#FF0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
         return {
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,

@@ -3,7 +3,8 @@ const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
 const getTokenEmoji = require('../helpers/get-token-emoji');
 const getReward = require('../helpers/get-reward');
-const consoleColors = require('../helpers/console-colors');
+
+const validateTaggedUser = require('../helpers/validate-tagged-user');
 
 async function handleChangeNickname(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
@@ -15,7 +16,7 @@ async function handleChangeNickname(message, client) {
     const validationError = validateNicknameAndEmoji(messageContent);
 
     if (validationError) {
-        console.error(consoleColors("red"), "Validation Error:", validationError);
+        logger.error("Validation Error:", validationError);
         // Send a confirmation message before closing the thread
         const title = "Shop";
         const description = `${validationError}\nPlease try again.`;
@@ -123,11 +124,11 @@ async function handleChangeUserNickname(message, client) {
     const validationError = validateTaggedUser(messageContent);
 
     if (validationError) {
-        console.error(consoleColors("red"), "Validation Error:", validationError);
+        logger.error("Validation Error:", validationError);
         // Send a confirmation message before closing the thread
         const title = "Shop";
         const description = `${validationError}\nPlease try again.`;
-        const color = "#ff0000"; // Changed to hex code for red
+        const color = "error"; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
         await message.channel.send({
@@ -171,18 +172,11 @@ async function handleChangeUserNickname(message, client) {
         ]
     });
 
-    // Retrieve the existing data
-    const existingData = userExchangeData.get(message.author.id) || {};
-
-    // Update only the properties you want to change
-    const updatedData = {
-        ...existingData, // Spread the existing properties
-        name: "change-own-nickname", // Update or add the name property
-        taggedUser: taggedUser,  // Update or add the taggedUser property
-    };
+    user_exchange_data.name = "change-own-nickname";
+    user_exchange_data.taggedUser = taggedUser;
 
     // Set the updated object back into the Map
-    userExchangeData.set(message.author.id, updatedData);
+    userExchangeData.set(message.author.id, user_exchange_data);
     // handleChangeNickname(message, client);
 }
 
@@ -213,22 +207,6 @@ function validateNicknameAndEmoji(content) {
     }
 
     // If all validations pass
-    return null;
-}
-
-function validateTaggedUser(content) {
-    // Define the regex pattern to match a user tag
-    const userTagRegex = /<@(\d+)>/;
-
-    // Test the content against the regex pattern
-    const match = content.match(userTagRegex);
-
-    // If there is no match, return an error message
-    if (!match) {
-        return "No valid user tag found in the message.";
-    }
-
-    // If there is a match, return null indicating no error
     return null;
 }
 

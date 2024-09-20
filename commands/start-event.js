@@ -3,7 +3,7 @@ const Events = require('../models/events');
 const createEmbed = require('../helpers/embed'); // Assuming this is a helper function to create embeds
 const { EmbedBuilder } = require('discord.js');
 const userExchangeData = require('../helpers/userExchangeData');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleStartEventCommand(interaction, client) {
     const { data, guild_id, channel_id } = interaction;
@@ -60,7 +60,7 @@ async function handleStartEventCommand(interaction, client) {
                     color_embed = "#7f2aff";
                     break;
                 case "red":
-                    color_embed = "#ff0000";
+                    color_embed = "error";
                     break;
                 case "yellow":
                     color_embed = "#ffb800";
@@ -165,7 +165,7 @@ async function handleStartEventCommand(interaction, client) {
 
 
     } catch (error) {
-        console.error(consoleColors("red"), "Error handling start event command:", error);
+        logger.error("Error handling start event command:", error);
         return {
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             data: {

@@ -1,10 +1,8 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../../helpers/embed');
 const userExchangeData = require('../../../helpers/userExchangeData');
-const consoleColors = require('../../../helpers/console-colors');
 
 async function handleTrollUser(name, interaction) {
-    console.log(consoleColors("red"), 'This text is green');
     const title = "Shop";
     const description = `Reply with the tagged user who's nickname you want to change. 
     \`\`\`@user_name\`\`\``;

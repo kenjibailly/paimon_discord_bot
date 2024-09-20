@@ -1,7 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleResetTeamsCommand(interaction, client) {
     const { member, guild_id } = interaction;
@@ -38,7 +38,7 @@ async function handleResetTeamsCommand(interaction, client) {
         } else {
             const title = "Error Teams";
             const description = `I could not find any teams, please set your teams using the \`/set-teams\` command.`;
-            const color = "#FF0000";
+            const color = "error";
             const embed = createEmbed(title, description, color);
 
             return {
@@ -50,7 +50,7 @@ async function handleResetTeamsCommand(interaction, client) {
             };
         }
     } catch (error) {
-        console.error(consoleColors("red"), "Error Reset Teams: " + error);
+        logger.error("Error Reset Teams:", error);
     }
 }
 

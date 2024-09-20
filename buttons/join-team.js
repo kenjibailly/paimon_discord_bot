@@ -4,7 +4,7 @@ const { EmbedBuilder } = require('discord.js');
 const Teams = require('../models/teams');
 const Events = require('../models/events');
 const TeamAssignments = require('../models/team-assignments');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleJoinTeamButton(interaction, client) {
     const customIdParts = interaction.data.custom_id.split(':');
@@ -118,7 +118,7 @@ async function handleJoinTeamButton(interaction, client) {
         };
 
     } catch (error) {
-        console.error(consoleColors("error"), "Join Event Error: " + error);
+        logger.error("Join Event Error: " + error);
         const title = "Join Event Error";
         const description = `You could not join the event at this time, the event might have ended already. Please try again later or contact the administrator.`;
         const color = "error";
@@ -167,7 +167,7 @@ async function updateEmbedWithNewMember(interaction, client, user) {
 
         return;
     } catch (error) {
-        console.error(consoleColors("red"), 'Error updating embed:', error);
+        logger.error('Error updating embed:', error);
     }
 }
 

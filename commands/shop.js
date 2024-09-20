@@ -2,7 +2,7 @@ const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const getTokenEmoji = require('../helpers/get-token-emoji');
 const Rewards = require('../models/rewards');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleShopCommand(interaction, client) {
     let rewards_options = "";
@@ -73,7 +73,7 @@ async function handleShopCommand(interaction, client) {
         };
 
     } catch (error) {
-        console.error(consoleColors("red"), 'Error handling shop command:', error);
+        logger.error('Error handling shop command:', error);
 
         const errorTitle = "Error";
         const errorDescription = "An error occurred while processing the shop command. Please try again later.";

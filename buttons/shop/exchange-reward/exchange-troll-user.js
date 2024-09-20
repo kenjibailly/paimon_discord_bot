@@ -5,13 +5,16 @@ const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
-const consoleColors = require('../../../helpers/console-colors');
+const Logger = require("../../../helpers/logger");
+const logger = new Logger("Bot");
 
-async function handleExchangeCustomSoundboard(interaction, client) {
+async function handleExchangeTrollUser(interaction, client) {
     try {
 
         const user_exchange_data = userExchangeData.get(interaction.member.user.id);
         userExchangeData.delete(interaction.member.user.id);
+
+        await trollUser(interaction, client, user_exchange_data);
 
         const guild = await client.guilds.fetch(interaction.guild_id);
         const thread = await guild.channels.fetch(interaction.channel_id);
@@ -50,7 +53,7 @@ async function handleExchangeCustomSoundboard(interaction, client) {
             await awardedReward.save();
 
         } catch (error) {
-            console.error(consoleColors("red"), 'Error adding reward to DB:', error);
+            logger.error('Error adding reward to DB:', error);
 
             let title = "Reward Database Error";
             let description = `I could not add the reward to the database. Please contact the administrator.`;
@@ -70,7 +73,7 @@ async function handleExchangeCustomSoundboard(interaction, client) {
             wallet.amount -= Number(user_exchange_data.rewardPrice);
             await wallet.save();
         } catch (error) {
-            console.error(consoleColors("red"), "Failed to save wallet:", error);
+            logger.error("Failed to save wallet:", error);
             
             const title = "Transaction Error";
             const description = "There was an error while processing your wallet transaction. Please try again later.";
@@ -92,8 +95,8 @@ async function handleExchangeCustomSoundboard(interaction, client) {
             try {
                 // troll user code here
 
-                const title = "Soundboard Sound Added";
-                const description = `The soundboard sound ${user_exchange_data.soundboardName} has been successfully added to the server!
+                const title = "You trolled someone!";
+                const description = `You have successfully trolled <@${user_exchange_data.taggedUser}>!
                 You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
                 const color = "";
                 const embed = createEmbed(title, description, color);
@@ -107,7 +110,7 @@ async function handleExchangeCustomSoundboard(interaction, client) {
                 const parentChannel = thread.parent;
                 if (parentChannel) {
                     const parentTitle = "Shop";
-                    const parentDescription = `<@${interaction.member.user.id}> has added soundboard sound: **${user_exchange_data.soundboardName}** to the server.`;
+                    const parentDescription = `<@${interaction.member.user.id}> has trolled <@${user_exchange_data.taggedUser}>!`;
                     const parentEmbed = createEmbed(parentTitle, parentDescription, "");
                     
                     await parentChannel.send({
@@ -120,10 +123,10 @@ async function handleExchangeCustomSoundboard(interaction, client) {
                 };
                 
             } catch (error) {
-                console.error(consoleColors("red"), "Error creating soundboard:", error);
+                logger.error("Error trolling user:", error);
                 
-                const title = "Creating Soundboard Sound Failed";
-                const description = `There was an issue adding the soundboard sound to the server. Please try again later.`;
+                const title = "Troll someone has failled";
+                const description = `There was an issue trolling someone. Please try again later.`;
                 const color = "error";
                 const embed = createEmbed(title, description, color);
 
@@ -138,10 +141,10 @@ async function handleExchangeCustomSoundboard(interaction, client) {
             }
 
         } catch (error) {
-            console.error(consoleColors("red"), "Soundboard Sound Creation Error: ", error);
+            logger.error("Error trolling user:", error);
             
-            const title = "Soundboard Sound Creation Failed";
-            const description = `There was an issue adding the soundboard sound to the server. Please try again later.`;
+            const title = "Troll someone has failled";
+            const description = `There was an issue trolling someone. Please try again later.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
 
@@ -156,10 +159,10 @@ async function handleExchangeCustomSoundboard(interaction, client) {
         }
 
     } catch (error) {
-        console.error(consoleColors("red"), 'Error adding soundboard sound:', error);
-
-        let title = "Add Custom Soundboard Sound Error";
-        let description = `I could not add a custom soundboard sound. Your wallet has not been affected.`;
+        logger.error("Error trolling user:", error);
+            
+        let title = "Troll someone has failled";
+        let description = `There was an issue trolling someone. Please try again later.`;
 
         if (error.code === 50013) {
             title = "Permission Error";
@@ -182,4 +185,14 @@ async function handleExchangeCustomSoundboard(interaction, client) {
 
 }
 
-module.exports = handleExchangeCustomSoundboard;
+async function trollUser (interaction, client, user_exchange_data) {
+    try {
+        logger.success("Success: ")
+        // throw new Error("TESTING");
+        
+    } catch (error) {
+        logger.error("Error trolling user:", error);
+    }
+}
+
+module.exports = handleExchangeTrollUser;

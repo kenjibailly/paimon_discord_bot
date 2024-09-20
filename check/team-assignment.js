@@ -2,7 +2,7 @@ const Events = require('../models/events');
 const TeamAssignments = require('../models/team-assignments');
 const Teams = require('../models/teams');
 const { EmbedBuilder } = require('discord.js');
-const consoleColors = require('../helpers/console-colors');
+
 
 // Helper function to shuffle an array randomly
 function shuffleArray(array) {
@@ -18,7 +18,7 @@ async function fetchUsernames(userIds, client) {
         const users = await Promise.all(userIds.map(userId => client.users.fetch(userId)));
         return users.map(user => user.globalName);
     } catch (error) {
-        console.error('Error fetching usernames:', error);
+        logger.error('Error fetching usernames:', error);
         return [];
     }
 }
@@ -31,7 +31,7 @@ async function assignUsersToRole(guildId, users, roleId, client) {
         const memberPromises = users.map(userId => guild.members.fetch(userId).then(member => member.roles.add(role)));
         await Promise.all(memberPromises);
     } catch (error) {
-        console.error(`Error assigning users to role ${roleId} in guild ${guildId}:`, error);
+        logger.error(`Error assigning users to role ${roleId} in guild ${guildId}:`, error);
     }
 }
 
@@ -59,7 +59,7 @@ async function sendTeamsEmbed(event, team1Name, team2Name, team1Usernames, team2
             embeds: [embed],
         });
     } catch (error) {
-        console.error('Error sending teams embed:', error);
+        logger.error('Error sending teams embed:', error);
     }
 }
 
@@ -153,7 +153,7 @@ async function checkTeamAssignment(client) {
             return;
         }
     } catch (error) {
-        console.error(consoleColors("red"), "Check Team Assignments Error: " + error);
+        logger.error("Check Team Assignments Error:", error);
     }
 }
 

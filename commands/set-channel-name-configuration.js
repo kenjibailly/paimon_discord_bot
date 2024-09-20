@@ -1,7 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const ChannelNameConfig = require('../models/channel-name-config');
 const createEmbed = require('../helpers/embed');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleSetChannelNameConfigurationCommand (interaction, client) {
     const { data, guild_id, channel_id } = interaction;
@@ -76,7 +76,7 @@ async function handleSetChannelNameConfigurationCommand (interaction, client) {
         };
 
     } catch (error) {
-        console.error(consoleColors("red"), 'Error handling Set Channel Name Configuration command:', error);
+        logger.error('Error handling Set Channel Name Configuration command:', error);
 
         const errorTitle = "Error";
         const errorDescription = "An error occurred while processing the shop command. Please try again later.";

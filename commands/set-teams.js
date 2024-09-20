@@ -1,7 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleSetTeamsCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -17,7 +17,7 @@ async function handleSetTeamsCommand(interaction, client) {
     if (team_1 === null || team_2 === null) {
         const title = "Invalid Input";
         const description = "Both team roles must be provided.";
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {
@@ -60,11 +60,11 @@ async function handleSetTeamsCommand(interaction, client) {
         };
 
     } catch (error) {
-        console.error(consoleColors("red"), 'Error updating teams:', error);
+        logger.error('Error updating teams:', error);
 
         const title = "Error";
         const description = `An error occurred while updating the teams. Please try again later.`;
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {

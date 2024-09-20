@@ -1,7 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const TokenEmoji = require('../models/token-emoji');
 const createEmbed = require('../helpers/embed');
-const consoleColors = require('../helpers/console-colors');
+
 
 async function handleSetTokenEmojiCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -14,7 +14,7 @@ async function handleSetTokenEmojiCommand(interaction, client) {
     if (!tokenEmoji) {
         const title = "Invalid Input";
         const description = "A token emoji must be provided.";
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {
@@ -72,7 +72,7 @@ async function handleSetTokenEmojiCommand(interaction, client) {
         };
 
     } catch (error) {
-        console.error(consoleColors("red"), 'Error updating token emoji:', error);
+        logger.error('Error updating token emoji:', error);
 
         const title = "Error";
         const description = `An error occurred while updating the token emoji. Please try again later.`;
