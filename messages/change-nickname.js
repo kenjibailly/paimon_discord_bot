@@ -3,6 +3,7 @@ const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
 const getTokenEmoji = require('../helpers/get-token-emoji');
 const getReward = require('../helpers/get-reward');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleChangeNickname(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
@@ -14,7 +15,7 @@ async function handleChangeNickname(message, client) {
     const validationError = validateNicknameAndEmoji(messageContent);
 
     if (validationError) {
-        console.log(validationError);
+        console.error(consoleColors("red"), "Validation Error:", validationError);
         // Send a confirmation message before closing the thread
         const title = "Shop";
         const description = `${validationError}\nPlease try again.`;
@@ -122,7 +123,7 @@ async function handleChangeUserNickname(message, client) {
     const validationError = validateTaggedUser(messageContent);
 
     if (validationError) {
-        console.log(validationError);
+        console.error(consoleColors("red"), "Validation Error:", validationError);
         // Send a confirmation message before closing the thread
         const title = "Shop";
         const description = `${validationError}\nPlease try again.`;

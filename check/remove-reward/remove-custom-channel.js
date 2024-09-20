@@ -1,5 +1,6 @@
 const createEmbed = require('../../helpers/embed');
 const getBotChannel = require('../../helpers/get-bot-channel');
+const consoleColors = require('../../helpers/console-colors');
 
 async function removeCustomChannel(client, reward) {
     try {
@@ -10,7 +11,7 @@ async function removeCustomChannel(client, reward) {
         const channel = guild.channels.cache.find(c => c.name === channelName);
 
         if (!channel) {
-            console.log("Channel not found to remove")
+            console.error(consoleColors("red"), "Channel not found to remove with name:", channelName);
             return;
         }
 
@@ -34,18 +35,18 @@ async function removeCustomChannel(client, reward) {
                 const channel = await client.channels.fetch(bot_channel.channel);
                 await channel.send({ embeds: [embed] });
                 
-                console.log('Message sent to the bot channel successfully.');
+                console.log(consoleColors("green"), 'Message sent to the bot channel successfully.');
                 return; // Ensure the function exits here
             } catch (error) {
-                console.error('Error sending message to the bot channel:', error);
+                console.error(consoleColors("red"), 'Error sending message to the bot channel:', error);
                 return; // Exit function if there's an error
             }
         } else {
-            console.error('Bot channel not found or not set.');
+            console.error(consoleColors("red"), 'Bot channel not found or not set.');
             return; // Exit function if the bot channel is not found
         }
     } catch (error) {
-        console.error(`Error resetting nickname:`, error);
+        console.error(consoleColors("red"), `Error resetting nickname:`, error);
         return; // Exit function if there's an error in the try-catch block
     }
 }

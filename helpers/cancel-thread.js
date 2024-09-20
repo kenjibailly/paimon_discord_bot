@@ -1,5 +1,6 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleCancelThread(guild_id, channel_id, client) {
     // Fetch the guild (server) using the guild_id from the interaction
@@ -31,7 +32,7 @@ async function handleCancelThread(guild_id, channel_id, client) {
         }, 5000);
 
     } catch (error) {
-        console.error('Failed to close the thread:', error);
+        console.error(consoleColors("red"), 'Failed to close the thread:', error);
         const title = "Error Thread";
         const description = `Failed to close the thread. Please close the thread manually.`;
         const color = "error";

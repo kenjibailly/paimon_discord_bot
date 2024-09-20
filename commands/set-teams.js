@@ -1,6 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleSetTeamsCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -59,7 +60,7 @@ async function handleSetTeamsCommand(interaction, client) {
         };
 
     } catch (error) {
-        console.error('Error updating teams:', error);
+        console.error(consoleColors("red"), 'Error updating teams:', error);
 
         const title = "Error";
         const description = `An error occurred while updating the teams. Please try again later.`;

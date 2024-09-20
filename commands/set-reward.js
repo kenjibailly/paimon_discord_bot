@@ -2,6 +2,7 @@ const { InteractionResponseType } = require('discord-interactions');
 const Rewards = require('../models/rewards');
 const TokenEmoji = require('../models/token-emoji');
 const createEmbed = require('../helpers/embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleSetRewardCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -21,7 +22,7 @@ async function handleSetRewardCommand(interaction, client) {
     if (!rewardName || (price === null && time === null && enable === null)) {
         const title = "Invalid Input";
         const description = "At least one of price, time, or enable must be provided.";
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {
@@ -85,11 +86,11 @@ async function handleSetRewardCommand(interaction, client) {
         }
 
     } catch (error) {
-        console.error('Error updating reward:', error);
+        console.error(consoleColors("red"), 'Error updating reward:', error);
 
         const title = "Error";
         const description = `An error occurred while updating the reward. Please try again later.`;
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {

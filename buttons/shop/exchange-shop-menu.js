@@ -19,7 +19,7 @@ async function handleExchangeShopMenuButton(interaction, client) {
             return await handleCustomChannel(name, interaction);
         case "custom-role":
             return await handleCustomRole(name, interaction);
-        case "custom-soundboard":
+        case "troll-user":
             return await handleTrollUser(name, interaction);
         default:
             break;

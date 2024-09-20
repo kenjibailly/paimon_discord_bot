@@ -6,6 +6,7 @@ const getTokenEmoji = require('../helpers/get-token-emoji');
 const getReward = require('../helpers/get-reward');
 const validateNumber = require('../helpers/validate-number');
 const ChannelNameConfig = require('../models/channel-name-config');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleCustomChannel(message, client) {
 
@@ -15,7 +16,7 @@ async function handleCustomChannel(message, client) {
     const contentValidationError = validateChannelName(messageContent);
     if (contentValidationError) {
         // Handle message content validation error
-        console.log(contentValidationError);
+        console.error(consoleColors("red"), "Validation Error:", contentValidationError);
         const title = "Shop";
         const description = `${contentValidationError}\nPlease try again.`;
         const color = "error";
@@ -139,7 +140,7 @@ async function handleCustomChannelCategory(message, client) {
     const validationError = validateNumber(messageContent, user_exchange_data.categories);
 
     if (validationError) {
-        console.log(validationError);
+        console.error(consoleColors("red"), "Validation Error:", validationError);
         // Send a confirmation message before closing the thread
         const title = `Input Error`;
         const description = `${validationError}\nPlease try again.`;

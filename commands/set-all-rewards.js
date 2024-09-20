@@ -2,6 +2,7 @@ const { InteractionResponseType } = require('discord-interactions');
 const Rewards = require('../models/rewards');
 const TokenEmoji = require('../models/token-emoji');
 const createEmbed = require('../helpers/embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleSetAllRewardsCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -68,7 +69,7 @@ async function handleSetAllRewardsCommand(interaction, client) {
         };
 
     } catch (error) {
-        console.error('Error updating rewards:', error);
+        console.error(consoleColors("red"), 'Error updating rewards:', error);
 
         const title = "Error";
         const description = `An error occurred while updating the rewards. Please try again later.`;

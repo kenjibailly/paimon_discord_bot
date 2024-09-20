@@ -4,6 +4,7 @@ const buttonHandlers = require('./buttons');
 const messageHandlers = require('./messages');
 const createEmbed = require("./helpers/embed");
 const userExchangeData = require('./helpers/userExchangeData');
+const consoleColors = require('./helpers/console-colors');
 
 async function handleSlashCommand(res, client) {
     const { data } = res;
@@ -12,7 +13,7 @@ async function handleSlashCommand(res, client) {
     if (commandHandlers[name]) {
         return commandHandlers[name](res, client);
     } else {
-        console.error(`Unknown command: ${name}`);
+        console.error(consoleColors("red"), `Unknown command: ${name}`);
 
         const title = "Unknown Command";
         const description = `I do not know this command.`;
@@ -37,7 +38,7 @@ async function handleButtonClicks(res, client) {
     if (buttonHandlers[name]) {
         return buttonHandlers[name](res, client);
     } else {
-        console.error(`Unknown button: ${name}`);
+        console.error(consoleColors("red"), `Unknown button: ${name}`);
 
         const title = "Unknown Button";
         const description = `I do not know this button.`;

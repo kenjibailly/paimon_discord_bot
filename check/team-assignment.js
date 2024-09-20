@@ -1,8 +1,8 @@
-const createEmbed = require('../helpers/embed');
 const Events = require('../models/events');
 const TeamAssignments = require('../models/team-assignments');
 const Teams = require('../models/teams');
-const { EmbedBuilder } = require('discord.js'); // Ensure you use the correct class for embedding
+const { EmbedBuilder } = require('discord.js');
+const consoleColors = require('../helpers/console-colors');
 
 // Helper function to shuffle an array randomly
 function shuffleArray(array) {
@@ -153,7 +153,7 @@ async function checkTeamAssignment(client) {
             return;
         }
     } catch (error) {
-        console.log("Check Team Assignments Error: " + error);
+        console.error(consoleColors("red"), "Check Team Assignments Error: " + error);
     }
 }
 

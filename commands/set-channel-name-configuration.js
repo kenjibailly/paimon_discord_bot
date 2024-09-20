@@ -1,6 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const ChannelNameConfig = require('../models/channel-name-config');
 const createEmbed = require('../helpers/embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleSetChannelNameConfigurationCommand (interaction, client) {
     const { data, guild_id, channel_id } = interaction;
@@ -75,7 +76,7 @@ async function handleSetChannelNameConfigurationCommand (interaction, client) {
         };
 
     } catch (error) {
-        console.error('Error handling Set Channel Name Configuration command:', error);
+        console.error(consoleColors("red"), 'Error handling Set Channel Name Configuration command:', error);
 
         const errorTitle = "Error";
         const errorDescription = "An error occurred while processing the shop command. Please try again later.";
@@ -89,49 +90,6 @@ async function handleSetChannelNameConfigurationCommand (interaction, client) {
             }
         };
     }
-
-    // // Ensure data.options is defined
-    // const options = data.options || [];
-
-    // // Find each option by name
-    // const channelOption = options.find(opt => opt.name === 'channel');
-
-    // const channel = channelOption ? channelOption.value : null;
-
-    // try {
-    //     const result = await BotChannel.findOneAndUpdate(
-    //         { guild_id: guild_id }, 
-    //         { channel: channel },
-    //         { upsert: true, new: true } // Create if not exists, return the updated document
-    //     );
-
-    //     const title = "Channel Name Configuration";
-    //     const description = `You successfully set the configuration to **${channel}**`;
-    //     const color = "";
-    //     const embed = createEmbed(title, description, color);
-
-    //     return {
-    //         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    //         data: {
-    //             embeds: [embed],
-    //             flags: 64,
-    //         },
-    //     };
-    // } catch (error) {
-    //     console.log(error);
-    //     const title = "Bot Channel Error";
-    //     const description = `Something went wrong while setting the bot channel, please try again later.`;
-    //     const color = "error";
-    //     const embed = createEmbed(title, description, color);
-
-    //     return {
-    //         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    //         data: {
-    //             embeds: [embed],
-    //             flags: 64,
-    //         },
-    //     };
-    // }
 
 }
 

@@ -5,6 +5,7 @@ const removeCustomChannel = require('./remove-reward/remove-custom-channel');
 const createEmbed = require('../helpers/embed');
 const AwardedReward = require('../models/awarded-reward');
 const Rewards = require('../models/rewards');
+const consoleColors = require('../helpers/console-colors');
 
 async function checkRemoveRewards(client) {
     const old_rewards = await findOldRewards();
@@ -41,9 +42,9 @@ async function removeReward(client, reward) {
         // Await the findOneAndDelete operation
         const removed_reward = await AwardedReward.findOneAndDelete({ _id: reward._id });
         if (removed_reward) {
-            console.log("Reward removed from database");
+            console.log(consoleColors("green"), "Reward removed from database");
         } else {
-            console.log("No reward found with that ID");
+            console.error(consoleColors("red"), "No reward found with ID", reward._id);
         }
     } catch (error) {
         console.error('Error removing reward from database:', error);
@@ -65,9 +66,9 @@ async function removeReward(client, reward) {
                 embeds: [embed],
             });
         
-            console.log('Message sent to the server owner successfully.');
+            console.log(consoleColors("green"), 'Message sent to the server owner successfully.');
         } catch (error) {
-            console.error('Error sending message to the server owner:', error);
+            console.error(consoleColors("red"), 'Error sending message to the server owner:', error);
         }
     }
 }
@@ -107,10 +108,9 @@ async function findOldRewards() {
             }
         }
 
-        // console.log('Old Awarded Rewards:', oldAwardedRewards);
         return oldAwardedRewards;
     } catch (error) {
-        console.error('Error finding old rewards:', error);
+        console.error(consoleColors("red"), 'Error finding old rewards:', error);
         // Handle error appropriately
     }
 }

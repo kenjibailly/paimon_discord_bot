@@ -4,6 +4,7 @@ const userExchangeData = require('../helpers/userExchangeData');
 const cancelThread = require('../helpers/cancel-thread');
 const Games = require('../models/games');
 const validateNumber = require('../helpers/validate-number');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleManageGames(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
@@ -15,7 +16,7 @@ async function handleManageGames(message, client) {
     const validationError = validateNumber(messageContent, user_exchange_data.games);
 
     if (validationError) {
-        console.log(validationError);
+        console.error(consoleColors("red"), "Validation Error:", validationError);
         // Send a confirmation message before closing the thread
         const title = `Input Error`;
         const description = `${validationError}\nPlease try again.`;
@@ -96,7 +97,7 @@ async function removeGame(game, client, message) {
         }
 
     } catch (error) {
-        console.log("Remove Game Error: " + error);
+        console.error(consoleColors("red"), "Remove Game Error: " + error);
         // Send a confirmation message before closing the thread
         const title = `Remove Game Error`;
         const description = `I could not remove the game, please try again later.`;
@@ -213,7 +214,7 @@ async function handleUpdateGameDescription(message, client) {
         }
 
     } catch (error) {
-        console.log("Error Updating Game To Database: " + error);
+        console.error(consoleColors("red"), "Error Updating Game To Database: " + error);
 
         const title = `Game Update Error`;
         const description = `Couldn't update game, please try again later.`;

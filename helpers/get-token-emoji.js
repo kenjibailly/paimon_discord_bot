@@ -1,5 +1,6 @@
 const TokenEmoji = require('../models/token-emoji');
 const createEmbed = require('../helpers/embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function getTokenEmoji(guild_id) {
     try {
@@ -13,7 +14,7 @@ async function getTokenEmoji(guild_id) {
         }
         return token_emoji;
     } catch (error) {
-        console.error(`Error fetching token emoji:`, error);
+        console.error(consoleColors("red"), `Error fetching token emoji:`, error);
         // Return an error embed for response
         const title = "Error";
         const description = "There was an error retrieving the token emoji. Please try again later.";

@@ -1,7 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
-const getTokenEmoji = require('../helpers/get-token-emoji'); // Assuming getTokenEmoji is in helpers
+const consoleColors = require('../helpers/console-colors');
 
 async function handleResetTeamsCommand(interaction, client) {
     const { member, guild_id } = interaction;
@@ -50,7 +50,7 @@ async function handleResetTeamsCommand(interaction, client) {
             };
         }
     } catch (error) {
-        console.log("Error Reset Teams: " + error);
+        console.error(consoleColors("red"), "Error Reset Teams: " + error);
     }
 }
 

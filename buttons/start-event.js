@@ -5,6 +5,7 @@ const Games = require('../models/games');
 const Events = require('../models/events');
 const userExchangeData = require('../helpers/userExchangeData');
 const cancelThread = require('./cancel-thread');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleStartEventAddGameButton(interaction, client) {
     try {
@@ -121,7 +122,7 @@ async function handleStartEventNoGameButton(interaction, client) {
             }
 
         } catch (error) {
-            console.log("Add Event Error: " + error);
+            console.error(consoleColors("red"), "Add Event Error: " + error);
             const title = "Add Event Error";
             const description = `I could not add the event to the database. Please contact your administrator, or try again later.`;
             const color = "error";

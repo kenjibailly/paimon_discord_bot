@@ -5,6 +5,7 @@ const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
+const consoleColors = require('../../../helpers/console-colors');
 
 async function handleExchangeCustomRole(interaction, client) {
     try {
@@ -51,7 +52,7 @@ async function handleExchangeCustomRole(interaction, client) {
             await awardedReward.save();
 
         } catch (error) {
-            console.error('Error adding reward to DB:', error);
+            console.error(consoleColors("red"), 'Error adding reward to DB:', error);
 
             let title = "Reward Database Error";
             let description = `I could not add the reward to the database. Please contact the administrator.`;
@@ -71,7 +72,7 @@ async function handleExchangeCustomRole(interaction, client) {
             wallet.amount -= Number(user_exchange_data.rewardPrice);
             await wallet.save();
         } catch (error) {
-            console.error("Failed to save wallet:", error);
+            console.error(consoleColors("red"), "Failed to save wallet:", error);
             
             const title = "Transaction Error";
             const description = "There was an error while processing your wallet transaction. Please try again later.";
@@ -145,7 +146,7 @@ async function handleExchangeCustomRole(interaction, client) {
             }
 
         } catch (error) {
-            console.log("Role Creation Error: ", error);
+            console.error(consoleColors("red"), "Role Creation Error: ", error);
             
             const title = "Role Creation Failed";
             const description = `There was an issue creating the role. Please try again later.`;
@@ -163,7 +164,7 @@ async function handleExchangeCustomRole(interaction, client) {
         }
 
     } catch (error) {
-        console.error('Error adding custom server emoji:', error);
+        console.error(consoleColors("red"), 'Error adding custom server emoji:', error);
 
         let title = "Add Custom Server Emoji Error";
         let description = `I could not add a custom server emoji. Your wallet has not been affected.`;

@@ -2,6 +2,7 @@ const createEmbed = require('../helpers/embed');
 const ChannelNameConfig = require('../models/channel-name-config');
 const userExchangeData = require('../helpers/userExchangeData');
 const cancelThread = require('../helpers/cancel-thread');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleChannelNameConfiguration (message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
@@ -10,7 +11,7 @@ async function handleChannelNameConfiguration (message, client) {
     const validationError = validateSeparator(messageContent);
 
     if (validationError) {
-        console.log(validationError);
+        console.error(consoleColors("red"), "Validation Error", validationError);
         // Send a confirmation message before closing the thread
         const title = "Shop";
         const description = `${validationError}\nPlease try again.`;
@@ -53,7 +54,7 @@ async function handleChannelNameConfiguration (message, client) {
         cancelThread(message.guildId, message.channelId, client);
 
     } catch (error) {
-        console.log("Channel Name Configuration Error: " + error);
+        console.error(consoleColors("red"), "Channel Name Configuration Error: " + error);
         const title = "Channel Name Configuration Error";
         const description = `I could not save the configuration to the database, please try again later or contact the administrator.`;
         const color = "error";

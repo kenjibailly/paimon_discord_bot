@@ -3,6 +3,7 @@ const getTokenEmoji = require('../helpers/get-token-emoji');
 const Wallet = require('../models/wallet');
 const handleCancelThread = require('../buttons/cancel-thread');
 const createEmbed = require('./embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function checkRequiredBalance(interaction, client, price, thread) {
     const tokenEmoji = await getTokenEmoji(interaction.guild_id);
@@ -49,7 +50,7 @@ async function checkRequiredBalance(interaction, client, price, thread) {
         }
         
     } catch (error) {
-        console.log("Check Required Balance Error: " + error);
+        console.error(consoleColors("red"), "Check Required Balance Error: " + error);
         const title = "Wallet";
         const description = `There was a problem getting your wallet balance, please try again later or contact your administrator.`;
         const color = "error";

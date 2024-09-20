@@ -1,7 +1,8 @@
 const { InteractionResponseType } = require('discord-interactions');
 const Wallet = require('../models/wallet');
 const createEmbed = require('../helpers/embed');
-const getTokenEmoji = require('../helpers/get-token-emoji'); // Assuming getTokenEmoji is in helpers
+const getTokenEmoji = require('../helpers/get-token-emoji');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleWalletCommand(interaction, client) {
     const { member, guild_id } = interaction;
@@ -51,7 +52,7 @@ async function handleWalletCommand(interaction, client) {
             };
         }
     } catch (error) {
-        console.error('Error during finding wallet:', error);
+        console.error(consoleColors("red"), 'Error during finding wallet:', error);
 
         const title = "Wallet";
         const description = `I could not find your wallet.`;

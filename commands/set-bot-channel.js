@@ -1,6 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const BotChannel = require('../models/bot-channel');
 const createEmbed = require('../helpers/embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleSetBotChannelCommand (interaction, client) {
     const { data, guild_id } = interaction;
@@ -33,7 +34,7 @@ async function handleSetBotChannelCommand (interaction, client) {
             },
         };
     } catch (error) {
-        console.log(error);
+        console.error(consoleColors("red"), "Bot Channel Error:", error);
         const title = "Bot Channel Error";
         const description = `Something went wrong while setting the bot channel, please try again later.`;
         const color = "error";

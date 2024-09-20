@@ -1,6 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const Games = require('../models/games');
 const createEmbed = require('../helpers/embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleGamesCommand(interaction, client) {
     const { guild_id } = interaction;
@@ -42,7 +43,7 @@ async function handleGamesCommand(interaction, client) {
         };
 
     } catch (error) {
-        console.log('Games error: ' + error);
+        console.error(consoleColors("red"), 'Games error: ' + error);
 
         const title = "Games Error";
         const description = `Something went wrong while trying to get the games list, please contact the administrator.`;

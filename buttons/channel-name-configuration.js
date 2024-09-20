@@ -3,6 +3,7 @@ const createEmbed = require('../helpers/embed');
 const ChannelNameConfig = require('../models/channel-name-config');
 const userExchangeData = require('../helpers/userExchangeData');
 const cancelThread = require('./cancel-thread');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleChannelNameConfiguration(interaction, client) {
     try {
@@ -51,7 +52,7 @@ async function handleChannelNameConfiguration(interaction, client) {
         };
 
     } catch (error) {
-        console.log('Channel Name Configuration Error: ' + error);
+        console.error(consoleColors("red"), 'Channel Name Configuration Error: ' + error);
         const title = "Error";
         const description = `Something went wrong, please try again later or contact your administrator.`;
         const color = "error";

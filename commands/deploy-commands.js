@@ -1,5 +1,6 @@
 require('dotenv/config');
 const { InstallGuildCommands } = require('../utilities/utils.js');
+const consoleColors = require('../helpers/console-colors');
 
 async function registerCommands(guildId) {
   const defaultManageGuildPermission = 0x0000000000000020; // MANAGE_GUILD permission
@@ -355,9 +356,9 @@ async function registerCommands(guildId) {
   try {
     // Pass guildId to register commands for a specific guild
     await InstallGuildCommands(process.env.APP_ID, NEW_COMMANDS, guildId);
-    console.log('Successfully registered or updated commands.');
+    console.log(consoleColors("green"), 'Successfully registered or updated commands.');
   } catch (error) {
-    console.error('Error registering commands:', error);
+    console.error(consoleColors("red"), 'Error registering commands:', error);
   }
 }
 

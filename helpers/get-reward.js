@@ -1,5 +1,6 @@
 const Rewards = require('../models/rewards');
-const createEmbed = require('../helpers/embed');
+const createEmbed = require('./embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function getReward(guild_id, name) {
     try {
@@ -13,7 +14,7 @@ async function getReward(guild_id, name) {
         }
         return reward;
     } catch (error) {
-        console.error(`Error fetching token emoji:`, error);
+        console.error(consoleColors("red"), `Error fetching token emoji:`, error);
         // Return an error embed for response
         const title = "Error";
         const description = "There was an error retrieving the reward. Please try again later.";

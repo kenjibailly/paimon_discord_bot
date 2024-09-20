@@ -2,6 +2,7 @@ const { InteractionResponseType } = require('discord-interactions');
 const Wallet = require('../models/wallet');
 const createEmbed = require('../helpers/embed');
 const getTokenEmoji = require('../helpers/get-token-emoji');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleDeductUserCommand(interaction, client) {
     const { member, data, guild_id } = interaction;
@@ -102,7 +103,7 @@ async function handleDeductUserCommand(interaction, client) {
 
     } catch (error) {
         // Handle errors during database operations
-        console.error('Error during wallet operation:', error);
+        console.error(consoleColors("red"), 'Error during wallet operation:', error);
 
         const title = "Error";
         const description = `An error occurred while processing the request.`;

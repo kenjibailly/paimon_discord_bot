@@ -2,6 +2,7 @@ const Rewards = require('./models/rewards');
 const TokenEmoji = require('./models/token-emoji'); // Import the TokenEmoji model
 const deployCommands = require('./commands/deploy-commands');
 const ChannelNameConfig = require('./models/channel-name-config');
+const consoleColors = require('./helpers/console-colors');
 
 async function botJoinsGuild(client, guild) {
     const guildId = guild.id;
@@ -10,7 +11,7 @@ async function botJoinsGuild(client, guild) {
         deployCommands(guildId);
 
     } catch (error) {
-        console.log('Deploy Commands Error: ' + error);
+        console.error(consoleColors("red"), 'Deploy Commands Error: ' + error);
 
         const title = "Deploy Commands Error";
         const description = `I could not deploy some slash commands, please contact your administrator.`;
@@ -29,7 +30,7 @@ async function botJoinsGuild(client, guild) {
                 embeds: [embed],
             });
         
-            console.log('Message sent to the server owner successfully.');
+            console.log(consoleColors("green"), 'Message sent to the server owner successfully.');
         } catch (error) {
             console.error('Error sending message to the server owner:', error);
         }
@@ -55,7 +56,7 @@ async function botJoinsGuild(client, guild) {
 
             if (!exists) {
                 await Rewards.create(reward);
-                console.log(`Reward "${reward.name}" added for guild ${guildId}`);
+                console.log(consoleColors("green"), `Reward "${reward.name}" added for guild ${guildId}`);
             } else {
                 console.log(`Reward "${reward.name}" already exists for guild ${guildId}`);
             }
@@ -72,7 +73,7 @@ async function botJoinsGuild(client, guild) {
                 token_emoji_name: "🪙",
                 token_emoji_id: null,
             });
-            console.log(`Default token emoji set for guild ${guildId}`);
+            console.log(consoleColors("green"), `Default token emoji set for guild ${guildId}`);
         } else {
             console.log(`Token emoji already set for guild ${guildId}`);
         }
@@ -89,7 +90,7 @@ async function botJoinsGuild(client, guild) {
             await ChannelNameConfig.create({
                 guild_id: guildId,
             });
-            console.log(`Default channel name configuration set for guild ${guildId}`);
+            console.log(consoleColors("green"), `Default channel name configuration set for guild ${guildId}`);
         } else {
             console.log(`Channel Name Configuration already set for guild ${guildId}`);
         }

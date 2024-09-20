@@ -1,10 +1,13 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../../helpers/embed');
 const userExchangeData = require('../../../helpers/userExchangeData');
+const consoleColors = require('../../../helpers/console-colors');
 
-async function handleCustomSoundboard(name, interaction) {
+async function handleTrollUser(name, interaction) {
+    console.log(consoleColors("red"), 'This text is green');
     const title = "Shop";
-    const description = "Reply with the name you want to give the new soundboard sound.";
+    const description = `Reply with the tagged user who's nickname you want to change. 
+    \`\`\`@user_name\`\`\``;
     const embed = createEmbed(title, description, "");
 
     // Store interaction data for the specific user
@@ -36,4 +39,4 @@ async function handleCustomSoundboard(name, interaction) {
 
 }
 
-module.exports = handleCustomSoundboard;
+module.exports = handleTrollUser;

@@ -1,6 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const TokenEmoji = require('../models/token-emoji');
 const createEmbed = require('../helpers/embed');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleSetTokenEmojiCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -52,7 +53,7 @@ async function handleSetTokenEmojiCommand(interaction, client) {
 
         // Upsert operation: find one by guild_id and update it, or create if not exists
         const result = await TokenEmoji.findOneAndUpdate(
-            { guild_id: guild_id },
+            { guild_id: guild_id }, 
             update,
             { upsert: true, new: true } // Create if not exists, return the updated document
         );
@@ -71,11 +72,11 @@ async function handleSetTokenEmojiCommand(interaction, client) {
         };
 
     } catch (error) {
-        console.error('Error updating token emoji:', error);
+        console.error(consoleColors("red"), 'Error updating token emoji:', error);
 
         const title = "Error";
         const description = `An error occurred while updating the token emoji. Please try again later.`;
-        const color = "#ff0000";
+        const color = "error";
         const embed = createEmbed(title, description, color);
 
         return {

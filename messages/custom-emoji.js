@@ -5,6 +5,7 @@ const getTokenEmoji = require('../helpers/get-token-emoji');
 const getReward = require('../helpers/get-reward');
 const sharp = require('sharp');
 const axios = require('axios');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleCustomEmoji(message, client) {
 
@@ -14,7 +15,6 @@ async function handleCustomEmoji(message, client) {
     const imageBuffer = await validateAndProcessPicture(message);
 
     if (typeof imageBuffer === 'string') {
-        console.log(imageBuffer);
         const title = "Shop";
         const description = `${imageBuffer}\nPlease try again.`;
         const color = "error";
@@ -39,7 +39,7 @@ async function handleCustomEmoji(message, client) {
     const contentValidationError = validateMessageContent(messageContent);
     if (contentValidationError) {
         // Handle message content validation error
-        console.log(contentValidationError);
+        console.error(consoleColors("red"), "Validation Error:", contentValidationError);
         const title = "Shop";
         const description = `${contentValidationError}\nPlease try again.`;
         const color = "error";

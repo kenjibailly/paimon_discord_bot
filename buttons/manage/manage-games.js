@@ -3,6 +3,7 @@ const createEmbed = require('../../helpers/embed');
 const Games = require('../../models/games');
 const userExchangeData = require('../../helpers/userExchangeData');
 const cancelThread = require('../cancel-thread');
+const consoleColors = require('../../helpers/console-colors');
 
 async function handleManageGamesButton(interaction, client) {
     try {
@@ -196,7 +197,7 @@ async function handleUpdateGameDescriptionButton(interaction, client) {
         
 
     } catch (error) {
-        console.log("Error Updating Game To Database: " + error);
+        console.error(consoleColors("red"), "Error Updating Game To Database: " + error);
 
         const title = `Game Update Error`;
         const description = `Couldn't update game, please try again later.`;

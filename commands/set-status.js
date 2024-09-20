@@ -2,6 +2,7 @@ const { InteractionResponseType } = require('discord-interactions');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
 const { ActivityType } = require('discord.js');
+const consoleColors = require('../helpers/console-colors');
 
 async function handleSetStatusCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -30,7 +31,7 @@ async function handleSetStatusCommand(interaction, client) {
             },
         };
     } catch (error) {
-        console.log("Set Status Error: " + error);
+        console.error(consoleColors("red"), "Set Status Error: " + error);
         const title = "Status Set Error";
         const description = `Something went wrong, please try again later.`;
         const color = "";

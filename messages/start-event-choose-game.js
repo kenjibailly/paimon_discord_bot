@@ -5,6 +5,7 @@ const cancelThread = require('../helpers/cancel-thread');
 const Events = require('../models/events');
 const validateNumber = require('../helpers/validate-number');
 const { EmbedBuilder } = require('discord.js'); 
+const consoleColors = require('../helpers/console-colors');
 
 async function handleStartEventChooseGame(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
@@ -16,7 +17,7 @@ async function handleStartEventChooseGame(message, client) {
     const validationError = validateNumber(messageContent, user_exchange_data.games);
 
     if (validationError) {
-        console.log(validationError);
+        console.error(consoleColors("red"), "Validation Error:", validationError);
         // Send a confirmation message before closing the thread
         const title = `Input Error`;
         const description = `${validationError}\nPlease try again.`;
@@ -50,7 +51,7 @@ async function handleStartEventChooseGame(message, client) {
         }
 
     } catch (error) {
-        console.log("Add Event Error: " + error);
+        console.error(consoleColors("red"), "Add Event Error: " + error);
         const title = "Add Event Error";
         const description = `I could not add the event to the database. Please contact your administrator, or try again later.`;
         const color = "error";

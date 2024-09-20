@@ -1,4 +1,5 @@
 require('dotenv/config');
+const consoleColors = require('../helpers/console-colors');
 
 async function DiscordRequest(endpoint, options) {
   const fetch = await import('node-fetch').then(mod => mod.default);
@@ -14,7 +15,7 @@ async function DiscordRequest(endpoint, options) {
   });
   if (!res.ok) {
     const data = await res.json();
-    console.log(res.status);
+    console.error(consoleColors("red"), res.status);
     throw new Error(JSON.stringify(data));
   }
   return res;
@@ -24,9 +25,9 @@ async function InstallGuildCommands(appId, commands, guildId) {
   const endpoint = `applications/${appId}/guilds/${guildId}/commands`;
   try {
     await DiscordRequest(endpoint, { method: 'PUT', body: commands });
-    console.log('Commands registered or updated successfully.');
+    console.log(consoleColors("green"), 'Commands registered or updated successfully.');
   } catch (err) {
-    console.error('Error registering commands:', err);
+    console.error(consoleColors("red"), 'Error registering commands:', err);
   }
 }
 
