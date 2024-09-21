@@ -26,9 +26,9 @@ async function handleSetChannelNameConfigurationCommand (interaction, client) {
         const channel_name_config = await ChannelNameConfig.find({ guild_id: guild_id });
 
         let title = "Channel Name Configuration";
-        let description = `Your current configuration is set to: 
-        - Emoji: ${channel_name_config.emoji ? 'Yes' : 'No'}\n- Separator: ${channel_name_config.separator || 'None'}
-        \n\nDo your channels start with an emoji?`;
+        let description = `Your current configuration is set to: \n` +
+        `- Emoji: ${channel_name_config.emoji ? 'Yes' : 'No'}\n- Separator: ${channel_name_config.separator || 'None'}\n` +
+        `\n\nDo your channels start with an emoji?`;
         let color = "";
         let embed = createEmbed(title, description, color);
 

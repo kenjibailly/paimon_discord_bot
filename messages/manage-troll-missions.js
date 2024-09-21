@@ -146,9 +146,9 @@ async function handleAddTrollMissionDescription (message, client) {
 
 
     const title = `Add Troll Mission`;
-    const description = `New troll mission added: 
-    Name: **${user_exchange_data.name}** 
-    Description: **${messageContent}**.\n\n`;
+    const description = `New troll mission added:\n` +
+    `Name: **${user_exchange_data.name}**\n` +
+    `Description: **${messageContent}**.\n\n`;
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);
 

@@ -99,8 +99,8 @@ async function handleCustomChannel(message, client) {
 
 
     const title = "Shop";
-    const description = `Under which category would you like to add the new channel?
-    Please reply with the according number next to the already existing categories listed below.\n\n${categoryList}`;
+    const description = `Under which category would you like to add the new channel?\n` +
+    `Please reply with the according number next to the already existing categories listed below.\n\n${categoryList}`;
     const embed = createEmbed(title, description, "");
 
     let buttonComponent = [];
@@ -181,10 +181,9 @@ async function handleCustomChannelCategory(message, client) {
     }
 
     const title = "Shop";
-    const description = `
-    Do you want to add this custom channel?\n
-    Channel name: **${user_exchange_data.channelName}**\nChannel category: **${user_exchange_data.category.name}**\n
-    This will deduct **${user_exchange_data.rewardPrice}** ${emojiDisplay} from your wallet.`;
+    const description = `Do you want to add this custom channel?\n` +
+    `Channel name: **${user_exchange_data.channelName}**\nChannel category: **${user_exchange_data.category.name}**\n\n` +
+    `This will deduct **${user_exchange_data.rewardPrice}** ${emojiDisplay} from your wallet.`;
     const embed = createEmbed(title, description, "");
 
 

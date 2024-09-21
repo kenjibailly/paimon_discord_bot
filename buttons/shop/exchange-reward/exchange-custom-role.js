@@ -114,8 +114,8 @@ async function handleExchangeCustomRoleButton(interaction, client) {
             if (newRole) {
                 // Send a success message once the emoji is added
                 const title = "Role Added";
-                const description = `You have successfully created the new role: <@&${newRole.id}> and it has been granted to you!
-                You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
+                const description = `You have successfully created the new role: <@&${newRole.id}> and it has been granted to you!\n` +
+                `You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
                 const color = "";
                 const embed = createEmbed(title, description, color);
 
@@ -171,8 +171,8 @@ async function handleExchangeCustomRoleButton(interaction, client) {
 
         if (error.code === 50013) {
             title = "Permission Error";
-            description = `I don't have permission to add a custom server emoji.
-            Your wallet has not been affected.`;
+            description = `I don't have permission to add a custom server emoji.\n` +
+            `Your wallet has not been affected.`;
         }
 
         const color = "error";

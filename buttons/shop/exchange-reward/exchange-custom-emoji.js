@@ -156,8 +156,8 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             if (newEmoji) {
                 // Send a success message once the emoji is added
                 const title = "Emoji Added";
-                const description = `The emoji **:${newEmoji.name}:** has been successfully added to the server!
-                You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
+                const description = `The emoji **:${newEmoji.name}:** has been successfully added to the server!\n` +
+                `You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
                 const color = "";
                 const embed = createEmbed(title, description, color);
 
@@ -213,8 +213,8 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
 
         if (error.code === 50013) {
             title = "Permission Error";
-            description = `I don't have permission to add a custom server emoji.
-            Your wallet has not been affected.`;
+            description = `I don't have permission to add a custom server emoji.\n` +
+            `Your wallet has not been affected.`;
         }
 
         const color = "error";

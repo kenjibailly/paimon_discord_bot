@@ -68,9 +68,8 @@ async function handleTrollUser(message, client) {
         : tokenEmoji.token_emoji;
 
     const title = "Shop";
-    const description = `
-    Do you want to troll <@${taggedUser}> ?
-    This will deduct **${reward.price}** ${emojiDisplay} from your wallet.`;
+    const description = `Do you want to troll <@${taggedUser}> ?\n` +
+    `This will deduct **${reward.price}** ${emojiDisplay} from your wallet.`;
     const embed = createEmbed(title, description, "");
 
     // Update or add new values to the existing data

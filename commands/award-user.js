@@ -60,9 +60,9 @@ async function handleAwardUserCommand(interaction, client) {
             await wallet.save();
 
             const title = "Wallet Created";
-            const description = `<@${member.user.id}> awarded **${amount}** ${tokenEmoji.token_emoji} to <@${userId}>. 
-            New balance: **${wallet.amount}** ${tokenEmoji.token_emoji}.
-            \nReason: **${reason}**`;
+            const description = `<@${member.user.id}> awarded **${amount}** ${tokenEmoji.token_emoji} to <@${userId}>.\n` +
+            `New balance: **${wallet.amount}** ${tokenEmoji.token_emoji}.\n` +
+            `\nReason: **${reason}**`;
             const color = "";
             const embed = createEmbed(title, description, color);
 
@@ -80,9 +80,9 @@ async function handleAwardUserCommand(interaction, client) {
 
         // Successful award response
         const title = "Wallet Updated";
-        const description = `<@${member.user.id}> awarded **${amount}** ${tokenEmoji.token_emoji} to <@${userId}>. 
-        New balance: **${wallet.amount}** ${tokenEmoji.token_emoji}.
-        \nReason: **${reason}**`;
+        const description = `<@${member.user.id}> awarded **${amount}** ${tokenEmoji.token_emoji} to <@${userId}>.\n` +
+        `New balance: **${wallet.amount}** ${tokenEmoji.token_emoji}.\n` +
+        `\nReason: **${reason}**`;
         const color = "";
         const embed = createEmbed(title, description, color);
 

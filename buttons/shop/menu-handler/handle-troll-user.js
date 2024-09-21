@@ -4,8 +4,8 @@ const userExchangeData = require('../../../helpers/userExchangeData');
 
 async function handleTrollUser(name, interaction) {
     const title = "Shop";
-    const description = `Reply with the tagged user who's nickname you want to change. 
-    \`\`\`@user_name\`\`\``;
+    const description = `Reply with the tagged user who's nickname you want to change.\n` +
+    `\`\`\`@user_name\`\`\``;
     const embed = createEmbed(title, description, "");
 
     // Store interaction data for the specific user

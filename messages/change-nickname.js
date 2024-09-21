@@ -71,9 +71,8 @@ async function handleChangeNickname(message, client) {
         : tokenEmoji.token_emoji;
 
     const title = "Shop";
-    const description = `
-    Do you want to change ${user_text} nickname to **${messageContent}**?
-    This will deduct **${reward.price}** ${emojiDisplay} from your wallet.`;
+    const description = `Do you want to change ${user_text} nickname to **${messageContent}**?\n` +
+    `This will deduct **${reward.price}** ${emojiDisplay} from your wallet.`;
     const embed = createEmbed(title, description, "");
 
     // Update or add new values to the existing data

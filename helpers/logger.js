@@ -22,6 +22,13 @@ class Logger {
       this._writeMessage(...args); // print error message
       process.stdout.write("\x1b[0m\n"); // reset color
     }
+
+    warn(...args) {
+      process.stdout.write("\x1b[33m"); // set color to green
+      process.stdout.write(`${this.stat}: `);
+      this._writeMessage(...args); // print message
+      process.stdout.write("\x1b[0m\n"); // reset color
+    }
   
     _writeMessage(...args) {
       args.forEach(arg => {

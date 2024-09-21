@@ -47,8 +47,8 @@ async function handleAwardTeamCommand(interaction, client) {
 
         const result = await Wallet.bulkWrite(newWalletEntries);
         const title = "Tokens";
-        const description = `<@${member.user.id}> awarded **${amount}** ${tokenEmoji.token_emoji} to <@&${role}>!
-        \nReason: **${reason}**`;
+        const description = `<@${member.user.id}> awarded **${amount}** ${tokenEmoji.token_emoji} to <@&${role}>!\n` +
+        `\nReason: **${reason}**`;
         const embed = createEmbed(title, description, "");
 
         return {

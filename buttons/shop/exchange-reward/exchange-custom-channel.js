@@ -122,8 +122,8 @@ async function handleExchangeCustomChannelButton(interaction, client) {
                 });
 
                 const title = "Channel Added";
-                const description = `The channel <#${createdChannel.id}> has been successfully added to the server!
-                You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
+                const description = `The channel <#${createdChannel.id}> has been successfully added to the server!\n` +
+                `You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
                 const color = "";
                 const embed = createEmbed(title, description, color);
 
@@ -192,8 +192,8 @@ async function handleExchangeCustomChannelButton(interaction, client) {
 
         if (error.code === 50013) {
             title = "Permission Error";
-            description = `I don't have permission to add a custom channel.
-            Your wallet has not been affected.`;
+            description = `I don't have permission to add a custom channel.\n` +
+            `Your wallet has not been affected.`;
         }
 
         const color = "error";

@@ -66,8 +66,8 @@ async function handleAddTrollMissionWithoutDescriptionButton (interaction, clien
 
 
     const title = `Add Troll Mission`;
-    const description = `New troll mission added: 
-    Name: **${user_exchange_data.new_troll_mission_name}**`;
+    const description = `New troll mission added: \n` +
+    `Name: **${user_exchange_data.new_troll_mission_name}**`;
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);
 

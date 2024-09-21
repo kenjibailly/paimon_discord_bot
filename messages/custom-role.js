@@ -127,11 +127,10 @@ async function handleCustomRoleColor(message, client) {
     : user_exchange_data.tokenEmoji.token_emoji;
 
     const title = "Shop";
-    const description = `
-    Do you want to add this custom role and be assigned to it?\n
-    Role name: **${user_exchange_data.roleName}**
-    Role color: **${user_exchange_data.roleColor}**\n
-    This will deduct **${user_exchange_data.rewardPrice}** ${emojiDisplay} from your wallet.`;
+    const description = `Do you want to add this custom role and be assigned to it?\n\n` +
+    `Role name: **${user_exchange_data.roleName}**\n` +
+    `Role color: **${user_exchange_data.roleColor}**\n\n` +
+    `This will deduct **${user_exchange_data.rewardPrice}** ${emojiDisplay} from your wallet.`;
     const embed = createEmbed(title, description, "");
 
 

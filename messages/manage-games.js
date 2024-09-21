@@ -146,9 +146,9 @@ async function handleAddGameDescription (message, client) {
 
 
     const title = `Add Game`;
-    const description = `New game added: 
-    Name: **${user_exchange_data.name}** 
-    Description: **${messageContent}**.\n\n`;
+    const description = `New game added:\n` +
+    `Name: **${user_exchange_data.name}**\n` +
+    `Description: **${messageContent}**.\n\n`;
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);
 

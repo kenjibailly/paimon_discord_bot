@@ -154,8 +154,8 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
         
         await member.setNickname(user_exchange_data.nickname);
         const title = "Shop";
-        const description = `**${member.user.globalName}**'s nickname has been changed to **${user_exchange_data.nickname}**.
-        You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
+        const description = `**${member.user.globalName}**'s nickname has been changed to **${user_exchange_data.nickname}**.\n` +
+        `You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
         const embed = createEmbed(title, description, "");
 
         // Send success message before canceling the thread message
@@ -189,10 +189,10 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
 
         if (nicknameError.code === 50013) {
             title = "Permission Error";
-            description = `I don't have permission to change the nickname. 
-            This could be due to role hierarchy issues or you are trying to change the nickname of the server owner. 
-            To change the nickname of the server owner, please contact the server owner.
-            Your wallet has not been affected.`;
+            description = `I don't have permission to change the nickname.\n` +
+            `This could be due to role hierarchy issues or you are trying to change the nickname of the server owner.\n` +
+            `To change the nickname of the server owner, please contact the server owner.\n` +
+            `Your wallet has not been affected.`;
         }
 
         const color = "error";

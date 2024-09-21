@@ -6,8 +6,8 @@ async function handleChangeNickname(name, interaction) {
     const title = "Shop";
     let description;
     if (name == "change-user-nickname") {
-        description = `Reply with the tagged user who's nickname you want to change. 
-        \`\`\`@user_name\`\`\``;
+        description = `Reply with the tagged user who's nickname you want to change.\n` +
+        `\`\`\`@user_name\`\`\``;
     } else {
         description = `Reply with desired new nickname.`;
     }

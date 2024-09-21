@@ -89,9 +89,8 @@ async function handleCustomEmoji(message, client) {
         : tokenEmoji.token_emoji;
 
     const title = "Shop";
-    const description = `
-    Do you want to add this custom server emoji?
-    This will deduct **${reward.price}** ${emojiDisplay} from your wallet.`;
+    const description = `Do you want to add this custom server emoji?\n` +
+    `This will deduct **${reward.price}** ${emojiDisplay} from your wallet.`;
     const embed = createEmbed(title, description, "");
 
 

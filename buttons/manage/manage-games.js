@@ -66,8 +66,8 @@ async function handleAddGameWithoutDescriptionButton (interaction, client) {
 
 
     const title = `Add Game`;
-    const description = `New game added: 
-    Name: **${user_exchange_data.new_game_name}**`;
+    const description = `New game added: \n` +
+    `Name: **${user_exchange_data.new_game_name}**`;
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);
 

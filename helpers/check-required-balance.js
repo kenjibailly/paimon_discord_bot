@@ -36,8 +36,8 @@ async function checkRequiredBalance(interaction, client, price, thread) {
         // Check wallet balance
         if (wallet.amount < Number(price)) {
             const title = "Wallet";
-            const description = `You don't have enough ${tokenEmoji.token_emoji} to make this exchange.
-            You currently have **${wallet.amount}** ${tokenEmoji.token_emoji} and you need **${price}** ${tokenEmoji.token_emoji}`;
+            const description = `You don't have enough ${tokenEmoji.token_emoji} to make this exchange.\n` +
+            `You currently have **${wallet.amount}** ${tokenEmoji.token_emoji} and you need **${price}** ${tokenEmoji.token_emoji}`;
             const color = "error";
             const embed = createEmbed(title, description, color);
 

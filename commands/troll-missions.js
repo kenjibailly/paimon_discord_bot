@@ -29,7 +29,6 @@ async function handleTrollMissionsCommand(interaction, client) {
             } else {
                 troll_missions_list += `- Name: **${troll_mission.name}**\n\n`;
             }
-            
         });
 
         const title = "Troll Missions";

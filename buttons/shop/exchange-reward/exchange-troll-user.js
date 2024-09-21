@@ -1,19 +1,19 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../../helpers/embed');
 const AwardedReward = require('../../../models/awarded-reward');
+const TrollMissions = require('../../../models/troll-missions');
 const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
+const { PermissionsBitField, ChannelType, AttachmentBuilder } = require('discord.js');
+const path = require('path');
 
 
 async function handleExchangeTrollUserButton(interaction, client) {
     try {
 
         const user_exchange_data = userExchangeData.get(interaction.member.user.id);
-        userExchangeData.delete(interaction.member.user.id);
-
-        await trollUser(interaction, client, user_exchange_data);
 
         const guild = await client.guilds.fetch(interaction.guild_id);
         const thread = await guild.channels.fetch(interaction.channel_id);
@@ -89,56 +89,40 @@ async function handleExchangeTrollUserButton(interaction, client) {
             }
         }
 
+            
+
         try {
+            // troll user code here
 
-            try {
-                // troll user code here
+            await trollUser(interaction, client, user_exchange_data);
 
-                const title = "You trolled someone!";
-                const description = `You have successfully trolled <@${user_exchange_data.taggedUser}>!
-                You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
-                const color = "";
-                const embed = createEmbed(title, description, color);
+            const title = "You trolled someone!";
+            const description = `You have successfully trolled <@${user_exchange_data.taggedUser}>!\n` +
+            `You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
+            const color = "";
+            const embed = createEmbed(title, description, color);
 
-                // Send success message before canceling the thread message
-                await thread.send({ embeds: [embed] });
+            // Send success message before canceling the thread message
+            await thread.send({ embeds: [embed] });
 
-                handleCancelThread(interaction, client);
+            handleCancelThread(interaction, client);
 
-                // Send message to the parent channel if available
-                const parentChannel = thread.parent;
-                if (parentChannel) {
-                    const parentTitle = "Shop";
-                    const parentDescription = `<@${interaction.member.user.id}> has trolled <@${user_exchange_data.taggedUser}>!`;
-                    const parentEmbed = createEmbed(parentTitle, parentDescription, "");
-                    
-                    await parentChannel.send({
-                        embeds: [parentEmbed],
-                    });
-                }
-
-                return {
-                    type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
-                };
+            // Send message to the parent channel if available
+            const parentChannel = thread.parent;
+            if (parentChannel) {
+                const parentTitle = "Shop";
+                const parentDescription = `<@${interaction.member.user.id}> has trolled <@${user_exchange_data.taggedUser}>!`;
+                const parentEmbed = createEmbed(parentTitle, parentDescription, "");
                 
-            } catch (error) {
-                logger.error("Error trolling user:", error);
-                
-                const title = "Troll someone has failled";
-                const description = `There was an issue trolling someone. Please try again later.`;
-                const color = "error";
-                const embed = createEmbed(title, description, color);
-
-                handleCancelThread(interaction, client);
-
-                return {
-                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                    data: {
-                        embeds: [embed],
-                    },
-                };
+                await parentChannel.send({
+                    embeds: [parentEmbed],
+                });
             }
 
+            return {
+                type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
+            };
+            
         } catch (error) {
             logger.error("Error trolling user:", error);
             
@@ -165,8 +149,8 @@ async function handleExchangeTrollUserButton(interaction, client) {
 
         if (error.code === 50013) {
             title = "Permission Error";
-            description = `I don't have permission to add a custom soundboard sound.
-            Your wallet has not been affected.`;
+            description = `I don't have permission to add a custom soundboard sound.\n` +
+            `Your wallet has not been affected.`;
         }
 
         const color = "error";
@@ -184,12 +168,136 @@ async function handleExchangeTrollUserButton(interaction, client) {
 
 }
 
-async function trollUser (interaction, client, user_exchange_data) {
+async function trollUser(interaction, client, user_exchange_data) {
     try {
-        
+        const guild = await client.guilds.fetch(interaction.guild_id);
+        const taggedUser = await guild.members.fetch(user_exchange_data.taggedUser);
+        const guild_id = interaction.guild_id;
+
+        // 1. Check if the "Trolled" role exists, if not, create it
+        let trolledRole = guild.roles.cache.find(role => role.name === "Trolled");
+        if (!trolledRole) {
+            trolledRole = await guild.roles.create({
+                name: "Trolled",
+                color: "#FF0000",
+                reason: "User got trolled",
+                hoist: true, // Appear separately in the member list
+                permissions: [
+                    PermissionsBitField.Flags.SendMessages, // Allow sending messages
+                    PermissionsBitField.Flags.AttachFiles,  // Allow uploading images
+                ],
+                deny: [
+                    PermissionsBitField.Flags.CreateInvite, 
+                    PermissionsBitField.Flags.ChangeNickname,
+                    PermissionsBitField.Flags.CreatePublicThreads,
+                    PermissionsBitField.Flags.CreatePrivateThreads,
+                    PermissionsBitField.Flags.MentionEveryone,
+                    PermissionsBitField.Flags.UseApplicationCommands, // Creating polls/events is a command
+                    PermissionsBitField.Flags.CreateEvents,
+                ],
+            });
+        }
+
+        // Use the fetched taggedUser's info to get the nickname, global name, or username
+        const displayName = taggedUser.nickname || taggedUser.user.globalName || taggedUser.user.username;
+
+
+        // 2. Create a new channel named "Trolled - <username>"
+        const trolledChannel = await guild.channels.create({
+            name: `Trolled - ${displayName}`,
+            type: ChannelType.GuildText, 
+            permissionOverwrites: [
+                {
+                    id: guild.roles.everyone, // Deny access to everyone else
+                    deny: [PermissionsBitField.Flags.ViewChannel],
+                },
+                {
+                    id: taggedUser.id, // Allow access to the trolled user
+                    allow: [
+                        PermissionsBitField.Flags.ViewChannel, 
+                        PermissionsBitField.Flags.SendMessages, 
+                        PermissionsBitField.Flags.AttachFiles, // Allow uploading images
+                        PermissionsBitField.Flags.ReadMessageHistory
+                    ],
+                },
+            ],
+        });
+
+        // 3. Add the "Trolled" role to the user
+        await taggedUser.roles.add(trolledRole);
+
+        // 4. Set permissions for the "Trolled" role in all other channels
+        guild.channels.cache.forEach(channel => {
+            if (channel.id !== trolledChannel.id) {
+                if (channel.permissionOverwrites && channel.permissionsFor(client.user).has(PermissionsBitField.Flags.ManageChannels)) {
+                    // Ensure the bot has the "Manage Channels" permission
+                    channel.permissionOverwrites.edit(trolledRole.id, {
+                        [PermissionsBitField.Flags.ViewChannel]: false
+                    }).catch(error => {
+                        logger.error(`Failed to update permissions for channel ${channel.name}`, error);
+                    });
+                } else {
+                    // Handle channels where permission overwrites are missing or bot lacks permission
+                    logger.warn(`No permission overwrites found or insufficient permissions for channel: ${channel.name}`);
+                }
+            }
+        });        
+
+        // 5. Fetch and format troll missions
+        let troll_missions_list = "";
+        const troll_missions = await TrollMissions.find({ guild_id: guild_id });
+
+        if (troll_missions.length === 0) {
+            const title = "Troll Missions";
+            const description = `I couldn't find any troll missions.`;
+            const color = "error";
+            const embed = createEmbed(title, description, color);
+
+            await trolledChannel.send({ embeds: [embed] });
+        } else {
+            troll_missions.forEach(troll_mission => {
+                if (troll_mission.description) {
+                    troll_missions_list += `- Name: **${troll_mission.name}**\n Description: **${troll_mission.description}**\n\n`;
+                } else {
+                    troll_missions_list += `- Name: **${troll_mission.name}**\n\n`;
+                }
+            });
+
+            const title = "You got trolled!";
+            const nickname = interaction.member.nick || interaction.member.user.global_name || interaction.member.user.username;
+            const description = `Oh no, you have been trolled by **${nickname}**!.\n` + 
+            `You now have to complete one of these missions listed below to get back access to the server.\n` +
+            `Please reply with the number next to the the mission you want to complete.\n` +
+            `The staff will then accept your completion when satisfied and get you back access to the server.\n` +
+            `\nThese are all the troll missions:\n\n ${troll_missions_list}`;
+            const embed = createEmbed(title, description, "");
+
+            // 6. Send the missions embed to the newly created channel
+            // Construct the absolute path using __dirname
+            const filePath = path.join(__dirname, '../../../media/rick-roll.webp');
+
+            // Upload the local GIF file as an attachment
+            const attachment = new AttachmentBuilder(filePath, { name: 'rick-roll.webp' });
+
+            // Add the GIF to the embed using the attachment's URL
+            embed.setImage('attachment://rick-roll.webp');
+
+            // Send the embed along with the attachment
+            await trolledChannel.send({ embeds: [embed], files: [attachment] });
+
+            // Update or add new values to the existing data
+            userExchangeData.set(interaction.member.user.id, {
+                ...user_exchange_data, // Spread the existing data to keep it intact
+                name: "troll-user-choose-mission",
+                threadId: trolledChannel.id,
+            });
+        }
+
     } catch (error) {
-        logger.error("Error trolling user:", error);
+        logger.error('Failed to troll user', error);
+        throw new Error("Failed to troll user");
     }
 }
+
 
 module.exports = handleExchangeTrollUserButton;

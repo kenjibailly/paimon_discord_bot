@@ -68,8 +68,8 @@ async function handleDeductUserCommand(interaction, client) {
         if (wallet.amount < amount) {
             // Handle case where there are insufficient funds
             const title = "Insufficient Funds";
-            const description = `<@${userId}> only has **${wallet.amount}** ${tokenEmoji.token_emoji}. 
-            The wallet does not have enough ${tokenEmoji.token_emoji} to deduct **${amount}** ${tokenEmoji.token_emoji}.`;
+            const description = `<@${userId}> only has **${wallet.amount}** ${tokenEmoji.token_emoji}. \n` +
+            `The wallet does not have enough ${tokenEmoji.token_emoji} to deduct **${amount}** ${tokenEmoji.token_emoji}.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
 
@@ -88,9 +88,9 @@ async function handleDeductUserCommand(interaction, client) {
 
         // Successful deduction response
         const title = "Wallet Updated";
-        const description = `<@${member.user.id}> deducted ${amount} ${tokenEmoji.token_emoji} from <@${userId}>'s wallet. 
-        New balance: **${wallet.amount}** ${tokenEmoji.token_emoji}.
-        \nReason: **${reason}**`;
+        const description = `<@${member.user.id}> deducted ${amount} ${tokenEmoji.token_emoji} from <@${userId}>'s wallet.\n` +
+        `New balance: **${wallet.amount}** ${tokenEmoji.token_emoji}.\n` +
+        `\nReason: **${reason}**`;
         const color = "";
         const embed = createEmbed(title, description, color);
 
