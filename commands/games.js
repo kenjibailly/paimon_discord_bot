@@ -6,7 +6,6 @@ const createEmbed = require('../helpers/embed');
 async function handleGamesCommand(interaction, client) {
     const { guild_id } = interaction;
     try {
-        let games_list = "";
         const games = await Games.find({guild_id: guild_id });
 
         if(games.length === 0) {
@@ -23,18 +22,21 @@ async function handleGamesCommand(interaction, client) {
             };
         }
 
+        const games_list = [];
         games.forEach(game => {
-            if (game.description) {
-                games_list += `- Name: **${game.name}**\n Description: **${game.description}**\n\n`;
-            } else {
-                games_list += `- Name: **${game.name}**\n\n`;
-            }
-            
+            // Create a field for each game
+            games_list.push({
+                name: game.name,
+                value: game.description ? game.description : "No description available",
+                inline: false // You can set this to `true` to display fields inline
+            });
         });
-
+        
         const title = "Games";
-        const description = `These are all the games:\n\n ${games_list}`;
+        const description = "These are all the games:\n\u200B\n";
         const embed = createEmbed(title, description, "");
+        embed.addFields(games_list); // Add the fields to the embed
+        
         return {
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             data: {
@@ -43,7 +45,7 @@ async function handleGamesCommand(interaction, client) {
         };
 
     } catch (error) {
-        logger.error('Games error: ' + error);
+        logger.error('Games error: ', error);
 
         const title = "Games Error";
         const description = `Something went wrong while trying to get the games list, please contact the administrator.`;

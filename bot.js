@@ -2,11 +2,12 @@ require('dotenv/config');
 const { Client, GatewayIntentBits, Events } = require('discord.js');
 const express = require('express');
 const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('discord-interactions');
-const { handleSlashCommand, handleButtonClicks, handleMessageReplies } = require('./handlers.js');
+const { handleSlashCommand, handleButtonClicks, handleMessageReplies } = require('./utilities/handlers.js');
 const botJoinsGuild = require("./bot_joins_guild");
 const checkRemoveRewards = require("./check/remove-rewards");
 const checkTeamAssignment = require("./check/team-assignment");
-const Logger = require("./helpers/logger");
+const handleTrolledUserJoin = require('./utilities/handle-trolled-user-join');
+const Logger = require("./utilities/logger.js");
 global.logger = new Logger("Bot");
 
 const mongoose = require('mongoose');
@@ -45,6 +46,11 @@ client.once(Events.ClientReady, () => {
 
 client.on('guildCreate', async (guild) => {
   botJoinsGuild(client, guild);
+});
+
+// When a user joins the server, check if they're being trolled
+client.on('guildMemberAdd', async (member) => {
+  await handleTrolledUserJoin(member);
 });
 
 // Express server setup for handling interactions

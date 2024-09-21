@@ -1,10 +1,12 @@
 const { InteractionResponseType } = require('discord-interactions');
-const commandHandlers = require('./commands');
-const buttonHandlers = require('./buttons');
-const messageHandlers = require('./messages');
-const createEmbed = require("./helpers/embed");
-const userExchangeData = require('./helpers/userExchangeData');
-
+const commandHandlers = require('../commands');
+const buttonHandlers = require('../buttons');
+const messageHandlers = require('../messages');
+const createEmbed = require("../helpers/embed");
+const userExchangeData = require('../helpers/userExchangeData');
+const trolledUserCache = require('../helpers/trolled-user-cache');
+const TrolledUser = require('../models/trolled-users');
+const handleTrollUserChooseMission = require('../messages/troll-user-choose-mission');
 
 async function handleSlashCommand(res, client) {
     const { data } = res;
@@ -56,11 +58,18 @@ async function handleButtonClicks(res, client) {
 }
 
 async function handleMessageReplies(message, client) {
+    const userId = message.author.id;
 
-    if (userExchangeData.has(message.author.id) && message.channelId === userExchangeData.get(message.author.id).threadId) {
-        if (userExchangeData.get(message.author.id).name) {
-            return messageHandlers[userExchangeData.get(message.author.id).name](message, client);
+    if (userExchangeData.has(userId) && message.channelId === userExchangeData.get(userId).threadId) {
+        if (userExchangeData.get(userId).name) {
+            return messageHandlers[userExchangeData.get(userId).name](message, client);
         }
+    }
+
+    // Check cache for trolled users without mission_id
+    const trolledUser = trolledUserCache.get(userId);
+    if (trolledUser && message.channelId === trolledUser.channel_id) {
+        return handleTrollUserChooseMission(message, client, trolledUser);
     }
 }
 

@@ -5,8 +5,8 @@ const Rewards = require('../models/rewards');
 
 
 async function handleShopCommand(interaction, client) {
-    let rewards_options = "";
     let tokenEmoji;
+    const rewards_list = [];
     try {
 
         // Fetch the token emoji
@@ -23,12 +23,22 @@ async function handleShopCommand(interaction, client) {
         }
 
         const rewards = await Rewards.find();
-        rewards.forEach(reward => {
+        rewards.forEach((reward) => {
+            // Create a field for each reward
             if (reward.enable === true) {
-                rewards_options += `- **${reward.short_description}** ${reward.long_description ? `: ${reward.long_description}` : ''} - **${reward.price}** ${tokenEmoji.token_emoji}\n`;
+                // Build the reward time string conditionally
+                const rewardTime = reward.time ? ` (${reward.time} days)` : '';
+
+                // Add the reward to the list
+                rewards_list.push({
+                    name: `**${reward.price}** ${tokenEmoji.token_emoji} - ${reward.short_description}${rewardTime}`,
+                    value: reward.long_description ? reward.long_description : " ",
+                    inline: false // You can set this to `true` to display fields inline
+                });
             }
         });
     } catch (error) {
+        logger.error("Rewards Error:", error);
         const title = "Error Rewards";
         const description = `I could not find the rewards in the database. Pleae contact the administrator.`;
         const color = "error";
@@ -42,8 +52,9 @@ async function handleShopCommand(interaction, client) {
         };
     }
     const title = "Shop";
-    const description = `Exchange your tokens for the following rewards: \n\n ${rewards_options}`;
+    const description = `Exchange your ${tokenEmoji.token_emoji} for the following rewards:\n\u200B\n`;
     const embed = createEmbed(title, description, "");
+    embed.addFields(rewards_list); // Add the fields to the embed
 
     try {
 

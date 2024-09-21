@@ -11,7 +11,7 @@ async function botJoinsGuild(client, guild) {
         deployCommands(guildId);
 
     } catch (error) {
-        logger.error('Deploy Commands Error: ' + error);
+        logger.error('Deploy Commands Error: ', error);
 
         const title = "Deploy Commands Error";
         const description = `I could not deploy some slash commands, please contact your administrator.`;
@@ -45,7 +45,7 @@ async function botJoinsGuild(client, guild) {
         { guild_id: guildId, name: 'custom-channel', short_description: 'Add a custom channel'},
         { guild_id: guildId, name: 'custom-role', short_description: 'Add a custom role name and color'},
         { guild_id: guildId, name: 'choose-game', short_description: 'Choose the next game'},
-        { guild_id: guildId, name: 'troll-user', short_description: `Troll someone`, long_description: `This person won't see any channels in the server until a mission on the list is completed. This person can choose their own mission from the list of missions. To see all missions use the \`/troll-missions\` command`},
+        { guild_id: guildId, name: 'troll-user', time: null, short_description: `Troll someone`, long_description: `This person won't see any channels in the server until a mission on the list is completed. This person can choose their own mission from the list of missions. To see all missions use the \`/troll-missions\` command`},
     ];
 
     const trollMissionsToAdd = [

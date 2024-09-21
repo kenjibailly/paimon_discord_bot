@@ -2,10 +2,12 @@ const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../../helpers/embed');
 const AwardedReward = require('../../../models/awarded-reward');
 const TrollMissions = require('../../../models/troll-missions');
+const TrolledUser = require('../../../models/trolled-users');
 const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const checkPermissions = require('../../../helpers/check-permissions');
+const trolledUserCache = require('../../../helpers/trolled-user-cache');
 const { PermissionsBitField, ChannelType, AttachmentBuilder } = require('discord.js');
 const path = require('path');
 
@@ -90,11 +92,27 @@ async function handleExchangeTrollUserButton(interaction, client) {
         }
 
             
+        try {
+            const trolledUser = await trollUser(interaction, client, user_exchange_data);
+            // If successful, you can handle success logic here
+        } catch (error) {
+            const title = "Troll someone has failed";
+            const description = error.message;
+            const color = "error";
+            const embed = createEmbed(title, description, color);
+        
+            handleCancelThread(interaction, client);
+        
+            return {
+                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                    embeds: [embed],
+                },
+            };
+        }
 
         try {
             // troll user code here
-
-            await trollUser(interaction, client, user_exchange_data);
 
             const title = "You trolled someone!";
             const description = `You have successfully trolled <@${user_exchange_data.taggedUser}>!\n` +
@@ -255,22 +273,28 @@ async function trollUser(interaction, client, user_exchange_data) {
 
             await trolledChannel.send({ embeds: [embed] });
         } else {
-            troll_missions.forEach(troll_mission => {
-                if (troll_mission.description) {
-                    troll_missions_list += `- Name: **${troll_mission.name}**\n Description: **${troll_mission.description}**\n\n`;
-                } else {
-                    troll_missions_list += `- Name: **${troll_mission.name}**\n\n`;
-                }
-            });
 
+            const troll_missions_list = [];
+            troll_missions.forEach((troll_mission, index) => {
+                const missionNumber = index + 1; // +1 to start counting from 1
+                // Create a field for each troll_mission
+                troll_missions_list.push({
+                    name: `${missionNumber}. ${troll_mission.name}`,
+                    value: troll_mission.description ? troll_mission.description : "No description available",
+                    inline: false // You can set this to `true` to display fields inline
+                });
+            });
+            
             const title = "You got trolled!";
             const nickname = interaction.member.nick || interaction.member.user.global_name || interaction.member.user.username;
-            const description = `Oh no, you have been trolled by **${nickname}**!.\n` + 
+            const description = `Oh no, you have been trolled by **${nickname}**!.\n\n` + 
             `You now have to complete one of these missions listed below to get back access to the server.\n` +
             `Please reply with the number next to the the mission you want to complete.\n` +
-            `The staff will then accept your completion when satisfied and get you back access to the server.\n` +
-            `\nThese are all the troll missions:\n\n ${troll_missions_list}`;
+            `The staff will then accept your completion when satisfied and get you back access to the server, your completion entry will be shared with the rest of the server.\n` +
+            `\nThese are all the troll missions:\n\u200B\n`;
             const embed = createEmbed(title, description, "");
+            embed.addFields(troll_missions_list); // Add the fields to the embed
+
 
             // 6. Send the missions embed to the newly created channel
             // Construct the absolute path using __dirname
@@ -285,17 +309,35 @@ async function trollUser(interaction, client, user_exchange_data) {
             // Send the embed along with the attachment
             await trolledChannel.send({ embeds: [embed], files: [attachment] });
 
+            try {
+                const newTrolledUser = new TrolledUser({
+                    guild_id: guild_id,
+                    user_id: user_exchange_data.taggedUser,
+                    channel_id: trolledChannel.id,
+                });
+                
+                await newTrolledUser.save();
+            } catch (error) {
+                logger.error("New Trolled User Error", error);
+                throw new Error("Failed to save trolled someone to the database, could it be that this person is already being trolled?");
+            }
+
             // Update or add new values to the existing data
-            userExchangeData.set(interaction.member.user.id, {
-                ...user_exchange_data, // Spread the existing data to keep it intact
-                name: "troll-user-choose-mission",
-                threadId: trolledChannel.id,
-            });
+            userExchangeData.delete(interaction.member.user.id);
+
+            // Refresh the cache immediately
+            await trolledUserCache.refresh();
         }
 
     } catch (error) {
         logger.error('Failed to troll user', error);
-        throw new Error("Failed to troll user");
+        
+        // Optionally, you can check if the error message matches a specific string
+        const errorMessage = error.message.includes("Failed to save")
+            ? error.message
+            : "Failed to troll user, please try again later.";
+    
+        throw new Error(errorMessage);
     }
 }
 

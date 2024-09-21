@@ -106,13 +106,13 @@ async function registerCommands(guildId) {
         description: 'Select the reward type',
         required: true,
         choices: [
-          { name: 'Choose your nickname', value: 'change-own-nickname' },
-          { name: "Choose someone's nickname", value: 'change-user-nickname' },
+          { name: 'Change your nickname', value: 'change-own-nickname' },
+          { name: "Change someone's nickname", value: 'change-user-nickname' },
           { name: 'Add a custom server emoji', value: 'custom-emoji' },
           { name: 'Add a custom channel', value: 'custom-channel' },
           { name: 'Add a custom role name and color', value: 'custom-role' },
-          { name: 'Add a custom soundboard sound', value: 'custom-soundboard' },
           { name: 'Choose next game', value: 'choose-game' },
+          { name: 'Troll someone', value: 'troll-user' },
         ],
       },
       {
@@ -322,6 +322,27 @@ async function registerCommands(guildId) {
     dm_permission: false, // Command can’t be used in DMs
   };
 
+  const TROLL_USER_COMPLETE_MISSION_COMMAND = {
+    name: 'troll-user-complete-mission',
+    description: `Complete a trolled user's mission, if no message link is added, last message will be used`,
+    options: [
+      {
+        type: 6, // USER
+        name: 'user',
+        description: 'Select a user to complete its troll mission',
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: 'message-link',
+        description: 'Copy the message link of the completed mission to post it to server',
+        required: false,
+      },
+    ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -342,6 +363,7 @@ async function registerCommands(guildId) {
     SET_CHANNEL_NAME_CONFIGURATION_COMMAND,
     TROLL_MISSIONS_COMMAND,
     MANAGE_TROLL_MISSIONS_COMMAND,
+    TROLL_USER_COMPLETE_MISSION_COMMAND,
   ];
 
   // Register or update the existing commands

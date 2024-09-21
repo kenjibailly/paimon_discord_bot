@@ -16,7 +16,8 @@ const handleResetTeamsCommand = require('./reset-teams');
 const handleSetStatusCommand = require('./set-status');
 const handleStartEventCommand = require('./start-event');
 const handleCancelEventCommand = require('./cancel-event');
-const handleChannelNameConfiguration = require('./set-channel-name-configuration');
+const handleChannelNameConfigurationCommand = require('./set-channel-name-configuration');
+const handleTrollUserCompleteMissionCommand = require('./troll-user-complete-mission');
 
 module.exports = {
     'award-team': handleAwardTeamCommand,
@@ -37,5 +38,6 @@ module.exports = {
     'set-status': handleSetStatusCommand,
     'start-event': handleStartEventCommand,
     'cancel-event': handleCancelEventCommand,
-    'set-channel-name-configuration': handleChannelNameConfiguration,
+    'set-channel-name-configuration': handleChannelNameConfigurationCommand,
+    'troll-user-complete-mission': handleTrollUserCompleteMissionCommand,
 };

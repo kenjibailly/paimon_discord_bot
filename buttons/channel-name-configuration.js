@@ -52,7 +52,7 @@ async function handleChannelNameConfigurationButton(interaction, client) {
         };
 
     } catch (error) {
-        logger.error('Channel Name Configuration Error: ' + error);
+        logger.error('Channel Name Configuration Error: ', error);
         const title = "Error";
         const description = `Something went wrong, please try again later or contact your administrator.`;
         const color = "error";

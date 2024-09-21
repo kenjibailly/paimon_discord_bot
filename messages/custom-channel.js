@@ -167,7 +167,7 @@ async function handleCustomChannelCategory(message, client) {
     try {
         channel_name_config = await ChannelNameConfig.findOne({ guild_id: message.guild.id });
     } catch (error) {
-        logger.error("Error getting Channel Name Configuration from the database" + error);
+        logger.error("Error getting Channel Name Configuration from the database", error);
         // Send a confirmation message before closing the thread
         const title = `Channel Name Configuration Error`;
         const description = `I could not find the channel name configuration in the database, please try again later or contact your administrator.`;

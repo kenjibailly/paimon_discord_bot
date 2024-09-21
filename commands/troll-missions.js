@@ -6,7 +6,6 @@ const createEmbed = require('../helpers/embed');
 async function handleTrollMissionsCommand(interaction, client) {
     const { guild_id } = interaction;
     try {
-        let troll_missions_list = "";
         const troll_missions = await TrollMissions.find({guild_id: guild_id });
 
         if(troll_missions.length === 0) {
@@ -23,17 +22,22 @@ async function handleTrollMissionsCommand(interaction, client) {
             };
         }
 
-        troll_missions.forEach(troll_mission => {
-            if (troll_mission.description) {
-                troll_missions_list += `- Name: **${troll_mission.name}**\n Description: **${troll_mission.description}**\n\n`;
-            } else {
-                troll_missions_list += `- Name: **${troll_mission.name}**\n\n`;
-            }
-        });
 
+        const troll_missions_list = [];
+        troll_missions.forEach(troll_mission => {
+            // Create a field for each troll_mission
+            troll_missions_list.push({
+                name: troll_mission.name,
+                value: troll_mission.description ? troll_mission.description : "No description available",
+                inline: false // You can set this to `true` to display fields inline
+            });
+        });
+        
         const title = "Troll Missions";
-        const description = `These are all the troll missions:\n\n ${troll_missions_list}`;
+        const description = "These are all the troll missions:\n\u200B\n";
         const embed = createEmbed(title, description, "");
+        embed.addFields(troll_missions_list); // Add the fields to the embed
+        
         return {
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             data: {
@@ -42,7 +46,7 @@ async function handleTrollMissionsCommand(interaction, client) {
         };
 
     } catch (error) {
-        logger.error('Troll Missions error: ' + error);
+        logger.error('Troll Missions error: ', error);
 
         const title = "Troll Missions Error";
         const description = `Something went wrong while trying to get the troll missions list, please contact the administrator.`;

@@ -49,7 +49,7 @@ async function handleSetRewardCommand(interaction, client) {
         );
 
         if (reward) {
-            let description = `The reward **${reward.description}** has been updated.`;
+            let description = `The reward **${reward.short_description}** has been updated.`;
 
             const token_emoji = await TokenEmoji.findOne({guild_id: guild_id});
 

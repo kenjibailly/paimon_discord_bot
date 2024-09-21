@@ -11,7 +11,7 @@ async function handleTrollUser(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
 
     const messageContent = message.content;
-    const validationError = validateTaggedUser(messageContent);
+    const validationError = await validateTaggedUser(messageContent, message);
 
     if (validationError) {
         logger.error("Validation Error:", validationError);

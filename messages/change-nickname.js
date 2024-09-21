@@ -120,7 +120,7 @@ async function handleChangeUserNickname(message, client) {
     }
 
     const messageContent = message.content;
-    const validationError = validateTaggedUser(messageContent);
+    const validationError = await validateTaggedUser(messageContent, message);
 
     if (validationError) {
         logger.error("Validation Error:", validationError);
