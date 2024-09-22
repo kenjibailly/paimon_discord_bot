@@ -11,6 +11,7 @@ const handleExchangeCustomChannelButton = require('./shop/exchange-reward/exchan
 const handleExchangeCustomRoleButton = require('./shop/exchange-reward/exchange-custom-role');
 const handleExchangeTrollUserButton = require('./shop/exchange-reward/exchange-troll-user');
 const { handleChannelNameConfigurationButton, handleChannelNameConfigurationFinishButton } = require('./channel-name-configuration');
+const handleExchangeChooseGameButton = require('./shop/exchange-reward/exchange-choose-game');
 
 module.exports = {
     'exchange-shop': handleExchangeShopButton,
@@ -40,4 +41,5 @@ module.exports = {
     'channel-name-config-separator-no': handleChannelNameConfigurationFinishButton,
     'exchange-troll-user': handleExchangeTrollUserButton,
     'exchange-troll-user': handleExchangeTrollUserButton,
+    'exchange-choose-game': handleExchangeChooseGameButton,
 };

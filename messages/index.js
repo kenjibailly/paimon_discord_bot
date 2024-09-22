@@ -7,6 +7,7 @@ const { handleCustomRole, handleCustomRoleColor } = require('./custom-role');
 const { handleCustomChannel, handleCustomChannelCategory } = require('./custom-channel');
 const handleChannelNameConfiguration = require('./channel-name-config');
 const handleTrollUser = require('./troll-user');
+const handleChooseGame = require('./choose-game');
 
 module.exports = {
     'change-user-nickname': handleChangeUserNickname,
@@ -29,4 +30,5 @@ module.exports = {
     'custom-channel-category': handleCustomChannelCategory,
     'channel-name-config': handleChannelNameConfiguration,
     'troll-user': handleTrollUser,
+    'choose-game': handleChooseGame,
 };

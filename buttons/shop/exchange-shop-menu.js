@@ -3,6 +3,7 @@ const handleCustomEmoji = require('./menu-handler/handle-custom-emoji');
 const handleCustomChannel = require('./menu-handler/handle-custom-channel');
 const handleCustomRole = require('./menu-handler/handle-custom-role');
 const handleTrollUser = require('./menu-handler/handle-troll-user');
+const handleChooseGame = require('./menu-handler/handle-choose-game');
 
 async function handleExchangeShopMenuButton(interaction, client) {
     const {data} = interaction;
@@ -21,6 +22,8 @@ async function handleExchangeShopMenuButton(interaction, client) {
             return await handleCustomRole(name, interaction);
         case "troll-user":
             return await handleTrollUser(name, interaction);
+        case "choose-game":
+            return await handleChooseGame(name, interaction, client);
         default:
             break;
     }

@@ -1,0 +1,120 @@
+const { InteractionResponseType } = require('discord-interactions');
+const createEmbed = require('../../../helpers/embed');
+const checkRequiredBalance = require('../../../helpers/check-required-balance');
+const handleCancelThread = require('../../cancel-thread');
+const userExchangeData = require('../../../helpers/userExchangeData');
+const NextGames = require('../../../models/next-games');
+
+async function handleExchangeChooseGameButton(interaction, client) {
+
+    const user_exchange_data = userExchangeData.get(interaction.member.user.id);
+    userExchangeData.delete(interaction.member.user.id);
+        
+    let next_game_position;
+    let next_games;
+    let wallet;
+
+    const guild = await client.guilds.fetch(interaction.guild_id);
+    const thread = await guild.channels.fetch(interaction.channel_id);
+
+    try {
+
+        wallet = await checkRequiredBalance(interaction, client, user_exchange_data.rewardPrice, thread);
+        if(!wallet) { // if wallet has return error message
+            return {
+                type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
+            };
+        }
+
+        const newNextGame = new NextGames({
+            guild_id: interaction.guild_id,
+            game_id: user_exchange_data.game._id,
+        });
+
+        const savedNextGame = await newNextGame.save();
+        next_games = await NextGames.find({ guild_id: interaction.guild_id });
+        next_game_position = next_games.length;
+
+        if (!savedNextGame) {
+            // If the result is falsy, throw an error
+            throw new Error('New event could not be saved.');
+        }
+    } catch (error) {
+        logger.error("Error Adding Next Game:", error);
+        const title = "Error Adding Next Game";
+        const description = `I could not add the game to the database. Please contact your administrator, or try again later.`;
+        const color = "error";
+        const embed = createEmbed(title, description, color);
+
+        handleCancelThread(interaction, client);
+
+        // Send a confirmation message before closing the thread
+        return {
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                embeds: [embed],
+            },
+        };
+    }
+
+    // Step 1: Combine next_games with corresponding game details from user_exchange_data.games
+    const combined_games = next_games.map(next_game => {
+        // Find the corresponding game in user_exchange_data.games
+        const corresponding_game = user_exchange_data.games.find(game => game._id.toString() === next_game.game_id.toString());
+
+        return {
+            date: next_game.date,
+            name: corresponding_game ? corresponding_game.name : "Unknown Game",
+            description: corresponding_game ? corresponding_game.description : "No description available."
+        };
+    });
+
+    // Step 2: Sort the combined games by the `date` field in ascending order
+    const sorted_games = combined_games.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Step 3: Populate the `next_games_list` with sorted games
+    const next_games_list = [];
+    sorted_games.forEach((game, index) => {
+        const missionNumber = index + 1; // +1 to start counting from 1
+        // Create a field for each game
+        next_games_list.push({
+            name: `${missionNumber}. ${game.name}`,
+            value: game.description ? game.description : "No description available.",
+            inline: false // You can set this to `true` to display fields inline
+        });
+    });
+
+    const title = "Shop";
+    const description = `Your game has been added to the list of next games list. Your game is currently number ${next_game_position} on the list.\n` +
+    `You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.\n\n` +
+    `These are all the next games:\n\u200B\n`;
+    const color = "";
+    const embed = createEmbed(title, description, color);
+    embed.addFields(next_games_list);
+
+    // Send success message before canceling the thread message
+    await thread.send({ embeds: [embed] });
+
+    await handleCancelThread(interaction, client);
+    
+    // Send message to the parent channel if available
+    const parentChannel = thread.parent;
+    if (parentChannel) {
+        const parentTitle = "Shop";
+        const parentDescription = `<@${interaction.member.user.id}> has queud up a game to play next.\n` + 
+        `This is the list of games to play next:\n\u200B\n`;
+        const color = "";
+        const parentEmbed = createEmbed(parentTitle, parentDescription, color);
+        parentEmbed.addFields(next_games_list);
+        
+        await parentChannel.send({
+            embeds: [parentEmbed],
+        });
+    }
+
+    return {
+        type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
+    };
+}
+
+module.exports = handleExchangeChooseGameButton;

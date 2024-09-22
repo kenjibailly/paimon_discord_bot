@@ -31,7 +31,7 @@ async function handleCancelThreadButton(interaction, client) {
 
         setTimeout(() => {
             thread.delete();
-        }, 5000);
+        }, 20000);
 
         // Respond to the interaction to avoid the "This interaction failed" message
         return {

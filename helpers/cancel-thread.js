@@ -16,7 +16,10 @@ async function handleCancelThread(guild_id, channel_id, client) {
         const description = `This thread will be closed shortly.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        await thread.send({ embeds: [embed] });
+
+        setTimeout(async () => {
+            await thread.send({ embeds: [embed] });
+        }, 1000);
 
         const members = await thread.members.fetch(); // Get all members of the thread
 
@@ -29,7 +32,7 @@ async function handleCancelThread(guild_id, channel_id, client) {
 
         setTimeout(() => {
             thread.delete();
-        }, 5000);
+        }, 20000);
 
     } catch (error) {
         logger.error('Failed to close the thread:', error);
