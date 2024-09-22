@@ -2,7 +2,7 @@ const { InteractionResponseType } = require('discord-interactions');
 const Events = require('../models/events');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
-
+const getBotChannel = require('../helpers/get-bot-channel');
 
 async function handleCancelEventCommand(interaction, client) {
     const { data, guild_id } = interaction;
@@ -12,9 +12,28 @@ async function handleCancelEventCommand(interaction, client) {
         await resetTeams(client, guild_id);
 
         const title = "Event Canceled";
-        const description = `Event successfully canceled and teams have been reset.`;
-        const color = "";
-        const embed = createEmbed(title, description, color);
+
+        let description = `The event below has been canceled:`;
+        let color = "error";
+        let embed = createEmbed(title, description, color);
+        const event_fields = {
+            name: event.name,
+            value: event.description ? event.description : "No description available",
+            inline: false // You can set this to `true` to display fields inline
+        };
+        embed.addFields(event_fields); // Add the fields to the embed
+
+        const bot_channel = await getBotChannel(guild_id);
+        const botChannel = await client.channels.fetch(bot_channel.channel);
+        if (botChannel) {
+            await botChannel.send({
+                embeds: [embed],
+            });
+        }
+
+        color = "";
+        description = `Event successfully canceled and teams have been reset.`;
+        embed = createEmbed(title, description, color);
 
         try {
             const events = await Events.find({ guild_id: guild_id });
