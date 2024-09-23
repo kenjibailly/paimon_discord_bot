@@ -10,7 +10,7 @@ async function refreshTrolledUserCache() {
             trolledUserCache.set(user.user_id, user);
         });
     } catch (error) {
-        logger.error("Error finding trolledUsers", error);
+        // logger.warn("Error finding trolledUsers", error);
     }
 
 }
