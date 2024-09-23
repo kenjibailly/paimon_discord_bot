@@ -1,7 +1,9 @@
 const { InteractionResponseType, ButtonStyle, ActionRowBuilder, ButtonBuilder } = require('discord-interactions');
 const Events = require('../models/events');
+const NextGames = require('../models/next-games');
+const Games = require('../models/games');
 const createEmbed = require('../helpers/embed'); // Assuming this is a helper function to create embeds
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ButtonComponent } = require('discord.js');
 const userExchangeData = require('../helpers/userExchangeData');
 
 
@@ -112,10 +114,80 @@ async function handleStartEventCommand(interaction, client) {
     
         // Add the user who clicked the button to the thread
         await thread.members.add(interaction.member.user.id);
+
+        let description;
+        let button_component = [];
+
+        const next_game = await NextGames.findOne({ guild_id: guild_id }).sort({ date: 1 });
+        const game = await Games.findById(next_game.game_id);
+
+        if (game) {
+            description = `Someone has added an upcoming game, do you want to select this game?\n\n` + 
+            `- Name: **${game.name}**\n` +
+            `  Description: **${game.description ? game.description : "No description available."}**\n\n` +
+            `Or do you want to add another existing game to your event?`;            
+            button_component = [
+                {
+                    type: 2, // Button
+                    style: 1, // Primary style (for updating a game)
+                    label: "Upcoming Game",
+                    emoji: { name: "➕" }, 
+                    custom_id: "start-event-next-game"
+                },
+                {
+                    type: 2, // Button
+                    style: 1, // Primary style (for updating a game)
+                    label: "Other Game",
+                    emoji: { name: "✅" },
+                    custom_id: "start-event-add-game"
+                },
+                {
+                    type: 2, // Button
+                    style: 4, // Danger style (for removing a game)
+                    label: "No Game",
+                    emoji: { name: "🫸" },
+                    custom_id: "start-event-no-game"
+                },
+                {
+                    type: 2, // Button
+                    style: 4, // Danger style (for removing a game)
+                    label: "Cancel",
+                    custom_id: "cancel-thread"
+                }
+            ];
+            user_exchange_data.game = game;
+            userExchangeData.set(interaction.member.user.id, user_exchange_data);
+        } else {
+            description = `Someone has added an upcoming game, do you want to select this game?\n\n` + 
+            `- Name: ${next_game.name}\n` +
+            `  Description: ${next_game.description}\n\n` +
+            `Do you want to add an existing game to your event?`;
+            button_component = [
+                {
+                    type: 2, // Button
+                    style: 1, // Primary style (for updating a game)
+                    label: "Yes",
+                    emoji: { name: "✅" }, // Pencil emoji for updating
+                    custom_id: "start-event-add-game"
+                },
+                {
+                    type: 2, // Button
+                    style: 4, // Danger style (for removing a game)
+                    label: "No",
+                    emoji: { name: "🫸" }, // Trash bin emoji for removing
+                    custom_id: "start-event-no-game"
+                },
+                {
+                    type: 2, // Button
+                    style: 4, // Danger style (for removing a game)
+                    label: "Cancel",
+                    custom_id: "cancel-thread"
+                }
+            ];
+        }
     
         // Post the message in the thread
         let title = "Start Event";
-        let description = `Do you want to add an existing game to your event?`;
         let embed = createEmbed(title, description, "");
     
         // Send the message to the thread
@@ -124,28 +196,7 @@ async function handleStartEventCommand(interaction, client) {
             components: [
                 {
                     type: 1, // Action Row
-                    components: [
-                        {
-                            type: 2, // Button
-                            style: 1, // Primary style (for updating a game)
-                            label: "Yes",
-                            emoji: { name: "✅" }, // Pencil emoji for updating
-                            custom_id: "start-event-add-game"
-                        },
-                        {
-                            type: 2, // Button
-                            style: 4, // Danger style (for removing a game)
-                            label: "No",
-                            emoji: { name: "🫸" }, // Trash bin emoji for removing
-                            custom_id: "start-event-no-game"
-                        },
-                        {
-                            type: 2, // Button
-                            style: 4, // Danger style (for removing a game)
-                            label: "Cancel",
-                            custom_id: "cancel-thread"
-                        }
-                    ],
+                    components: button_component,
                 },
             ],
         });

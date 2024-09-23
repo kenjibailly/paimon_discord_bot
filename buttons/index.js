@@ -6,6 +6,7 @@ const handleJoinTeamButton = require('./join-team');
 const { handleAddGameNameButton, handleAddGameWithoutDescriptionButton, handleManageGamesButton, handleUpdateGameNameButton, handleUpdateGameDescriptionButton } = require('./manage/manage-games');
 const { handleAddTrollMissionNameButton, handleAddTrollMissionWithoutDescriptionButton, handleManageTrollMissionsButton, handleUpdateTrollMissionNameButton, handleUpdateTrollMissionDescriptionButton } = require('./manage/manage-troll-missions');
 const { handleStartEventAddGameButton, handleStartEventNoGameButton } = require('./start-event');
+const handleStartEventNextGameButton = require('./start-event-next-game');
 const handleExchangeCustomEmojiButton = require('./shop/exchange-reward/exchange-custom-emoji');
 const handleExchangeCustomChannelButton = require('./shop/exchange-reward/exchange-custom-channel');
 const handleExchangeCustomRoleButton = require('./shop/exchange-reward/exchange-custom-role');
@@ -32,6 +33,7 @@ module.exports = {
     'remove-troll-mission': handleManageTrollMissionsButton,
     'update-troll-mission-name': handleUpdateTrollMissionNameButton,
     'update-troll-mission-description': handleUpdateTrollMissionDescriptionButton,
+    'start-event-next-game': handleStartEventNextGameButton,
     'start-event-add-game': handleStartEventAddGameButton,
     'start-event-no-game': handleStartEventNoGameButton,
     'exchange-custom-channel': handleExchangeCustomChannelButton,

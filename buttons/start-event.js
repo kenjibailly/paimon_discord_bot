@@ -1,6 +1,5 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
-const { EmbedBuilder } = require('discord.js'); 
 const Games = require('../models/games');
 const Events = require('../models/events');
 const userExchangeData = require('../helpers/userExchangeData');
@@ -137,11 +136,15 @@ async function handleStartEventNoGameButton(interaction, client) {
             };
         }
 
-        const embedEvent = new EmbedBuilder()
-        .setTitle(user_exchange_data.event_name || 'Event Started!')
-        .setDescription(user_exchange_data.event_description || 'No description provided')
-        .setImage(user_exchange_data.image || undefined)
-        .setColor(user_exchange_data.color); // Customize the color
+        const eventTitle = user_exchange_data.event_name || 'Event Started!';
+        const eventDescription = user_exchange_data.event_description || 'No description provided';
+        const eventColor = user_exchange_data.color;
+        const embedEvent = createEmbed(eventTitle, eventDescription, eventColor);
+        embedEvent.setImage(user_exchange_data.image || undefined);
+        embedEvent.addFields([
+            { name: "Game", value: game.name, inline: true },
+            { name: 'Game Description', value: game.description ? game.description : 'No description', inline: true }
+        ]);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
         cancelThread(interaction, client);

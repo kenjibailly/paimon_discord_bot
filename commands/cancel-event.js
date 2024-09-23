@@ -1,6 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const Events = require('../models/events');
 const Teams = require('../models/teams');
+const TeamAssignments = require('../models/team-assignments');
 const createEmbed = require('../helpers/embed');
 const getBotChannel = require('../helpers/get-bot-channel');
 
@@ -9,6 +10,7 @@ async function handleCancelEventCommand(interaction, client) {
 
     try {
         const event = await Events.findOneAndDelete({ guild_id: guild_id });
+        const removeTeamAssignments = await TeamAssignments.deleteMany({ guild_id: guild_id });
         await resetTeams(client, guild_id);
 
         const title = "Event Canceled";
