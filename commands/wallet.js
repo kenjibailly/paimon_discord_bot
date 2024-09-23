@@ -39,7 +39,7 @@ async function handleWalletCommand(interaction, client) {
             };
         } else {
             const title = "Wallet";
-            const description = `You have not been awarded any tokens yet.`;
+            const description = `You have not been awarded any ${tokenEmoji.token_emoji} yet.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
 
