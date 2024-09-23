@@ -18,16 +18,16 @@ async function handleCancelThreadButton(interaction, client) {
 
         setTimeout(async () => {
             await thread.send({ embeds: [embed] });
+
+            const members = await thread.members.fetch(); // Get all members of the thread
+
+            // Remove all members except the bot itself
+            members.forEach(async member => {
+                if (member.id !== client.user.id) { // `client.user.id` is the bot's ID
+                    await thread.members.remove(member.id, 'Removing all members except the bot');
+                }
+            });
         }, 1000);
-
-        const members = await thread.members.fetch(); // Get all members of the thread
-
-        // Remove all members except the bot itself
-        members.forEach(async member => {
-            if (member.id !== client.user.id) { // `client.user.id` is the bot's ID
-                await thread.members.remove(member.id, 'Removing all members except the bot');
-            }
-        });
 
         setTimeout(() => {
             thread.delete();

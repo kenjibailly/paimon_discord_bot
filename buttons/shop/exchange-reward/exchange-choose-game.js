@@ -29,6 +29,7 @@ async function handleExchangeChooseGameButton(interaction, client) {
         const newNextGame = new NextGames({
             guild_id: interaction.guild_id,
             game_id: user_exchange_data.game._id,
+            user_id: interaction.member.user.id,
         });
 
         const savedNextGame = await newNextGame.save();
@@ -85,9 +86,9 @@ async function handleExchangeChooseGameButton(interaction, client) {
     });
 
     const title = "Shop";
-    const description = `Your game has been added to the list of next games list. Your game is currently number ${next_game_position} on the list.\n` +
+    const description = `Your game has been added to the list of upcoming games list. Your game is currently number ${next_game_position} on the list.\n` +
     `You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.\n\n` +
-    `These are all the next games:\n\u200B\n`;
+    `These are all the upcoming games:\n\u200B\n`;
     const color = "";
     const embed = createEmbed(title, description, color);
     embed.addFields(next_games_list);

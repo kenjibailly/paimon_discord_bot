@@ -6,6 +6,10 @@ const nextGamesSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    user_id: {
+        type: String,
+        required: true,
+    },
     game_id: {
         type: String,
         required: true,

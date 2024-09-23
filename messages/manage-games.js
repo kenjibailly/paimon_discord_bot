@@ -3,7 +3,12 @@ const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
 const cancelThread = require('../helpers/cancel-thread');
 const Games = require('../models/games');
+const NextGames = require('../models/next-games');
 const validateNumber = require('../helpers/validate-number');
+const Rewards = require('../models/rewards');
+const Wallet = require('../models/wallet');
+const getBotChannel = require('../helpers/get-bot-channel');
+const getTokenEmoji = require('../helpers/get-token-emoji');
 
 async function handleManageGames(message, client) {
     const user_exchange_data = userExchangeData.get(message.author.id);
@@ -163,6 +168,94 @@ async function handleAddGameDescription (message, client) {
 async function removeGame(game, client, message) {
     try {
         const deletedGame = await Games.findByIdAndDelete(game._id);
+
+        // Find and delete associated NextGames
+        const associatedNextGames = await NextGames.find({ game_id: game._id });
+        await NextGames.deleteMany({ game_id: game._id });
+        
+        if (associatedNextGames.length > 0) {
+            const reward = await Rewards.findOne({ guild_id: message.guildId, name: 'choose-game' });
+        
+            // Create a mapping of user_id to the total amount to reimburse them
+            const userReimbursements = {};
+        
+            // Loop through associated next games to aggregate reimbursements
+            associatedNextGames.forEach(nextGame => {
+                if (userReimbursements[nextGame.user_id]) {
+                    userReimbursements[nextGame.user_id] += reward.price;
+                } else {
+                    userReimbursements[nextGame.user_id] = reward.price;
+                }
+            });
+        
+            // Find wallets for the users involved
+            const wallets = await Wallet.find({ 
+                guild_id: message.guildId, 
+                user_id: { $in: Object.keys(userReimbursements) } 
+            });
+        
+            // Update each wallet with the aggregated reimbursement amount
+            wallets.forEach(wallet => {
+                if (userReimbursements[wallet.user_id]) {
+                    wallet.amount += userReimbursements[wallet.user_id];
+                }
+            });
+        
+            // Save the updated wallets
+            await Promise.all(wallets.map(wallet => wallet.save()));
+        
+            // Fetch the token emoji using getTokenEmoji function (moved up)
+            const tokenEmoji = await getTokenEmoji(message.guildId);
+        
+            // Check if tokenEmoji is an embed (error case)
+            if (tokenEmoji.data) {
+                return {
+                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                    data: {
+                        embeds: [tokenEmoji],
+                        flags: 64,
+                    },
+                };
+            }
+        
+            // Build the description string with user reimbursements
+            let description = `The staff removed a game from the list which has been chosen as an upcoming game.\n\n` +
+            `This game has been removed:\n` +
+            `- Name: **${game.name}**\n` +
+            `  Description: **${game.description}**\n\n` +
+            `These members have been reimbursed:\n`;
+            
+            Object.keys(userReimbursements).forEach(user_id => {
+                description += `- <@${user_id}> has been reimbursed: **${userReimbursements[user_id]} ${tokenEmoji.token_emoji}**\n`;
+            });
+        
+            const title = `Game Removed`;
+            const color = "";
+            const embed = createEmbed(title, description, color);
+        
+            // Fetch bot channel and send the message
+            const bot_channel = await getBotChannel(reward.guild_id);
+        
+            // Send embed to bot channel or fallback to the current message channel
+            if (bot_channel && bot_channel.channel) {
+                try {
+                    const channel = await client.channels.fetch(bot_channel.channel);
+                    await channel.send({ embeds: [embed] });
+                    
+                    logger.success('Message sent to the bot channel successfully.');
+                } catch (error) {
+                    logger.error('Error sending message to the bot channel:', error);
+                }
+            } else {
+                logger.error('Bot channel not found or not set.');
+                await message.channel.send({
+                    embeds: [embed],
+                });
+            }
+        }
+        
+
+
             // Check if the game was deleted
         if (deletedGame) {
             // Game was successfully deleted

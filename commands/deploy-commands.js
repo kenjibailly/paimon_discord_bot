@@ -219,6 +219,11 @@ async function registerCommands(guildId) {
     description: 'Show a list of all the games',
   };
 
+  const NEXT_GAMES_COMMAND = {
+    name: 'upcoming-games',
+    description: 'Show a list of all the upcoming games',
+  };
+
   const RESET_TEAMS_COMMAND = {
     name: 'reset-teams',
     description: 'Remove all users from the set teams',
@@ -355,6 +360,7 @@ async function registerCommands(guildId) {
     SET_TOKEN_EMOJI_COMMAND,
     SET_BOT_CHANNEL_COMMAND,
     GAMES_COMMAND,
+    NEXT_GAMES_COMMAND,
     RESET_TEAMS_COMMAND,
     SET_STATUS_COMMAND,
     START_EVENT_COMMAND,
