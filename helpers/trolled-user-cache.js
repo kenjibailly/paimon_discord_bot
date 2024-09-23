@@ -16,7 +16,7 @@ async function refreshTrolledUserCache() {
 }
 
 // Call this function on startup and at intervals
-setInterval(refreshTrolledUserCache, 2000); // every minute
+setInterval(refreshTrolledUserCache, 60000); // every minute
 
 module.exports = {
     get: (userId) => trolledUserCache.get(userId),
