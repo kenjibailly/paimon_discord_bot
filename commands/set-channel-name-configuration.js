@@ -27,8 +27,8 @@ async function handleSetChannelNameConfigurationCommand (interaction, client) {
 
         let title = "Channel Name Configuration";
         let description = `Your current configuration is set to: \n` +
-        `- Emoji: ${channel_name_config.emoji ? 'Yes' : 'No'}\n- Separator: ${channel_name_config.separator || 'None'}\n` +
-        `\n\nDo your channels start with an emoji?`;
+        `- Emoji: ${channel_name_config.emoji ? '**Yes**' : '**No**'}\n- Separator: **${channel_name_config.separator || 'None'}**\n` +
+        `\nDo your channels start with an emoji?`;
         let color = "";
         let embed = createEmbed(title, description, color);
 
