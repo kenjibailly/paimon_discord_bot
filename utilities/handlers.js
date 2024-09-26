@@ -8,12 +8,12 @@ const trolledUserCache = require('../helpers/trolled-user-cache');
 const TrolledUser = require('../models/trolled-users');
 const handleTrollUserChooseMission = require('../messages/troll-user-choose-mission');
 
-async function handleSlashCommand(res, client) {
-    const { data } = res;
+async function handleSlashCommand(interaction, client, res) {
+    const { data } = interaction;
     const { name } = data;
 
     if (commandHandlers[name]) {
-        return commandHandlers[name](res, client);
+        return commandHandlers[name](interaction, client, res);
     } else {
         logger.error(`Unknown command: ${name}`);
 
@@ -33,12 +33,11 @@ async function handleSlashCommand(res, client) {
 }
 
 
-async function handleButtonClicks(res, client) {
-    const interaction = res;
+async function handleButtonClicks(interaction, client) {
     const name = interaction.data.custom_id.split(':')[0];
 
     if (buttonHandlers[name]) {
-        return buttonHandlers[name](res, client);
+        return buttonHandlers[name](interaction, client);
     } else {
         logger.error(`Unknown button: ${name}`);
 

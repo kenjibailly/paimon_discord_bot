@@ -348,6 +348,19 @@ async function registerCommands(guildId) {
     dm_permission: false, // Command can’t be used in DMs
   };
 
+  const CREATE_IMAGE_COMMAND = {
+    name: 'create-image',
+    description: 'Creates an image using AI',
+    options: [
+      {
+        type: 3, // STRING
+        name: 'prompt',
+        description: 'Choose a prompt for your image creation',
+        required: true,
+      },
+    ],
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -370,6 +383,7 @@ async function registerCommands(guildId) {
     TROLL_MISSIONS_COMMAND,
     MANAGE_TROLL_MISSIONS_COMMAND,
     TROLL_USER_COMPLETE_MISSION_COMMAND,
+    ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];
 
   // Register or update the existing commands

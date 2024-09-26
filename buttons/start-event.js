@@ -141,11 +141,7 @@ async function handleStartEventNoGameButton(interaction, client) {
         const eventColor = user_exchange_data.color;
         const embedEvent = createEmbed(eventTitle, eventDescription, eventColor);
         embedEvent.setImage(user_exchange_data.image || undefined);
-        embedEvent.addFields([
-            { name: "Game", value: game.name, inline: true },
-            { name: 'Game Description', value: game.description ? game.description : 'No description', inline: true }
-        ]);
-
+        
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
         cancelThread(interaction, client);
 

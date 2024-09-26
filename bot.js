@@ -12,7 +12,7 @@ global.logger = new Logger("Bot");
 
 const mongoose = require('mongoose');
 const mongodb_URI = require('./mongodb/URI');
-
+// const registerCommands = require('./commands/deploy-commands');
 
 mongoose.connect(mongodb_URI)
 .then(() => {
@@ -33,6 +33,15 @@ const client = new Client({
 
 client.once(Events.ClientReady, () => {
   logger.success(`Logged in as ${client.user.tag}!`);
+
+  // // Iterate over all guilds the bot is in
+  // client.guilds.cache.forEach((guild) => {
+  //   const guildId = guild.id;
+  //   logger.log(`Registering commands for guild: ${guild.name} (ID: ${guildId})`);
+
+  //   // Call the function to register commands for this guild
+  //   registerCommands(guildId);
+  // });
 
   setInterval(() => {
     checkRemoveRewards(client);
@@ -58,12 +67,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async function (req, res) {
-    // logger.log('Received interaction:', req.body);
+  // logger.log('Received interaction:', req.body);
 
-    const { type } = req.body;
+  const { type } = req.body;
 
   if (type === InteractionType.APPLICATION_COMMAND) {
-    const response = await handleSlashCommand(req.body, client);
+    const response = await handleSlashCommand(req.body, client, res);
     return res.send(response);
   }
 
@@ -85,16 +94,6 @@ client.on('messageCreate', async message => {
 
 
 app.listen(PORT, () => {
-  const test = [
-    {
-    name: "test",
-    number: 6,
-    },
-    {
-      name: "yeet",
-      number: 9,
-    }
-  ]
   logger.success('Express server listening on port:', PORT);
 });
 
