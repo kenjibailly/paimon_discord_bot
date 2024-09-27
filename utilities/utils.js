@@ -31,4 +31,15 @@ async function InstallGuildCommands(appId, commands, guildId) {
   }
 }
 
-module.exports = { DiscordRequest, InstallGuildCommands };
+// Register global commands (works in DMs and all servers)
+async function InstallGlobalCommands(appId, commands) {
+  const endpoint = `applications/${appId}/commands`; // No guildId needed
+  try {
+    await DiscordRequest(endpoint, { method: 'PUT', body: commands });
+    logger.success('Global commands registered or updated successfully.');
+  } catch (err) {
+    logger.error('Error registering global commands:', err);
+  }
+}
+
+module.exports = { DiscordRequest, InstallGuildCommands, InstallGlobalCommands };

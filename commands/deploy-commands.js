@@ -1,5 +1,5 @@
 require('dotenv/config');
-const { InstallGuildCommands } = require('../utilities/utils.js');
+const { InstallGuildCommands, InstallGlobalCommands } = require('../utilities/utils.js');
 
 
 async function registerCommands(guildId) {
@@ -401,6 +401,9 @@ async function registerCommands(guildId) {
   try {
     // Pass guildId to register commands for a specific guild
     await InstallGuildCommands(process.env.APP_ID, NEW_COMMANDS, guildId);
+    await InstallGlobalCommands(process.env.APP_ID, [
+      ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Only register `create-image` globally
+    ]);
     logger.success('Successfully registered or updated commands.');
   } catch (error) {
     logger.error('Error registering commands:', error);
