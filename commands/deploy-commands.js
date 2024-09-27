@@ -358,6 +358,17 @@ async function registerCommands(guildId) {
         description: 'Choose a prompt for your image creation',
         required: true,
       },
+      {
+        type: 3, // STRING
+        name: 'dimensions',
+        description: 'Select the dimensions of your created image, default 768x768',
+        required: false,
+        choices: [
+          { name: '768x768', value: '768x768' },
+          { name: '512x768', value: '512x768' },
+          { name: '768x512', value: '768x512' },
+        ],
+      },
     ],
   };
 

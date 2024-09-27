@@ -145,7 +145,7 @@ Optional: Change the permissions of the commands of the bot. Go to `Server Setti
 <summary>🛠️ Open for installation steps</summary>
 
 Install and run ComfyUI, I'm not going to explain how to do this, there are a lot of different ways.
-The workflow is made to generate anime images. If you want to use another model or tweak the steps / dimensions, go to commands/create-image.js and edit `const workflow`.
+The workflow is made to generate anime images. If you want to use another model or tweak some options, you can change the workflow in the AI folder.
 
 Download Pony Diffusion V6 XL:
 https://civitai.com/models/257749/pony-diffusion-v6-xl
@@ -175,7 +175,7 @@ It should have this name, but double check or it won't work: `ponyDiffusionV6XL_
     - Lists all the troll missions
 - ✅ /create-image
     - Generates an AI image using ComfyUI, note: a working instance of ComfyUI must be setup for this (not included)
-    - Input: Prompt
+    - Input: Prompt, optional: dimensions
     - ❌ Add LoRa support
 
 #### 🧑‍💼 Staff functions
