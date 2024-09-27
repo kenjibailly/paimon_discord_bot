@@ -88,7 +88,10 @@ async function handleCreateImageCommand(interaction, client, res) {
                     const updatedDescription = description + "\nProgress: **" + percentage_progress + "%**";
                     const initialEmbed = createEmbed(title, updatedDescription, color);
                     // Update the original message using the follow-up URL
-                    await updateMessageWithRetry(followUpUrl, initialEmbed);
+                    const result = await updateMessageWithRetry(followUpUrl, initialEmbed);
+                    if (result instanceof Error) {
+                      throw result; // Manually throw the error returned from the retry function
+                    }
             
                 } catch (error) {
                     logger.error('Error updating message:', error.response ? error.response.data : error.message);
@@ -108,7 +111,10 @@ async function handleCreateImageCommand(interaction, client, res) {
                     // Send an initial response to indicate that the image is being generated
                     const initialEmbed = createEmbed(title, initialDescription, color);
 
-                    await updateMessageWithRetry(followUpUrl, initialEmbed);
+                    const result = await updateMessageWithRetry(followUpUrl, initialEmbed);
+                    if (result instanceof Error) {
+                      throw result; // Manually throw the error returned from the retry function
+                    }
                 }
             }
             
@@ -157,7 +163,10 @@ async function handleCreateImageCommand(interaction, client, res) {
                                 flags: 64 // Only visible to the user
                             }));
             
-                            await updateFormDataWithRetry(followUpUrl, formData);
+                            const result = await updateFormDataWithRetry(followUpUrl, formData);
+                            if (result instanceof Error) {
+                              throw result; // Manually throw the error returned from the retry function
+                            }
                     
                         } catch (error) {
                             logger.error('Error updating message:', error.response ? error.response.data : error.message);
@@ -173,7 +182,10 @@ async function handleCreateImageCommand(interaction, client, res) {
                             "error"
                         );
             
-                        await updateMessageWithRetry(followUpUrl, errorEmbed);
+                        const result = await updateMessageWithRetry(followUpUrl, errorEmbed);
+                        if (result instanceof Error) {
+                          throw result; // Manually throw the error returned from the retry function
+                        }
                     }
                 } catch (error) {
                     logger.error('Error fetching image from history:', error.message);
@@ -252,7 +264,7 @@ async function updateMessageWithRetry(followUpUrl, initialEmbed, retries = 3) {
           return updateMessageWithRetry(followUpUrl, initialEmbed, retries - 1);
       }
       logger.error('Error updating message:', error.response ? error.response.data : error.message);
-      throw new Error('Error updating message:', error.response ? error.response.data : error.message);
+      return error;
   }
 }
 
@@ -270,7 +282,7 @@ async function updateFormDataWithRetry(followUpUrl, formData, retries = 3) {
           return updateFormDataWithRetry(followUpUrl, formData, retries - 1);
       }
       logger.error('Error updating form data message:', error.response ? error.response.data : error.message);
-      throw new Error('Error updating form data message:', error.response ? error.response.data : error.message);
+      return error;
   }
 }
 
