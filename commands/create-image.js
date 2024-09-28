@@ -34,8 +34,7 @@ async function handleCreateImageCommand(interaction, client, res) {
     try {
       ws = new WebSocket(`ws://${process.env.COMFYUI_ADDRESS}/ws?clientId=${clientId}`); // Connect with the client ID
     } catch (error) {
-      throw new Error("Could not connect to websocket of comfyui");
-      
+      logger.error("Could not connect to websocket");      
     }
 
     try {
@@ -90,12 +89,24 @@ async function handleCreateImageCommand(interaction, client, res) {
                     // Update the original message using the follow-up URL
                     const result = await updateMessageWithRetry(followUpUrl, initialEmbed);
                     if (result instanceof Error) {
-                      throw result; // Manually throw the error returned from the retry function
+                        const errorEmbed = createEmbed(
+                            "Error",
+                            "Something went wrong while creating the image.",
+                            "error"
+                        );
+                
+                        await updateMessageWithRetry(followUpUrl, errorEmbed);
                     }
             
                 } catch (error) {
                     logger.error('Error updating message:', error.response ? error.response.data : error.message);
-                    throw new Error('Error updating message:', error.response ? error.response.data : error.message);
+                    const errorEmbed = createEmbed(
+                        "Error",
+                        "Something went wrong while creating the image.",
+                        "error"
+                    );
+            
+                    await updateMessageWithRetry(followUpUrl, errorEmbed);
                     
                 }
             }
@@ -113,7 +124,13 @@ async function handleCreateImageCommand(interaction, client, res) {
 
                     const result = await updateMessageWithRetry(followUpUrl, initialEmbed);
                     if (result instanceof Error) {
-                      throw result; // Manually throw the error returned from the retry function
+                        const errorEmbed = createEmbed(
+                            "Error",
+                            "Something went wrong while creating the image.",
+                            "error"
+                        );
+                
+                        await updateMessageWithRetry(followUpUrl, errorEmbed);
                     }
                 }
             }
@@ -165,13 +182,25 @@ async function handleCreateImageCommand(interaction, client, res) {
             
                             const result = await updateFormDataWithRetry(followUpUrl, formData);
                             if (result instanceof Error) {
-                              throw result; // Manually throw the error returned from the retry function
+                                const errorEmbed = createEmbed(
+                                    "Error",
+                                    "Something went wrong while creating the image.",
+                                    "error"
+                                );
+                        
+                                await updateMessageWithRetry(followUpUrl, errorEmbed);
                             }
                     
                         } catch (error) {
                             logger.error('Error updating message:', error.response ? error.response.data : error.message);
                             logger.error('Error updating message:', error.response.data.errors.embeds);
-                            throw new Error(error.response.data.errors.embeds);
+                            const errorEmbed = createEmbed(
+                                "Error",
+                                "Something went wrong while creating the image.",
+                                "error"
+                            );
+                    
+                            await updateMessageWithRetry(followUpUrl, errorEmbed);
                             
                         }
                     } else {
@@ -181,11 +210,8 @@ async function handleCreateImageCommand(interaction, client, res) {
                             "Sorry, we couldn't create your image. Please try again later.",
                             "error"
                         );
-            
-                        const result = await updateMessageWithRetry(followUpUrl, errorEmbed);
-                        if (result instanceof Error) {
-                          throw result; // Manually throw the error returned from the retry function
-                        }
+                
+                        await updateMessageWithRetry(followUpUrl, errorEmbed);
                     }
                 } catch (error) {
                     logger.error('Error fetching image from history:', error.message);
