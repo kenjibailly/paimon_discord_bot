@@ -47,25 +47,36 @@ async function handleTrollUserCompleteMissionCommand(interaction, client) {
                     `- **${completed_troll_mission.name}**\n` +
                     (completed_troll_mission.description ? `  ${completed_troll_mission.description}\n` : '') + "\n" +
                     `<@${message.author.id}>'s troll mission entry:\n\n` +
-                    (`***"${message.content}"***` || "");            
+                    (message.content ? `***"${message.content}"***` : "");
                 const color = "";
                 const embed = createEmbed(title, description, color);
-                
-                const imageUrl = message.attachments.first().url;
-                const response = await fetch(imageUrl);
-                if (!response.ok) throw new Error('Failed to fetch image');
-                const attachmentBuffer = await response.buffer(); 
-                const attachmentName = message.attachments.first().name;
-                // Set the image in the embed using the attachment URL
-                embed.setImage(`attachment://${attachmentName}`);
-    
+
+                    
                 const bot_channel = await getBotChannel(guild_id);
                 const botChannel = await client.channels.fetch(bot_channel.channel);
-                if (botChannel) {
-                    await botChannel.send({
-                        embeds: [embed],
-                        files: [{ attachment: attachmentBuffer, name: attachmentName }]
-                    });
+                
+                const attachmentImage = message.attachments.first();
+                if(attachmentImage) {
+                    const imageUrl = attachmentImage.url;
+                    const response = await fetch(imageUrl);
+                    if (!response.ok) throw new Error('Failed to fetch image');
+                    const attachmentBuffer = await response.buffer(); 
+                    const attachmentName = message.attachments.first().name;
+                    // Set the image in the embed using the attachment URL
+                    embed.setImage(`attachment://${attachmentName}`);
+
+                    if (botChannel) {
+                        await botChannel.send({
+                            embeds: [embed],
+                            files: [{ attachment: attachmentBuffer, name: attachmentName }]
+                        });
+                    }
+                } else {
+                    if (botChannel) {
+                        await botChannel.send({
+                            embeds: [embed],
+                        });
+                    }
                 }
 
                 if (channel) {
@@ -80,6 +91,16 @@ async function handleTrollUserCompleteMissionCommand(interaction, client) {
                 const role = guild.roles.cache.find(role => role.name === "Trolled");
                 if (role && member) {
                     await member.roles.remove(role);
+                    // Add back all the previous roles
+                    for (const roleId of trolled_user.previous_roles) {
+                        const role = guild.roles.cache.get(roleId);
+                        if (role) {
+                            await member.roles.add(role);
+                            logger.success(`Successfully added role "${role.name}" to user ${member.user.tag}`);
+                        } else {
+                            logger.warn(`Role with ID ${roleId} no longer exists in the guild.`);
+                        }
+                    }
                     logger.success(`Removed 'Trolled' role from user: ${complete_user}`);
                 } else {
                     throw new Error("Role not found or user not found.");

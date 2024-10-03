@@ -67,7 +67,7 @@ async function handleMessageReplies(message, client) {
 
     // Check cache for trolled users without mission_id
     const trolledUser = trolledUserCache.get(userId);
-    if (trolledUser && message.channelId === trolledUser.channel_id) {
+    if (trolledUser && message.channelId === trolledUser.channel_id && trolledUser.mission_id == null) {
         return handleTrollUserChooseMission(message, client, trolledUser);
     }
 }

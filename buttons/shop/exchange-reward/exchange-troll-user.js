@@ -192,6 +192,11 @@ async function trollUser(interaction, client, user_exchange_data) {
         const taggedUser = await guild.members.fetch(user_exchange_data.taggedUser);
         const guild_id = interaction.guild_id;
 
+        // Get all the role IDs except the @everyone role
+        const user_roles = taggedUser.roles.cache
+        .filter(role => role.id !== guild.id) // Exclude the @everyone role
+        .map(role => role.id);
+
         // 1. Check if the "Trolled" role exists, if not, create it
         let trolledRole = guild.roles.cache.find(role => role.name === "Trolled");
         if (!trolledRole) {
@@ -241,7 +246,8 @@ async function trollUser(interaction, client, user_exchange_data) {
             ],
         });
 
-        // 3. Add the "Trolled" role to the user
+        // 3. Add the "Trolled" role to the user and remove all roles
+        await taggedUser.roles.remove(user_roles);
         await taggedUser.roles.add(trolledRole);
 
         // 4. Set permissions for the "Trolled" role in all other channels
@@ -262,7 +268,6 @@ async function trollUser(interaction, client, user_exchange_data) {
         });        
 
         // 5. Fetch and format troll missions
-        let troll_missions_list = "";
         const troll_missions = await TrollMissions.find({ guild_id: guild_id });
 
         if (troll_missions.length === 0) {
@@ -293,7 +298,7 @@ async function trollUser(interaction, client, user_exchange_data) {
             `The staff will then accept your completion when satisfied and get you back access to the server, your completion entry will be shared with the rest of the server.\n` +
             `\nThese are all the troll missions:\n\u200B\n`;
             const embed = createEmbed(title, description, "");
-            embed.addFields(troll_missions_list); // Add the fields to the embed
+            embed.addFields(troll_missions_list);
 
 
             // 6. Send the missions embed to the newly created channel
@@ -314,6 +319,7 @@ async function trollUser(interaction, client, user_exchange_data) {
                     guild_id: guild_id,
                     user_id: user_exchange_data.taggedUser,
                     channel_id: trolledChannel.id,
+                    previous_roles: user_roles,
                 });
                 
                 await newTrolledUser.save();

@@ -18,6 +18,11 @@ const trolledUsersSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    previous_roles: {
+        type: [String],
+        required: false,
+        default: [],
+    },
 });
 
 // Create a compound unique index on guild_id and name

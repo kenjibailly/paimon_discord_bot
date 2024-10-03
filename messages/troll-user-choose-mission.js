@@ -3,6 +3,7 @@ const validateNumber = require('../helpers/validate-number');
 const TrollMissions = require('../models/troll-missions');
 const TrolledUser = require('../models/trolled-users');
 const createEmbed = require("../helpers/embed");
+const trolledUserCache = require('../helpers/trolled-user-cache');
 
 async function handleTrollUserChooseMission (message, client, trolledUser) {
     const messageContent = message.content;
@@ -68,6 +69,9 @@ async function handleTrollUserChooseMission (message, client, trolledUser) {
     await message.channel.send({
         embeds: [embed],
     });
+
+    // Refresh the cache immediately
+    await trolledUserCache.refreshSingleUser(message.author.id);
 }
 
 module.exports = handleTrollUserChooseMission;
