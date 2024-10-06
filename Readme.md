@@ -162,6 +162,13 @@ The bot is configured to be able to use the slash commands: `/create-image` and 
     "contexts": [0,1,2],
 ```
 
+Also remove these 2 lines:
+
+```js
+    await InstallGlobalCommands(process.env.APP_ID, [
+      ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND, CREATE_IMAGE_SETTINGS_COMMAND] : []), // Register both commands globally if COMFYUI_ADDRESS is set
+```
+
 ---
 
 ⚠️ In development, the settings are not used in the workflow yet
