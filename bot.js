@@ -1,5 +1,5 @@
 require('dotenv/config');
-const { Client, GatewayIntentBits, Events } = require('discord.js');
+const { Client, GatewayIntentBits, Events, Partials } = require('discord.js');
 const express = require('express');
 const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('discord-interactions');
 const { handleSlashCommand, handleButtonClicks, handleMessageReplies } = require('./utilities/handlers.js');
@@ -26,9 +26,11 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
-  ]
+  ],
+  partials: [Partials.Channel]
 });
 
 client.once(Events.ClientReady, () => {
@@ -86,12 +88,10 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
 
 
 client.on('messageCreate', async message => {
-
   const response = await handleMessageReplies(message, client);
   // return res.send(response);
 
 });
-
 
 app.listen(PORT, () => {
   logger.success('Express server listening on port:', PORT);

@@ -13,6 +13,10 @@ const handleExchangeCustomRoleButton = require('./shop/exchange-reward/exchange-
 const handleExchangeTrollUserButton = require('./shop/exchange-reward/exchange-troll-user');
 const { handleChannelNameConfigurationButton, handleChannelNameConfigurationFinishButton } = require('./channel-name-configuration');
 const handleExchangeChooseGameButton = require('./shop/exchange-reward/exchange-choose-game');
+const handleCreateImageSettingsButton = require('./create-image-settings/create-image-settings');
+const handleDimensionsButton = require('./create-image-settings/dimensions');
+const handleModelButton = require('./create-image-settings/model');
+const handleLorabutton = require('./create-image-settings/lora');
 
 module.exports = {
     'exchange-shop': handleExchangeShopButton,
@@ -44,4 +48,8 @@ module.exports = {
     'exchange-troll-user': handleExchangeTrollUserButton,
     'exchange-troll-user': handleExchangeTrollUserButton,
     'exchange-choose-game': handleExchangeChooseGameButton,
+    'create-image-settings': handleCreateImageSettingsButton,
+    'dimensions': handleDimensionsButton,
+    'model': handleModelButton,
+    'lora': handleLorabutton,
 };

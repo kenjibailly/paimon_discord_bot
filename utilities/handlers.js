@@ -4,6 +4,7 @@ const buttonHandlers = require('../buttons');
 const messageHandlers = require('../messages');
 const createEmbed = require("../helpers/embed");
 const userExchangeData = require('../helpers/userExchangeData');
+const { createImageSettingsUsersDataCache } = require('../helpers/create-image-settings-cache');
 const trolledUserCache = require('../helpers/trolled-user-cache');
 const TrolledUser = require('../models/trolled-users');
 const handleTrollUserChooseMission = require('../messages/troll-user-choose-mission');
@@ -62,6 +63,12 @@ async function handleMessageReplies(message, client) {
     if (userExchangeData.has(userId) && message.channelId === userExchangeData.get(userId).threadId) {
         if (userExchangeData.get(userId).name) {
             return messageHandlers[userExchangeData.get(userId).name](message, client);
+        }
+    }
+
+    if (createImageSettingsUsersDataCache.has(userId) && message.channelId  === createImageSettingsUsersDataCache.get(userId).channelId) {
+        if (createImageSettingsUsersDataCache.get(userId).name) {
+            return messageHandlers[createImageSettingsUsersDataCache.get(userId).name](message, client);
         }
     }
 

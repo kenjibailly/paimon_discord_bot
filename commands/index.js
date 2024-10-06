@@ -20,6 +20,7 @@ const handleChannelNameConfigurationCommand = require('./set-channel-name-config
 const handleTrollUserCompleteMissionCommand = require('./troll-user-complete-mission');
 const handleNextGamesCommand = require('./next-games');
 const handleCreateImageCommand = require('./create-image');
+const handleCreateImageSettingsCommand = require('./create-image-settings');
 
 module.exports = {
     'award-team': handleAwardTeamCommand,
@@ -44,4 +45,5 @@ module.exports = {
     'troll-user-complete-mission': handleTrollUserCompleteMissionCommand,
     'upcoming-games': handleNextGamesCommand,
     'create-image': handleCreateImageCommand,
+    'create-image-settings': handleCreateImageSettingsCommand,
 };

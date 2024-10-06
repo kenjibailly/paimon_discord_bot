@@ -4,7 +4,7 @@ const axios = require('axios'); // You can use axios for HTTP requests
 const FormData = require('form-data'); // If needed to upload data
 const WebSocket = require('ws'); // Ensure you have the ws package installed
 const { v4: uuidv4 } = require('uuid');
-const workflow = require('../AI/ponyXL_lora.json');
+const workflow = require('../AI/workflow.json');
 
 async function handleCreateImageCommand(interaction, client, res) {
     const { data, guild_id } = interaction;

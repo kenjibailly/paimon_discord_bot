@@ -1,34 +1,42 @@
 class Logger {
-  constructor(stat) {
-      this.stat = stat;
-  }
+    constructor(stat) {
+        this.stat = stat;
+    }
 
-  log(...args) {
-      process.stdout.write(`${this.stat}: `);
-      this._writeMessage(...args); // print message
-      process.stdout.write(`\n`);
-  }
+    log(...args) {
+        process.stdout.write(`${this.stat}: `);
+        this._writeMessage(...args); // print message
+        process.stdout.write(`\n`);
+    }
 
-  success(...args) {
-      process.stdout.write("\x1b[32m"); // set color to green
-      process.stdout.write(`${this.stat}: `);
-      this._writeMessage(...args); // print message
-      process.stdout.write("\x1b[0m\n"); // reset color
-  }
+    info(...args) {
+        process.stdout.write("\x1b[34m"); // set color to blue
+        process.stdout.write(`${this.stat}: `);
+        this._writeMessage(...args); // print message
+        process.stdout.write("\x1b[0m\n"); // reset color
+    }
 
-  error(...args) {
-      process.stdout.write("\x1b[31m"); // set color to red
-      process.stdout.write(`${this.stat}: `);
-      this._writeMessage(...args); // print error message
-      process.stdout.write("\x1b[0m\n"); // reset color
-  }
 
-  warn(...args) {
-      process.stdout.write("\x1b[33m"); // set color to yellow
-      process.stdout.write(`${this.stat}: `);
-      this._writeMessage(...args); // print message
-      process.stdout.write("\x1b[0m\n"); // reset color
-  }
+    success(...args) {
+        process.stdout.write("\x1b[32m"); // set color to green
+        process.stdout.write(`${this.stat}: `);
+        this._writeMessage(...args); // print message
+        process.stdout.write("\x1b[0m\n"); // reset color
+    }
+
+    error(...args) {
+        process.stdout.write("\x1b[31m"); // set color to red
+        process.stdout.write(`${this.stat}: `);
+        this._writeMessage(...args); // print error message
+        process.stdout.write("\x1b[0m\n"); // reset color
+    }
+
+    warn(...args) {
+        process.stdout.write("\x1b[33m"); // set color to yellow
+        process.stdout.write(`${this.stat}: `);
+        this._writeMessage(...args); // print message
+        process.stdout.write("\x1b[0m\n"); // reset color
+    }
 
   async _writeMessage(...args) {
       for (const arg of args) {

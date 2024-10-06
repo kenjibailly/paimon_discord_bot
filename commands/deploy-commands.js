@@ -358,18 +358,14 @@ async function registerCommands(guildId) {
         description: 'Choose a prompt for your image creation',
         required: true,
       },
-      {
-        type: 3, // STRING
-        name: 'dimensions',
-        description: 'Select the dimensions of your created image, default 768x768',
-        required: false,
-        choices: [
-          { name: '768x768', value: '768x768' },
-          { name: '512x768', value: '512x768' },
-          { name: '768x512', value: '768x512' },
-        ],
-      },
     ],
+    "integration_types": [0,1],
+    "contexts": [0,1,2],
+  };
+
+  const CREATE_IMAGE_SETTINGS_COMMAND = {
+    name: 'create-image-settings',
+    description: 'Open the settings for image creation, change models, dimensions or add LoRas.',
     "integration_types": [0,1],
     "contexts": [0,1,2],
   };
@@ -397,6 +393,7 @@ async function registerCommands(guildId) {
     MANAGE_TROLL_MISSIONS_COMMAND,
     TROLL_USER_COMPLETE_MISSION_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
+    ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];
 
   // Register or update the existing commands
@@ -404,8 +401,8 @@ async function registerCommands(guildId) {
     // Pass guildId to register commands for a specific guild
     await InstallGuildCommands(process.env.APP_ID, NEW_COMMANDS, guildId);
     await InstallGlobalCommands(process.env.APP_ID, [
-      ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Only register `create-image` globally
-    ]);
+      ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND, CREATE_IMAGE_SETTINGS_COMMAND] : []), // Register both commands globally if COMFYUI_ADDRESS is set
+  ]);  
     logger.success('Successfully registered or updated commands.');
   } catch (error) {
     logger.error('Error registering commands:', error);
