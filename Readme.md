@@ -155,6 +155,15 @@ It should have this name, but double check or it won't work: `ponyDiffusionV6XL_
 
 ---
 
+The bot is configured to be able to use the slash commands: `/create-image` and `/create-image-settings` everywhere when you add the bot as an app. If you don't want this, then edit `/commands/deploy-commands.js` and remove these lines from the constants `CREATE_IMAGE_COMMAND` and `CREATE_IMAGE_SETTINGS_COMMAND`:
+
+```js
+    "integration_types": [0,1],
+    "contexts": [0,1,2],
+```
+
+---
+
 ⚠️ In development, the settings are not used in the workflow yet
 
 In `/AI/data.json` you can setup the models, loras and dimensions.
