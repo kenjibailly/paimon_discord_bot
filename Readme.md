@@ -145,6 +145,8 @@ Optional: Change the permissions of the commands of the bot. Go to `Server Setti
 <summary>🛠️ Open for installation steps</summary>
 
 Install and run ComfyUI, I'm not going to explain how to do this, there are a lot of different ways.
+Add your ComfyUI address to the `.env`file, more information in the comments in the `.env` file.
+
 The workflow is made to generate anime images. If you want to use another model or tweak some options, you can change the workflow in the AI folder.
 
 Download Pony Diffusion V6 XL:
