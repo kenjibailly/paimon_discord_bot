@@ -317,3 +317,6 @@ Example:
 You can add multiple checkpoints to use with multiple loras with the same dimensions. 
 You can add new objects with a different appropriate name, in our example: `SDXL`. This name is not used anywhere and only used for better visibility in the json file. This means you can name this anything you want.
 When you create a new object like this, you can specify different dimensions and loras you might want to couple with these checkpoints.
+
+You need to set a default checkpoint to be used in case the user hasn't configured any.
+You can do this by adding `"default": true` to your checkpoint. Make sure only one checkpoint has been set to `true`. The other checkpoints should be set to `"default": false`.
