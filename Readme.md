@@ -175,8 +175,9 @@ It should have this name, but double check or it won't work: `ponyDiffusionV6XL_
     - Lists all the troll missions
 - ✅ /create-image
     - Generates an AI image using ComfyUI, note: a working instance of ComfyUI must be setup for this (not included)
-    - Input: Prompt, optional: dimensions
-    - ❌ Add LoRa support
+    - Input: Prompt
+- ✅ /create-image-settings
+    - Opens a settings menu in a DM with the bot, where the user can change the model, lora and dimensions. The compatible loras and dimensions can be chosen per model.
 
 #### 🧑‍💼 Staff functions
 
@@ -256,3 +257,63 @@ When opening the shop, the user can click a button to start interacting with the
 ### 💪 Join event and assign team
 
 - ✅ Users apply to join event, those who applied will be randomly assigned to a team, after the expiration time. Users will get the role according to the team they have been assigned to. The roles are set with the `/set-teams` command. The teams will be posted in the same channel where the event has been started.
+
+
+### ⚙️ ComfyUI models, loras and dimensions settings
+
+⚠️ In development, the settings are not used in the workflow yet
+
+In `/AI/data.json` you can setup the models, loras and dimensions.
+The loras and dimensions are configured per model as this varies and you might want to limit these for lower end GPUs.
+
+Example:
+
+```json
+{
+    "SDXL": {
+        "dimensions": {
+            "1:1 square": "768x768",
+            "3:4 portrait": "672x864",
+            "5:8 portrait": "624x912",
+            "9:16 portrait": "576x1008",
+            "9:21 portrait": "480x1152",
+            "4:3 landscape": "864x672",
+            "3:2 landscape": "912x624",
+            "16:9 landscape": "1008x576",
+            "21:9 landscape": "1152x480"
+        },
+        "checkpoints": [
+            {
+                "name": "Pony Diffusion V6 XL",
+                "file": "ponyDiffusionV6XL_v6StartWithThisOne.safetensors",
+                "description": "Pony Diffusion V6 is a versatile SDXL finetune capable of producing stunning SFW and NSFW visuals of various anthro, feral, or humanoids species and their interactions based on simple natural language prompts.",
+                "link": "https://civitai.com/models/257749?modelVersionId=290640",
+                "settings": {
+                    "cfg": 7,
+                    "steps": 25,
+                    "sampler_name": "euler_ancestral",
+                    "scheduler": "normal",
+                    "clip_skip": -2,
+                    "positive_prompt": "score_9, score_8_up, score_7_up, anime",
+                    "negative_prompt": "low-res, bad anatomy, bad hands, text, error, missing xfingers, extra digit, fewer digits, cropped, worst quality, xlow quality, normal quality, jpeg artifacts, signature, xwatermark, username, blurry, artist name,(deformed, xdistorted, disfigured:1.3), poorly drawn, bad anatomy, xwrong anatomy, extra limb, missing limb, floating limbs, x(mutated hands and fingers:1.4), disconnected limbs, xmutation, mutated, ugly, disgusting, blurry, amputation"    
+                },
+                "default": true
+            }
+        ],
+        "loras": [
+            {
+                "name": "Aesthetic Anime V1",
+                "file": "aesthetic_anime_v1s.safetensors",
+                "description": "Enhances the aesthetic style of anime creations.",
+                "link": "https://civitai.com/models/295100/aesthetic-anime-lora",
+                "model_weight": 1,
+                "clip_weight": 1
+            }
+        ]
+    }
+}
+```
+
+You can add multiple checkpoints to use with multiple loras with the same dimensions. 
+You can add new objects with a different appropriate name, in our example: `SDXL`. This name is not used anywhere and only used for better visibility in the json file. This means you can name this anything you want.
+When you create a new object like this, you can specify different dimensions and loras you might want to couple with these checkpoints.
