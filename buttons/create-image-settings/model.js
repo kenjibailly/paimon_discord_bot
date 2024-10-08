@@ -1,7 +1,7 @@
 const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../helpers/embed');
 const data = require('../../AI/data.json');
-const { createImageSettingsUsersDataCache } = require('../../helpers/create-image-settings-cache');
+const { createImageSettingsUsersDataCache, loadUserSettingsIntoCache, createImageSettingsTemporaryCache } = require('../../helpers/create-image-settings-cache');
 
 async function handleModelButton (interaction, client) {
     const models = [];
@@ -32,8 +32,23 @@ async function handleModelButton (interaction, client) {
         models: models,
     });
 
+    await loadUserSettingsIntoCache(interaction.user.id);
+    const create_image_settings_temporary_user_cache = createImageSettingsTemporaryCache.get(interaction.user.id);
+    let checkpointName;
+    if (create_image_settings_temporary_user_cache) {
+         // Find the parent model that corresponds to the selected model
+        parentModel = Object.values(data).find(model => 
+            model.checkpoints.some(checkpoint => checkpoint.file === create_image_settings_temporary_user_cache.model)
+        );
+        checkpointName = parentModel.checkpoints.find(checkpoint => checkpoint.file === create_image_settings_temporary_user_cache.model)?.name || "Unknown Checkpoint";
+
+    }
+
     const title = "Create Image Settings";
-    const description = `Please reply with the number next to the model to select that model.\n` +
+    const description = `${checkpointName 
+    ? `\nYour current model: **${checkpointName}**\n\n` 
+    : ``}` +
+    `Please reply with the number next to the model to select that model.\n` +
     `These are all the models:\n\u200B\n`;
     const color = "";
     const embed = createEmbed(title, description, color);

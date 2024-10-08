@@ -17,6 +17,7 @@ const handleCreateImageSettingsButton = require('./create-image-settings/create-
 const handleDimensionsButton = require('./create-image-settings/dimensions');
 const handleModelButton = require('./create-image-settings/model');
 const handleLorabutton = require('./create-image-settings/lora');
+const handleRemoveLoraButton = require('./create-image-settings/remove-lora');
 
 module.exports = {
     'exchange-shop': handleExchangeShopButton,
@@ -52,4 +53,5 @@ module.exports = {
     'dimensions': handleDimensionsButton,
     'model': handleModelButton,
     'lora': handleLorabutton,
+    'remove-lora': handleRemoveLoraButton,
 };

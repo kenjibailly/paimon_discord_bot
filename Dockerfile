@@ -17,9 +17,6 @@ RUN apt-get update -y && \
 RUN npm install -g --force nodemon && \
     npm install
 
-# Register slash commands
-# RUN npm run register
-
 # Set the default command to run your bot
 CMD ["npm", "start"]
 

@@ -35,10 +35,10 @@ async function handleCreateImageCommand(interaction, client) {
     };
 
     let user;
-    if (interaction.channel.type === 1) {
+    if(interaction.user) {
         user = interaction.user;
-    } else {
-        user = interaction.member.user
+    } else if (interaction.member) {
+        user = interaction.member.user;
     }
 
     // Get the DM channel of the bot

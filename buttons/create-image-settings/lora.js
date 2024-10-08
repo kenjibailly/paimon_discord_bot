@@ -5,46 +5,79 @@ const data = require('../../AI/data.json');
 
 async function handleLorabutton (interaction, client) {
 
-    let create_image_settings_termporary_user_cache = createImageSettingsTemporaryCache.get(interaction.user.id);
+    let create_image_settings_temporary_user_cache = createImageSettingsTemporaryCache.get(interaction.user.id);
 
     const loras = [];
     const loras_list = [];
     const create_image_settings_user_data_cache = {};
 
-    if (!create_image_settings_termporary_user_cache) {
+    if (!create_image_settings_temporary_user_cache) {
         await loadUserSettingsIntoCache(interaction.user.id);
-        create_image_settings_termporary_user_cache = createImageSettingsTemporaryCache.get(interaction.user.id);
-        if (!create_image_settings_termporary_user_cache) {
+        create_image_settings_temporary_user_cache = createImageSettingsTemporaryCache.get(interaction.user.id);
+        if (!create_image_settings_temporary_user_cache) {
             const defaultCheckpoint = Object.values(data).flatMap(model => 
                 model.checkpoints.filter(checkpoint => checkpoint.default === true)
             ).map(checkpoint => checkpoint.file)[0]; // Get the file of the first found default checkpoint
     
             if (defaultCheckpoint) {
-                createImageSettingsTemporaryCache.set(interaction.user.id, {
-                    model: defaultCheckpoint,
-                });
+
                 create_image_settings_user_data_cache.model = defaultCheckpoint;
-                create_image_settings_termporary_user_cache = createImageSettingsTemporaryCache.get(interaction.user.id);
+
+                // Find the parent model that corresponds to the selected model
+                parentModel = Object.values(data).find(model => 
+                    model.checkpoints.some(checkpoint => checkpoint.file === defaultCheckpoint)
+                );
+
+                // Get the first dimension from the found parent model
+                const dimensions = Object.entries(parentModel.dimensions)[0]; // Get the first dimension entry (e.g., ['1:1 square', '1024x1024'])
+                let dimensionValue;
+                if (dimensions) {
+                    dimensionValue = dimensions[1];
+                    // Set model and dimensions in the cache
+                    createImageSettingsTemporaryCache.set(interaction.user.id, {
+                        model: defaultCheckpoint,
+                        dimensions: dimensionValue
+                    });
+                } else {
+                    // output error message
+                }
+
+                create_image_settings_user_data_cache.dimensions = dimensionValue;
+                create_image_settings_temporary_user_cache = createImageSettingsTemporaryCache.get(interaction.user.id);
+            } else {
+                // output error message
             }
         }
     }
 
-    // Find the parent model that corresponds to the selected model
-    const parentModel = Object.values(data).find(model => 
-        model.checkpoints.some(checkpoint => checkpoint.file === create_image_settings_termporary_user_cache.model)
+     // Find the parent model that corresponds to the selected model
+     parentModel = Object.values(data).find(model => 
+        model.checkpoints.some(checkpoint => checkpoint.file === create_image_settings_temporary_user_cache.model)
     );
 
     const buttonComponent = {
         type: 1, // Action row type
         components: [
+            ...(create_image_settings_temporary_user_cache.lora ? [
+                {
+                    type: 2, // Button type
+                    style: 4, // Danger style (typically red)
+                    label: "Remove LoRa",
+                    emoji: {
+                        name: "🗑️", // Use the name
+                    },
+                    custom_id: `remove-lora`
+                }
+            ] : []),
             {
                 type: 2, // Button type
-                style: 4, // Primary style
+                style: 4, // Danger style (typically red)
                 label: "Go back",
                 custom_id: `create-image-settings`
-            },
+            }
         ]
     };
+    
 
     if (parentModel) {
         // Loop through each lora for the found parent model
@@ -77,11 +110,20 @@ async function handleLorabutton (interaction, client) {
     }
 
     let description;
-    const checkpointName = parentModel.checkpoints.find(checkpoint => checkpoint.file === create_image_settings_termporary_user_cache.model)?.name || "Unknown Checkpoint";
+    const checkpointName = parentModel.checkpoints.find(checkpoint => checkpoint.file === create_image_settings_temporary_user_cache.model)?.name || "Unknown Checkpoint";
+    const loraName = parentModel.loras.find(lora => lora.file === create_image_settings_temporary_user_cache.lora)?.name || "";
 
     if (loras_list.length > 0) {
-        description = `Please reply with the number next to the lora to select that lora.\n\n` +
-        `These are all the loras compatible with the **${checkpointName}** model:\n\u200B\n`;
+        description = `Your current model: **${checkpointName}**\n` +
+        `${create_image_settings_temporary_user_cache.lora 
+        ? `Your current LoRa: **${loraName}**\n` 
+        : ``}` +
+        `${create_image_settings_temporary_user_cache.lora 
+        ? `\nClick the \`Remove LoRa\` button to remove your current set LoRa (**${loraName}**) from your settings.\n` 
+        : ``}` + 
+        `\nThese are all the LoRas compatible with the **${checkpointName}** model:` +
+        `\nPlease reply with the number next to the LoRa to select that LoRA.\n\u200B\n`;
+        
 
         create_image_settings_user_data_cache.name = "choose-lora";
         create_image_settings_user_data_cache.channelId = interaction.channel.id;

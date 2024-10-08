@@ -77,11 +77,20 @@ async function handleDimensionsButton (interaction, client) {
     }
 
     let description;
+    const create_image_settings_temporary_user_cache = createImageSettingsTemporaryCache.get(interaction.user.id);
     const checkpointName = parentModel.checkpoints.find(checkpoint => checkpoint.file === create_image_settings_termporary_user_cache.model)?.name || "Unknown Checkpoint";
+    const loraName = parentModel.loras.find(lora => lora.file === create_image_settings_temporary_user_cache.lora)?.name || "";
 
     if (dimensions_list.length > 0) {
-        description = `Please reply with the number next to the dimension to select that dimension.\n\n` +
-        `These are all the dimensions (width x height) compatible with the **${checkpointName}** model:\n\u200B\n`;
+        description = `Your current model: **${checkpointName}**\n` +
+        `${create_image_settings_temporary_user_cache.lora 
+        ? `Your current LoRa: **${loraName}**\n` 
+        : ``}` +
+        `${create_image_settings_temporary_user_cache.dimensions 
+            ? `Your current dimensions: **${create_image_settings_temporary_user_cache.dimensions }**\n` 
+            : ``}` +
+        `\nThese are all the dimensions (width x height) compatible with the **${checkpointName}** model:\n` + 
+        `Please reply with the number next to the dimension to select that dimension.\n\u200B\n`;
 
         create_image_settings_user_data_cache.name = "choose-dimensions";
         create_image_settings_user_data_cache.channelId = interaction.channel.id;

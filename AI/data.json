@@ -19,8 +19,8 @@
                 "link": "https://civitai.com/models/112902?modelVersionId=355868",
                 "settings": {
                     "cfg": 2,
-                    "steps": 3,
-                    "sampler_name": "euler",
+                    "steps": 6,
+                    "sampler_name": "dpmpp_sde",
                     "scheduler": "karras",
                     "clip_skip": -1,
                     "positive_prompt": "",

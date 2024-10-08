@@ -5,16 +5,69 @@ const FormData = require('form-data'); // If needed to upload data
 const WebSocket = require('ws'); // Ensure you have the ws package installed
 const { v4: uuidv4 } = require('uuid');
 const workflow = require('../AI/workflow.json');
+const { createImageSettingsTemporaryCache, loadUserSettingsIntoCache } = require('../helpers/create-image-settings-cache');
+const data_json = require('../AI/data.json');
 
 async function handleCreateImageCommand(interaction, client, res) {
-    const { data, guild_id } = interaction;
+    const { data } = interaction;
+
+    let user_id;
+    if(interaction.user) {
+        user_id = interaction.user.id;
+    } else if (interaction.member) {
+        user_id = interaction.member.user.id;
+    }
+
+    let parentModel;
+
+    let create_image_settings_user_data_cache = createImageSettingsTemporaryCache.get(user_id);
+    if (!create_image_settings_user_data_cache) {
+        await loadUserSettingsIntoCache(user_id);
+        create_image_settings_user_data_cache = createImageSettingsTemporaryCache.get(user_id);
+        if(!create_image_settings_user_data_cache) {
+            const defaultCheckpoint = Object.values(data_json).flatMap(model => 
+                model.checkpoints.filter(checkpoint => checkpoint.default === true)
+            ).map(checkpoint => checkpoint.file)[0]; // Get the file of the first found default checkpoint
+    
+            // Find the model that contains the default checkpoint
+            parentModel = Object.values(data_json).find(model => 
+                model.checkpoints.some(checkpoint => checkpoint.file === defaultCheckpoint)
+            );
+
+            // Get the first dimension from the found parent model
+            const dimensions = Object.entries(parentModel.dimensions)[0]; // Get the first dimension entry (e.g., ['1:1 square', '1024x1024'])
+
+            if (dimensions) {
+                const dimensionValue = dimensions[1];
+
+                // Set model and dimensions in the cache
+                createImageSettingsTemporaryCache.set(user_id, {
+                    model: defaultCheckpoint,
+                    dimensions: dimensionValue
+                });
+                create_image_settings_user_data_cache = createImageSettingsTemporaryCache.get(user_id);
+            } else {
+                // output error message
+            }
+        }
+    }
+
+    // Find the model that contains the default checkpoint
+    parentModel = Object.values(data_json).find(model => 
+        model.checkpoints.some(checkpoint => checkpoint.file === create_image_settings_user_data_cache.model)
+    );
+
 
     // Find the options for the command
     const promptOption = data.options.find(opt => opt.name === 'prompt');
     const prompt = promptOption ? promptOption.value : 'default prompt';
 
-    const dimensionsOption = data.options.find(opt => opt.name === 'dimensions');
-    const dimensions = dimensionsOption ? dimensionsOption.value : '768x768';
+    const dimensions = create_image_settings_user_data_cache.dimensions;
+    const model = create_image_settings_user_data_cache.model;
+    const lora = create_image_settings_user_data_cache.lora;
+    const checkpointName = parentModel.checkpoints.find(checkpoint => checkpoint.file === model)?.name || "Unknown Checkpoint";
+    const loraName = parentModel.loras.find(lora_data => lora_data.file === lora)?.name || "";
+
 
     // Split the string into width and height
     const [width, height] = dimensions.split('x').map(Number); // Convert to numbers
@@ -44,8 +97,7 @@ async function handleCreateImageCommand(interaction, client, res) {
             type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
         });
 
-        const { previewImageKey } = editWorkflow(prompt, width, height);
-
+        const { previewImageKey } = editWorkflow(prompt, width, height, model, lora);
         // Make the POST request to ComfyUI API to queue the image generation
         const response = await axios.post(`http://${process.env.COMFYUI_ADDRESS}/prompt`, {
             prompt: workflow,
@@ -100,11 +152,10 @@ async function handleCreateImageCommand(interaction, client, res) {
             
                 } catch (error) {
                     logger.error('Error updating message:', error.response ? error.response.data : error.message);
-                    const errorEmbed = createEmbed(
-                        "Error",
-                        "Something went wrong while creating the image.",
-                        "error"
-                    );
+                    const title = "Error";
+                    const description = "Something went wrong while creating the image.";
+                    const color = "error";
+                    const errorEmbed = createEmbed(title, description, color);
             
                     await updateMessageWithRetry(followUpUrl, errorEmbed);
                     
@@ -124,11 +175,10 @@ async function handleCreateImageCommand(interaction, client, res) {
 
                     const result = await updateMessageWithRetry(followUpUrl, initialEmbed);
                     if (result instanceof Error) {
-                        const errorEmbed = createEmbed(
-                            "Error",
-                            "Something went wrong while creating the image.",
-                            "error"
-                        );
+                        const title = "Error";
+                        const description = "Something went wrong while creating the image.";
+                        const color = "error";
+                        const errorEmbed = createEmbed(title, description, color);
                 
                         await updateMessageWithRetry(followUpUrl, errorEmbed);
                     }
@@ -152,11 +202,14 @@ async function handleCreateImageCommand(interaction, client, res) {
                     
 
                     if (imageUrl) {
-                        const successEmbed = createEmbed(
-                            "Image Created",
-                            "Your image has been created succesfully!\nTake a look at this master piece!",
-                            ""
-                        )
+                        const title = "Image Created";
+                        const description = `Model: **${checkpointName}**\n` + 
+                        `${loraName 
+                        ? `LoRa: **${loraName}**\n` 
+                        : ``}` +
+                        "\nYour image has been created succesfully!\nTake a look at this master piece!";
+                        const color = "";
+                        const successEmbed = createEmbed(title, description, color)
                         .setImage(`attachment://${image.filename}`); // Embed image
             
                         // Convert the embed to a plain object using .toJSON()
@@ -240,44 +293,101 @@ function getRandomSeed() {
     return randomNum.toString();
 }
 
-function editWorkflow(prompt, width, height) {
-  let previewImageKey = null;
-  // Iterate through the workflow to find nodes and update their respective values
-  for (const key in workflow) {
-    const node = workflow[key];
-
-    // Update seed for KSampler node
-    if (node.class_type === 'KSampler') {
-      node.inputs.seed = getRandomSeed();
-    }
-
-    // Update text for CLIPTextEncode (Prompt) Positive node
-    if (node.class_type === 'CLIPTextEncode' && node._meta.title === 'CLIP Text Encode (Prompt) Positive') {
-      node.inputs.text = prompt;
-    }
-
-    // Find the PreviewImage node
-    if (node.class_type === 'PreviewImage') {
-      // Check if the title contains "Final"
-      if (node._meta.title.includes('Final')) {
-        previewImageKey = key; // Store this key
-        break; // Exit the loop since we found the one with "Final"
+function editWorkflow(prompt, width, height, modelFile, loraFile) {
+    let previewImageKey = null;
+  
+    // Function to find model settings dynamically across all parent keys
+    function findModelSettings(file) {
+      for (const parentKey in data_json) {
+        const checkpoints = data_json[parentKey].checkpoints;
+        const model = Object.values(checkpoints).find(checkpoint => checkpoint.file === file);
+        if (model) return model; // Return as soon as we find it
       }
-      // Otherwise, keep the first PreviewImage node (if no "Final" is found later)
-      if (!previewImageKey) {
-        previewImageKey = key;
+      return null; // Return null if not found
+    }
+  
+    // Function to find LoRA settings dynamically across all parent keys
+    function findLoRASettings(file) {
+      for (const parentKey in data_json) {
+        const loras = data_json[parentKey].loras;
+        const lora = Object.values(loras).find(lora => lora.file === file);
+        if (lora) return lora; // Return as soon as we find it
       }
+      return null; // Return null if not found
     }
-
-    // Update width and height for EmptyLatentImage node
-    if (node.class_type === 'EmptyLatentImage') {
-      node.inputs.width = width;
-      node.inputs.height = height;
-    }
-
-  }
-  return { previewImageKey };
+  
+    // Find the model and LoRA settings based on the provided file names
+    const modelSettings = findModelSettings(modelFile);
+    const loraSettings = findLoRASettings(loraFile);
+  
+    // Iterate through the workflow to find nodes and update their respective values
+    Object.keys(workflow).forEach(key => {
+      const node = workflow[key];
+  
+      // Update seed for KSampler node
+      if (node.class_type === 'KSampler') {
+        node.inputs.seed = getRandomSeed(); // Random seed
+        // Update KSampler settings (cfg, steps, sampler_name, scheduler) from the model settings
+        if (modelSettings) {
+          node.inputs.cfg = modelSettings.settings.cfg;
+          node.inputs.steps = modelSettings.settings.steps;
+          node.inputs.sampler_name = modelSettings.settings.sampler_name;
+          node.inputs.scheduler = modelSettings.settings.scheduler;
+        }
+      }
+  
+      // Update text for CLIPTextEncode (Prompt) Positive node
+      if (node.class_type === 'CLIPTextEncode' && node._meta.title === 'CLIP Text Encode (Prompt) Positive Style') {
+        node.inputs.text = modelSettings?.settings.positive_prompt || prompt; // Update prompt or fallback to the provided one
+      }
+  
+      // Update text for CLIPTextEncode (Prompt) Negative node
+      if (node.class_type === 'CLIPTextEncode' && node._meta.title === 'CLIP Text Encode (Prompt) Negative') {
+        node.inputs.text = modelSettings?.settings.negative_prompt; // Update the negative prompt from model settings
+      }
+      
+      // Update width and height for EmptyLatentImage node
+      if (node.class_type === 'EmptyLatentImage') {
+        node.inputs.width = width;
+        node.inputs.height = height;
+      }
+  
+      // Update model for UNETLoader or CheckpointLoaderSimple nodes
+      if (node._meta?.title === 'Load Checkpoint' || node.class_type === 'UNETLoader') {
+        node.inputs.ckpt_name = modelFile; // Update the checkpoint name with the selected model file
+      }
+  
+      // Update lora settings for CR LoRA Stack
+      if (node.class_type === 'CR LoRA Stack' && loraSettings) {
+        node.inputs.switch_1 = "On";
+        node.inputs.lora_name_1 = loraFile; // Set LoRA file
+        node.inputs.model_weight_1 = loraSettings.model_weight || 1; // Set model weight
+        node.inputs.clip_weight_1 = loraSettings.clip_weight || 1;   // Set clip weight
+      }
+  
+      // Update stop_at_clip_layer (clip_skip) for CLIPSetLastLayer node
+      if (node.class_type === 'CLIPSetLastLayer') {
+        node.inputs.stop_at_clip_layer = modelSettings?.settings.clip_skip;
+      }
+  
+      // Find the PreviewImage node
+      if (node.class_type === 'PreviewImage') {
+        // Check if the title contains "Final"
+        if (node._meta.title.includes('Final')) {
+          previewImageKey = key; // Store this key
+        //   break; // Exit the loop since we found the one with "Final"
+        }
+        // Otherwise, keep the first PreviewImage node (if no "Final" is found later)
+        if (!previewImageKey) {
+          previewImageKey = key;
+        }
+      }
+    });
+  
+    return { previewImageKey };
 }
+  
+  
 
 async function updateMessageWithRetry(followUpUrl, initialEmbed, retries = 3) {
   try {

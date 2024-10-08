@@ -46,6 +46,11 @@ async function handleChooseLora(message, client) {
         if (create_image_settings_user_data_cache.model) {
             updateData.model = create_image_settings_user_data_cache.model;
         }
+
+        // Check if dimensions exists in create_image_settings_user_data_cache and add it to the update data
+        if (create_image_settings_user_data_cache.dimensions) {
+            updateData.dimensions = create_image_settings_user_data_cache.dimensions;
+        }
         
         const newLora = await CreateImageSettings.findOneAndUpdate(
             { user_id: message.author.id }, 
@@ -53,8 +58,8 @@ async function handleChooseLora(message, client) {
             { upsert: true, new: true }
         );
 
-        const title = `Change Lora Success`;
-        const description = `I successfully updated your lora!`;
+        const title = `Change LoRa Success`;
+        const description = `I successfully updated your LoRa!`;
         const color = ""; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
@@ -66,9 +71,9 @@ async function handleChooseLora(message, client) {
         await loadUserSettingsIntoCache(message.author.id);
         return;
     } catch (error) {
-        logger.error('Choose Lora Error', error);
-        const title = `Change Lora Error`;
-        const description = `I couldn't save your new lora to the database, please try again later.`;
+        logger.error('Choose LoRa Error', error);
+        const title = `Change LoRa Error`;
+        const description = `I couldn't save your new LoRa to the database, please try again later.`;
         const color = "error"; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
