@@ -80,6 +80,71 @@
                 "clip_weight": 1
             }
         ]
+    },
+    "SD15": {
+        "dimensions": {
+            "1:1 square": "512x512",
+            "3:4 portrait": "448x576",
+            "5:8 portrait": "416x608",
+            "9:16 portrait": "384x672",
+            "9:21 portrait": "320x768",
+            "4:3 landscape": "576x448",
+            "3:2 landscape": "608x416",
+            "16:9 landscape": "672x384",
+            "21:9 landscape": "768x320"
+        },        
+        "checkpoints": [
+            {
+                "name": "Abyss Orange Mix 3 (AOM3)",
+                "file": "abyssorangemix3AOM3_aom3a1b.safetensors",
+                "description": "AOM3 can generate illustrations with very realistic textures and can generate a wide variety of content. There are also three variant models based on the AOM3 that have been adjusted to a unique illustration style. These models will help you to express your ideas more clearly.",
+                "link": "https://civitai.com/models/9942?modelVersionId=17233",
+                "settings": {
+                    "cfg": 7,
+                    "steps": 20,
+                    "sampler_name": "dpmpp_sde",
+                    "scheduler": "karras",
+                    "clip_skip": -2,
+                    "positive_prompt": "masterpiece, best quality, ultra-detailed, illustration, connection, harmony, balance, texture, detail, realism, depth, perspective, composition, color, light, shadow, reflection, refraction, tone, contrast, foreground, middle ground, background, naturalistic, figurative, representational, impressionistic, expressionistic, abstract, innovative, experimental, unique",
+                    "negative_prompt": "(worst quality, low quality:1.4), (realistic, lip, nose, tooth, rouge, lipstick, eyeshadow:1.0), (dusty sunbeams:1.0),, (abs, muscular, rib:1.0), (depth of field, bokeh, blurry:1.4), (greyscale, monochrome:1.0), text, title, logo, signature,watermark,"    
+                },
+                "default": false
+            },
+            {
+                "name": "ReV Animated V2 Rebirth",
+                "file": "revAnimated_v2Rebirth.safetensors",
+                "description": "The model has the ability to create 2.5D like image generations.\nThese are some included styles for this model: fantasy, anime, semi-realistic, decent landscape.\nThis model likes: ((best quality)), ((masterpiece)), (detailed) in beginning of prompt if you want anime-2.5D type",
+                "link": "https://civitai.com/models/7371?modelVersionId=425083",
+                "settings": {
+                    "cfg": 8.5,
+                    "steps": 30,
+                    "sampler_name": "dpmpp_2m",
+                    "scheduler": "karras",
+                    "clip_skip": -2,
+                    "positive_prompt": "masterpiece, best quality, ultra-detailed, illustration, connection, harmony, balance, texture, detail, realism, depth, perspective, composition, color, light, shadow, reflection, refraction, tone, contrast, foreground, middle ground, background, naturalistic, figurative, representational, impressionistic, expressionistic, abstract, innovative, experimental, unique",
+                    "negative_prompt": "EasyNegative, Deep Negative, bad_prompt_version2, bad-artist, bad-artist-anime, bad-quality"    
+                },
+                "default": false
+            }
+        ],
+        "loras": [
+            {
+                "name": "The Shorekeeper (Wuthering Waves)",
+                "file": "TheShorekeeperSD15.safetensors",
+                "description": "The Shorekeeper is a character from wuthering waves.\nThese can be some helpful triggerwords:\nthe_shorekeeper,blue_hair,breasts,cleavage,navel,colored_eyelashes,purple_eyes,blue_veil,white_veil,white_dress,two-tone_veil,dress,jewelry,blue_butterfly,flower,veil,black_flower",
+                "link": "https://civitai.com/models/841471/the-shorekeeper-wuthering-waves",
+                "model_weight": 1,
+                "clip_weight": 1
+            },
+            {
+                "name": "Real Dragons",
+                "file": "dragon_real_base_V1_SD15.safetensors",
+                "description": "You can expect awe-inspiring dragon flames, powerful dragon strength, unparalleled dragon vision, and acute dragon perception, among other characteristics.\nThese can be some helpful triggerwords:\ndragon_real,flame",
+                "link": "https://civitai.com/models/82903/real-dragons",
+                "model_weight": 1,
+                "clip_weight": 1
+            }
+        ]
     }
 }
   

@@ -51,7 +51,7 @@ async function handleCreateImageCommand(interaction, client) {
 
 
     // Find the options for the command
-    const prompt = interaction.options.getString('prompt') ? interaction.options.getString('prompt') : 'default prompt';
+    const prompt = interaction.options.getString('prompt');
 
     const dimensions = create_image_settings_user_data_cache.dimensions;
     const model = create_image_settings_user_data_cache.model;
@@ -63,14 +63,7 @@ async function handleCreateImageCommand(interaction, client) {
     // Split the string into width and height
     const [width, height] = dimensions.split('x').map(Number); // Convert to numbers
 
-    // Your application ID and the token from the interaction
-    const applicationId = process.env.APP_ID; // Replace with your application ID
-
-    // Use the interaction token directly from the interaction payload
-    const token = interaction.token; // The interaction token
-
     // Construct the follow-up URL
-    const followUpUrl = `https://discord.com/api/v10/webhooks/${applicationId}/${token}/messages/@original`;
     const clientId = uuidv4(); // Generate a unique client ID
 
     let ws;
@@ -271,7 +264,7 @@ async function handleCreateImageCommand(interaction, client) {
 function getRandomSeed() {
     const max = BigInt('0xffffffffffffffff'); // Maximum value
     const randomNum = BigInt(Math.floor(Math.random() * Number(max + 1n))); // Scale to 0 to max
-    return randomNum.toString();
+    return Number(randomNum);
 }
 
 function editWorkflow(prompt, width, height, modelFile, loraFile) {
@@ -316,10 +309,15 @@ function editWorkflow(prompt, width, height, modelFile, loraFile) {
           node.inputs.scheduler = modelSettings.settings.scheduler;
         }
       }
+
+    // Update text for CLIPTextEncode (Prompt) Positive node
+    if (node.class_type === 'CLIPTextEncode' && node._meta.title === 'CLIP Text Encode (Prompt) Positive') {
+        node.inputs.text = prompt; // Update prompt or fallback to the provided one
+    }
   
       // Update text for CLIPTextEncode (Prompt) Positive node
       if (node.class_type === 'CLIPTextEncode' && node._meta.title === 'CLIP Text Encode (Prompt) Positive Style') {
-        node.inputs.text = modelSettings?.settings.positive_prompt || prompt; // Update prompt or fallback to the provided one
+        node.inputs.text = modelSettings?.settings.positive_prompt; // Update prompt or fallback to the provided one
       }
   
       // Update text for CLIPTextEncode (Prompt) Negative node
