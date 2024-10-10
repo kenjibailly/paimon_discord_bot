@@ -90,7 +90,7 @@ async function handleLorabutton (interaction, client) {
                 inline: false // You can set this to `true` to display fields inline
             });
 
-            loras.push(lora.file);
+            loras.push({ name: lora.name, file: lora.file });
         });
     } else {
         console.warn("No parent model found for the selected checkpoint.");

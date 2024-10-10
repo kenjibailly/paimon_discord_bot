@@ -105,7 +105,7 @@
                     "sampler_name": "dpmpp_sde",
                     "scheduler": "karras",
                     "clip_skip": -2,
-                    "positive_prompt": "masterpiece, best quality, ultra-detailed, illustration, connection, harmony, balance, texture, detail, realism, depth, perspective, composition, color, light, shadow, reflection, refraction, tone, contrast, foreground, middle ground, background, naturalistic, figurative, representational, impressionistic, expressionistic, abstract, innovative, experimental, unique",
+                    "positive_prompt": "masterpiece, best quality, ultra-detailed, illustration, texture, detail, realism, depth, perspective, composition, color, light, shadow, tone, contrast, naturalistic, figurative, representational, impressionistic, expressionistic",
                     "negative_prompt": "(worst quality, low quality:1.4), (realistic, lip, nose, tooth, rouge, lipstick, eyeshadow:1.0), (dusty sunbeams:1.0),, (abs, muscular, rib:1.0), (depth of field, bokeh, blurry:1.4), (greyscale, monochrome:1.0), text, title, logo, signature,watermark,"    
                 },
                 "default": false

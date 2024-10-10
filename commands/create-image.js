@@ -53,11 +53,35 @@ async function handleCreateImageCommand(interaction, client) {
     // Find the options for the command
     const prompt = interaction.options.getString('prompt');
 
-    const dimensions = create_image_settings_user_data_cache.dimensions;
+    let dimensions = create_image_settings_user_data_cache.dimensions;
     const model = create_image_settings_user_data_cache.model;
-    const lora = create_image_settings_user_data_cache.lora;
+    let lora = create_image_settings_user_data_cache.lora;
     const checkpointName = parentModel.checkpoints.find(checkpoint => checkpoint.file === model)?.name || "Unknown Checkpoint";
     const loraName = parentModel.loras.find(lora_data => lora_data.file === lora)?.name || "";
+
+
+    // Get the first dimensions from the parent model
+    const first_dimensions = Object.entries(parentModel.dimensions)[0];
+
+    // Check if the current dimensions exist in the dimensions object
+    const dimensionExists = Object.values(parentModel.dimensions).includes(dimensions);
+
+    let dimensions_description;
+    // If dimensions doesn't exist, use the first one
+    if (!dimensionExists) {
+        dimensions = first_dimensions[1]; // Use the first entry's value (like "512x512")
+        dimensions_description = `⚠️ *You have incompatible dimensions in your settings for this model, I have changed them to the standard 1:1 square.*`
+    }
+
+    // Check if the current lora exist in the loras object
+    let loraExists = parentModel.loras.some(loraObj => loraObj.file === lora);
+    let lora_description;
+    // If lora doesn't exist, remove it
+    if (!loraExists) {
+        lora = "";
+        lora_description = `⚠️ *You have an incompatible LoRa in your settings for this model, I have removed the LoRa for this creation.*`
+    }
+
 
 
     // Split the string into width and height
@@ -185,10 +209,12 @@ async function handleCreateImageCommand(interaction, client) {
                     if (imageUrl) {
                         const title = "Image Created";
                         const description = `Model: **${checkpointName}**\n` + 
-                        `${loraName 
+                        (loraName 
                         ? `LoRa: **${loraName}**\n` 
-                        : ``}` +
-                        "\nYour image has been created succesfully!\nTake a look at this master piece!";
+                        : ``) + 
+                        "\nYour image has been created successfully!\nTake a look at this masterpiece!" + 
+                        (dimensions_description ? `\n\n${dimensions_description}` : ``) + 
+                        (lora_description ? `\n\n${lora_description}` : ``);
                         const color = "";
                         const successEmbed = createEmbed(title, description, color)
                         .setImage(`attachment://${image.filename}`); // Embed image
@@ -207,16 +233,6 @@ async function handleCreateImageCommand(interaction, client) {
                                 embeds: [embedObject],
                                 files: [{ attachment: imageBuffer, name: image.filename }],
                             });
-                            
-                            // if (result instanceof Error) {
-                            //     const errorEmbed = createEmbed(
-                            //         "Error",
-                            //         "Something went wrong while creating the image.",
-                            //         "error"
-                            //     );
-                        
-                            //     await interaction.editReply({ embeds: [errorEmbed] });
-                            // }
                     
                         } catch (error) {
                             logger.error('Error updating message:', error.response ? error.response.data : error.message);

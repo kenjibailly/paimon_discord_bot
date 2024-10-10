@@ -20,7 +20,7 @@ async function handleModelButton (interaction, client) {
                 inline: false // You can set this to `true` to display fields inline
             });
 
-            models.push(checkpoint.file);
+            models.push({ name: checkpoint.name, file: checkpoint.file });
         });
     });
 

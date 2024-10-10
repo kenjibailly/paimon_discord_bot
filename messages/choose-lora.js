@@ -38,8 +38,9 @@ async function handleChooseLora(message, client) {
     }
 
     try {
+        const selected_lora = create_image_settings_user_data_cache.loras[Number(messageContent) - 1];
         const updateData = { 
-            lora: create_image_settings_user_data_cache.loras[Number(messageContent) - 1] 
+            lora: selected_lora.file
         };
         
         // Check if model exists in create_image_settings_user_data_cache and add it to the update data
@@ -59,7 +60,7 @@ async function handleChooseLora(message, client) {
         );
 
         const title = `Change LoRa Success`;
-        const description = `I successfully updated your LoRa!`;
+        const description = `I successfully updated your LoRa to: **${selected_lora.name}**!`;
         const color = ""; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 

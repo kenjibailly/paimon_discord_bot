@@ -38,8 +38,9 @@ async function handleChooseDimensions(message, client) {
     }
 
     try {
+        const selected_dimensions = create_image_settings_user_data_cache.dimensions[Number(messageContent) - 1];
         const updateData = { 
-            dimensions: create_image_settings_user_data_cache.dimensions[Number(messageContent) - 1].value
+            dimensions: selected_dimensions.value
         };
         
         // Check if model exists in create_image_settings_user_data_cache and add it to the update data
@@ -54,7 +55,7 @@ async function handleChooseDimensions(message, client) {
         );
 
         const title = `Change Dimensions Success`;
-        const description = `I successfully updated your dimensions!`;
+        const description = `I successfully updated your dimensions to: **${selected_dimensions.name} ${selected_dimensions.value}**!`;
         const color = ""; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 

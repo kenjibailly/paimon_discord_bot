@@ -38,14 +38,15 @@ async function handleChooseModel(message, client) {
     }
 
     try {
+        const selected_model = create_image_settings_user_data_cache.models[Number(messageContent)-1];
         const newModel = await CreateImageSettings.findOneAndUpdate(
             { user_id: message.author.id }, 
-            { $set: { model: create_image_settings_user_data_cache.models[Number(messageContent) - 1] } },
+            { $set: { model: selected_model.file } },
             { upsert: true, new: true }
         );
 
         const title = `Change Model Success`;
-        const description = `I successfully updated your model!`;
+        const description = `I successfully updated your model to: **${selected_model.name}**!`;
         const color = ""; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
