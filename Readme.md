@@ -59,20 +59,6 @@ docker-compose up -d
 ```
 </details>
 
-### 🛜 Proxy
-
-<details>
-
-<summary>🛠️ Open for installation steps</summary>
-
-Create a proxy to your (sub)domain with swag / nginx-proxy-manager / nginx. 
-```
-http://discord_bot_paimon:3000
-```
-And add a CNAME for your sub domain if used.
-
-</details>
-
 
 ### 🌀 Discord Developer Portal
 
@@ -102,12 +88,6 @@ After completing your .env file please restart the docker container, if you don'
 
 ```bash
 docker restart discord_bot_paimon
-```
-
-Now go back to the Discord Developer Portal. Under the `General Information` tab, find `Interactions Endpoint URL` and add your url you proxied ending in `/interactions`.
-Example:
-```
-https://sub.domain.com/interactions
 ```
 
 </details>
