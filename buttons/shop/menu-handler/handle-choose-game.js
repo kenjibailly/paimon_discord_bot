@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../../helpers/embed');
 const userExchangeData = require('../../../helpers/userExchangeData');
 const Games = require('../../../models/games');
@@ -12,7 +11,7 @@ async function handleChooseGame(name, interaction, client) {
     let games_list;
 
     try {
-        games = await Games.find({ guild_id: interaction.guild_id });
+        games = await Games.find({ guild_id: interaction.guildId });
         games_list = [];
         if (games.length > 0) {
             games.forEach((game, index) => {
@@ -27,7 +26,7 @@ async function handleChooseGame(name, interaction, client) {
     
             // Store interaction data for the specific user
             userExchangeData.set(interaction.member.user.id, {
-                threadId: interaction.channel_id,
+                threadId: interaction.channelId,
                 name: name,
                 games: games,
             });
@@ -36,14 +35,20 @@ async function handleChooseGame(name, interaction, client) {
             title = "No Games Added Yet";
             description = "The staff hasn't added any games yet, please ask them to add some games.";
             color = "error";
+            const embed = createEmbed(title, description, color);
+            await interaction.update({ embeds: [embed] });
             handleCancelThread(interaction, client);
+            return;
         }
     } catch (error) {
         logger.error('Error Finding Games', error);
         title = "Error Finding Games";
         description = "I couldn't retrieve the list of games, please try again later.";
         color = "error";
+        const embed = createEmbed(title, description, color);
+        await interaction.update({ embeds: [embed] });
         handleCancelThread(interaction, client);
+        return;
     }
 
     const embed = createEmbed(title, description, color);
@@ -51,25 +56,22 @@ async function handleChooseGame(name, interaction, client) {
         embed.addFields(games_list);
     }
 
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            components: [
-                {
-                    type: 1,
-                    components: [
-                        {
-                            type: 2,
-                            style: 4,
-                            label: "Cancel",
-                            custom_id: "cancel-thread"
-                        }
-                    ]
-                }
-            ],
-        },
-    };
+    await interaction.update({
+        embeds: [embed],
+        components: [
+            {
+                type: 1,
+                components: [
+                    {
+                        type: 2,
+                        style: 4,
+                        label: "Cancel",
+                        custom_id: "cancel-thread"
+                    }
+                ]
+            }
+        ],
+    });
 }
 
 module.exports = handleChooseGame;

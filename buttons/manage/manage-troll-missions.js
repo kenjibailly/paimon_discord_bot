@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../helpers/embed');
 const TrollMissions = require('../../models/troll-missions');
 const userExchangeData = require('../../helpers/userExchangeData');
@@ -8,32 +7,29 @@ const cancelThread = require('../cancel-thread');
 async function handleAddTrollMissionNameButton(interaction, client) {
     // Store interaction data for the specific user
     userExchangeData.set(interaction.member.user.id, {
-        threadId: interaction.channel_id,
+        threadId: interaction.channelId,
         name: "add-troll-mission-name",
     });
 
     const title = `Add Troll Mission`;
     const description = `Please reply with the new name of your troll mission.`;
     const embed = createEmbed(title, description, "");
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            components: [
-                {
-                    type: 1, // Action Row
-                    components: [
-                        {
-                            type: 2, // Button
-                            style: 4, // Danger style (for removing a troll mission)
-                            label: "Cancel",
-                            custom_id: "cancel-thread"
-                        }
-                    ],
-                },
-            ],
-        },
-    };
+    await interaction.reply({
+        embeds: [embed],
+        components: [
+            {
+                type: 1, // Action Row
+                components: [
+                    {
+                        type: 2, // Button
+                        style: 4, // Danger style (for removing a troll mission)
+                        label: "Cancel",
+                        custom_id: "cancel-thread"
+                    }
+                ],
+            },
+        ],
+    });
 }
 
 async function handleAddTrollMissionWithoutDescriptionButton (interaction, client) {
@@ -41,7 +37,7 @@ async function handleAddTrollMissionWithoutDescriptionButton (interaction, clien
 
     try {
         const newTrollMission = new TrollMissions({
-            guild_id: interaction.guild_id,
+            guild_id: interaction.guildId,
             name: user_exchange_data.new_troll_mission_name,
         });
         await newTrollMission.save();
@@ -54,14 +50,10 @@ async function handleAddTrollMissionWithoutDescriptionButton (interaction, clien
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+        await interaction.reply({ embeds: [embed] });
         cancelThread(interaction, client);
     
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            },
-        };
+        return;
     }
 
 
@@ -72,19 +64,14 @@ async function handleAddTrollMissionWithoutDescriptionButton (interaction, clien
     const embed = createEmbed(title, description, color);
 
     userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+    await interaction.reply({ embeds: [embed] });
     cancelThread(interaction, client);
 
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-        },
-    };
 }
 
 async function handleManageTrollMissionsButton(interaction, client) {
     try {
-        const trollMissions = await TrollMissions.find({ guild_id: interaction.guild_id });
+        const trollMissions = await TrollMissions.find({ guild_id: interaction.guildId });
         
         if(trollMissions.length > 0) {
             let troll_missions_list = "";
@@ -95,16 +82,16 @@ async function handleManageTrollMissionsButton(interaction, client) {
 
             // Store interaction data for the specific user
             userExchangeData.set(interaction.member.user.id, {
-                threadId: interaction.channel_id,
+                threadId: interaction.channelId,
                 name: "manage-troll-missions",
-                action: interaction.data.custom_id,
+                action: interaction.customId,
                 troll_missions: trollMissions,
             });
             
             let action;
-            if (interaction.data.custom_id == "update-troll-mission") {
+            if (interaction.customId == "update-troll-mission") {
                 action = "update";
-            } else if (interaction.data.custom_id == "remove-troll-mission") {
+            } else if (interaction.customId == "remove-troll-mission") {
                 action = "remove";
             }
 
@@ -113,25 +100,22 @@ async function handleManageTrollMissionsButton(interaction, client) {
             const title = `${capitalizedAction} Troll Mission`;
             const description = `Please reply with the number next to the troll mission to ${action} that troll mission.\n\n${troll_missions_list}`;
             const embed = createEmbed(title, description, "");
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    components: [
-                        {
-                            type: 1, // Action Row
-                            components: [
-                                {
-                                    type: 2, // Button
-                                    style: 4, // Danger style (for removing a troll mission)
-                                    label: "Cancel",
-                                    custom_id: "cancel-thread"
-                                }
-                            ],
-                        },
-                    ],
-                },
-            };
+            await interaction.reply({
+                embeds: [embed],
+                components: [
+                    {
+                        type: 1, // Action Row
+                        components: [
+                            {
+                                type: 2, // Button
+                                style: 4, // Danger style (for removing a troll mission)
+                                label: "Cancel",
+                                custom_id: "cancel-thread"
+                            }
+                        ],
+                    },
+                ],
+            });
         } else {
             const title = "No troll missions found";
             const description = `I couldn't find any troll missions, please add one first using the \`/manage-troll-missions\` command.`;
@@ -139,27 +123,24 @@ async function handleManageTrollMissionsButton(interaction, client) {
             const embed = createEmbed(title, description, color);
 
             userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-            cancelThread(interaction, client);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    components: [
-                        {
-                            type: 1, // Action Row
-                            components: [
-                                {
-                                    type: 2, // Button
-                                    style: 4, // Danger style (for removing a troll mission)
-                                    label: "Cancel",
-                                    custom_id: "cancel-thread"
-                                }
-                            ],
-                        },
-                    ],
-                },
-            };
+            await interaction.reply({
+                embeds: [embed],
+                components: [
+                    {
+                        type: 1, // Action Row
+                        components: [
+                            {
+                                type: 2, // Button
+                                style: 4, // Danger style (for removing a troll mission)
+                                label: "Cancel",
+                                custom_id: "cancel-thread"
+                            }
+                        ],
+                    },
+                ],
+            });
+            cancelThread(interaction, client);
         }
 
     } catch (error) {
@@ -170,14 +151,9 @@ async function handleManageTrollMissionsButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+        await interaction.reply({ embeds: [embed] });
         cancelThread(interaction, client);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            },
-        };
     }
 }
 
@@ -195,32 +171,29 @@ async function handleUpdateTrollMissionNameButton(interaction, client) {
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);
 
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            components: [
-                {
-                    type: 1, // Action Row
-                    components: [
-                        {
-                            type: 2, // Button
-                            style: 3, // Green style
-                            label: "Proceed",
-                            emoji: { name: "✅" },
-                            custom_id: "update-troll-mission-description"
-                        },
-                        {
-                            type: 2, // Button
-                            style: 4, // Danger style (for removing a troll mission)
-                            label: "Cancel",
-                            custom_id: "cancel-thread"
-                        }
-                    ],
-                },
-            ],
-        }
-    };
+    await interaction.reply({
+        embeds: [embed],
+        components: [
+            {
+                type: 1, // Action Row
+                components: [
+                    {
+                        type: 2, // Button
+                        style: 3, // Green style
+                        label: "Proceed",
+                        emoji: { name: "✅" },
+                        custom_id: "update-troll-mission-description"
+                    },
+                    {
+                        type: 2, // Button
+                        style: 4, // Danger style (for removing a troll mission)
+                        label: "Cancel",
+                        custom_id: "cancel-thread"
+                    }
+                ],
+            },
+        ],
+    });
 }
 
 async function handleUpdateTrollMissionDescriptionButton(interaction, client) {
@@ -241,14 +214,8 @@ async function handleUpdateTrollMissionDescriptionButton(interaction, client) {
                 const embed = createEmbed(title, description, color);
 
                 userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-                cancelThread(interaction, client);
-            
-                return {
-                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                    data: {
-                        embeds: [embed],
-                    }
-                };
+                await interaction.reply({ embeds: [embed] });
+                cancelThread(interaction, client);            
 
             } else {
                 throw new Error("Couldn't update troll mission to database");
@@ -260,17 +227,10 @@ async function handleUpdateTrollMissionDescriptionButton(interaction, client) {
             const embed = createEmbed(title, description, color);
             
             userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+            await interaction.reply({ embeds: [embed] });
             cancelThread(interaction, client);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                }
-            };
         }
-
-        
 
     } catch (error) {
         logger.error("Error Updating Troll Mission To Database:", error);
@@ -281,14 +241,9 @@ async function handleUpdateTrollMissionDescriptionButton(interaction, client) {
         const embed = createEmbed(title, description, color);
         
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+        await interaction.reply({ embeds: [embed] });
         cancelThread(interaction, client);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            }
-        };
     }
 }
 

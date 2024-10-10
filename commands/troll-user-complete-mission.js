@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const TrolledUser = require('../models/trolled-users');
 const TrollMissions = require('../models/troll-missions');
 const createEmbed = require('../helpers/embed');
@@ -7,19 +6,16 @@ const { ChannelType } = require('discord.js');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 async function handleTrollUserCompleteMissionCommand(interaction, client) {
-    const { data, guild_id } = interaction;
+    const { guildId } = interaction;
 
     // Find each option by name
-    const userOption = data.options.find(opt => opt.name === 'user');
-    const messageLinkOption = data.options.find(opt => opt.name === 'message-link');
-
-    const complete_user = userOption ? userOption.value : null;
-    const message_link = messageLinkOption ? messageLinkOption.value : null;
+    const complete_user = interaction.options.getUser('user').id;
+    const message_link = interaction.options.getString('message-link');
 
     let channelId;
     let channel;
     try {
-        const trolled_user = await TrolledUser.findOne({ guild_id: guild_id, user_id: complete_user });
+        const trolled_user = await TrolledUser.findOne({ guild_id: guildId, user_id: complete_user });
 
         if (trolled_user) {
             // Get the channel_id from the deleted document
@@ -52,7 +48,7 @@ async function handleTrollUserCompleteMissionCommand(interaction, client) {
                 const embed = createEmbed(title, description, color);
 
                     
-                const bot_channel = await getBotChannel(guild_id);
+                const bot_channel = await getBotChannel(guildId);
                 const botChannel = await client.channels.fetch(bot_channel.channel);
                 
                 const attachmentImage = message.attachments.first();
@@ -86,7 +82,7 @@ async function handleTrollUserCompleteMissionCommand(interaction, client) {
                 }
 
                 // Remove the "Trolled" role from the user
-                const guild = await client.guilds.fetch(guild_id);
+                const guild = await client.guilds.fetch(guildId);
                 const member = await guild.members.fetch(complete_user); // Ensure `guild` is your Guild object
                 const role = guild.roles.cache.find(role => role.name === "Trolled");
                 if (role && member) {
@@ -105,7 +101,7 @@ async function handleTrollUserCompleteMissionCommand(interaction, client) {
                 } else {
                     throw new Error("Role not found or user not found.");
                 }
-                await TrolledUser.deleteOne({ guild_id: guild_id, user_id: complete_user });
+                await TrolledUser.deleteOne({ guild_id: guildId, user_id: complete_user });
             } else {
                 throw new Error("Message not found.");
             }
@@ -120,13 +116,7 @@ async function handleTrollUserCompleteMissionCommand(interaction, client) {
         const description = `I could not complete the troll mission, please try again later.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        }
+        await interaction.reply({ embeds: [embed] });
     }
 }
 

@@ -68,23 +68,23 @@ client.on('guildMemberAdd', async (member) => {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async function (req, res) {
-  // logger.log('Received interaction:', req.body);
+client.on('interactionCreate', async (interaction) => {
+  try {
+      const { type } = interaction;
 
-  const { type } = req.body;
-
-  if (type === InteractionType.APPLICATION_COMMAND) {
-    const response = await handleSlashCommand(req.body, client, res);
-    return res.send(response);
+      if (type === InteractionType.APPLICATION_COMMAND) {
+          await handleSlashCommand(interaction, client);
+      } else if (type === InteractionType.MESSAGE_COMPONENT) {
+          await handleButtonClicks(interaction, client);
+      }
+  } catch (error) {
+      console.error('Error handling interaction:', error);
+      if (interaction.isRepliable()) {
+          await interaction.reply({ content: 'There was an error processing your request.', ephemeral: true });
+      }
   }
-
-  if (type === InteractionType.MESSAGE_COMPONENT) {
-    const response = await handleButtonClicks(req.body, client);
-    return res.send(response);
-  }
-
-  return res.status(400).json({ error: 'Unknown interaction type' });
 });
+
 
 
 client.on('messageCreate', async message => {

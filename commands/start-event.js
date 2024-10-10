@@ -7,36 +7,25 @@ const userExchangeData = require('../helpers/userExchangeData');
 
 
 async function handleStartEventCommand(interaction, client) {
-    const { data, guild_id, channel_id } = interaction;
+    const { guildId, channelId } = interaction;
 
     try {
-        const event = await Events.findOne({ guild_id: guild_id });
+        const event = await Events.findOne({ guild_id: guildId });
         if (event) {
             const title = "Error Start Event";
             const description = `You already have an ongoing event, please let it finish or cancel it using the \`/cancel-event\` command.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
 
         // Find each option by name
-        const eventNameOption = data.options.find(opt => opt.name === 'name');
-        const eventDescriptionOption = data.options.find(opt => opt.name === 'description');
-        const imageOption = data.options.find(opt => opt.name === 'image');
-        const colorOption = data.options.find(opt => opt.name === 'color');
-        const expirationOption = data.options.find(opt => opt.name === 'expiration');
-
-        const event_name = eventNameOption ? eventNameOption.value : null;
-        const event_description = eventDescriptionOption ? eventDescriptionOption.value : null;
-        const image = imageOption ? imageOption.value : null;
-        const color = colorOption ? colorOption.value : null;
-        const expiration = expirationOption ? expirationOption.value : null;
+        const event_name = interaction.options.getString('name');
+        const event_description = interaction.options.getString('description');
+        const image = interaction.options.getString('image');
+        const color = interaction.options.getString('color');
+        const expiration = interaction.options.getInteger('expiration');
 
         if (image && !isValidImageUrl(image)) {
             // Handle invalid image URL
@@ -45,13 +34,8 @@ async function handleStartEventCommand(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
     
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
 
         let color_embed = "#7f2aff";
@@ -89,7 +73,7 @@ async function handleStartEventCommand(interaction, client) {
         }
 
         let user_exchange_data = {};
-        user_exchange_data.channel_id = channel_id;
+        user_exchange_data.channel_id = channelId;
         user_exchange_data.event_name = event_name;
         user_exchange_data.event_description = event_description;
         user_exchange_data.image = image;
@@ -99,12 +83,12 @@ async function handleStartEventCommand(interaction, client) {
         userExchangeData.set(interaction.member.user.id, user_exchange_data);
 
 
-        const guild = await client.guilds.fetch(guild_id);
-        const channel = await guild.channels.fetch(channel_id);
+        const guild = await client.guilds.fetch(guildId);
+        const channel = await guild.channels.fetch(channelId);
     
         // Create a private thread that is only visible to the user who clicked the button
         const thread = await channel.threads.create({
-            name: `Start Event - ${interaction.member.user.global_name}`, // Ensure you use the correct user property
+            name: `Start Event - ${interaction.member.user.globalName}`, // Ensure you use the correct user property
             autoArchiveDuration: 60, // Archive the thread after 60 minutes of inactivity
             reason: 'User initiated start event interaction',
             invitable: false, // Don't allow other users to join the thread
@@ -117,7 +101,7 @@ async function handleStartEventCommand(interaction, client) {
         let description;
         let button_component = [];
 
-        const next_game = await NextGames.findOne({ guild_id: guild_id }).sort({ date: 1 });
+        const next_game = await NextGames.findOne({ guild_id: guildId }).sort({ date: 1 });
         const game = await Games.findById(next_game.game_id);
 
         if (game) {
@@ -205,24 +189,16 @@ async function handleStartEventCommand(interaction, client) {
         title = "Start Event";
         description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
         embed = createEmbed(title, description, "");
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
 
 
     } catch (error) {
         logger.error("Error handling start event command:", error);
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                content: "An error occurred while handling the command.",
-                flags: 64, // Ephemeral message
-            },
-        };
+        await interaction.reply({
+            content: "An error occurred while handling the command.",
+            ephemeral: true, // Ephemeral message
+        });
     }
 }
 

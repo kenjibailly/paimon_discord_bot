@@ -1,25 +1,19 @@
-const { InteractionResponseType } = require('discord-interactions');
 const Games = require('../models/games');
 const createEmbed = require('../helpers/embed');
 
 
 async function handleGamesCommand(interaction, client) {
-    const { guild_id } = interaction;
+    const { guildId } = interaction;
     try {
-        const games = await Games.find({guild_id: guild_id });
+        const games = await Games.find({guild_id: guildId });
 
         if(games.length === 0) {
             const title = "Games";
             const description = `I couldn't find any games.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
 
         const games_list = [];
@@ -37,12 +31,7 @@ async function handleGamesCommand(interaction, client) {
         const embed = createEmbed(title, description, "");
         embed.addFields(games_list); // Add the fields to the embed
         
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            },
-        };
+        await interaction.reply({ embeds: [embed] });
 
     } catch (error) {
         logger.error('Games error: ', error);
@@ -51,13 +40,7 @@ async function handleGamesCommand(interaction, client) {
         const description = `Something went wrong while trying to get the games list, please contact the administrator.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        }
+        await interaction.reply({ embeds: [embed] });
     }
 }
 

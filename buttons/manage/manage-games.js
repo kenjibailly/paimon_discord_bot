@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../helpers/embed');
 const Games = require('../../models/games');
 const userExchangeData = require('../../helpers/userExchangeData');
@@ -8,32 +7,29 @@ const cancelThread = require('../cancel-thread');
 async function handleAddGameNameButton(interaction, client) {
     // Store interaction data for the specific user
     userExchangeData.set(interaction.member.user.id, {
-        threadId: interaction.channel_id,
+        threadId: interaction.channelId,
         name: "add-game-name",
     });
 
     const title = `Add Game`;
     const description = `Please reply with the new name of your game.`;
     const embed = createEmbed(title, description, "");
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            components: [
-                {
-                    type: 1, // Action Row
-                    components: [
-                        {
-                            type: 2, // Button
-                            style: 4, // Danger style (for removing a game)
-                            label: "Cancel",
-                            custom_id: "cancel-thread"
-                        }
-                    ],
-                },
-            ],
-        },
-    };
+    await interaction.reply({
+        embeds: [embed],
+        components: [
+            {
+                type: 1, // Action Row
+                components: [
+                    {
+                        type: 2, // Button
+                        style: 4, // Danger style (for removing a game)
+                        label: "Cancel",
+                        custom_id: "cancel-thread"
+                    }
+                ],
+            },
+        ],
+    });
 }
 
 async function handleAddGameWithoutDescriptionButton (interaction, client) {
@@ -41,7 +37,7 @@ async function handleAddGameWithoutDescriptionButton (interaction, client) {
 
     try {
         const newGame = new Games({
-            guild_id: interaction.guild_id,
+            guild_id: interaction.guildId,
             name: user_exchange_data.new_game_name,
         });
         await newGame.save();
@@ -54,14 +50,10 @@ async function handleAddGameWithoutDescriptionButton (interaction, client) {
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        cancelThread(interaction, client);
     
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            },
-        };
+        await interaction.reply({ embeds: [embed] });
+        cancelThread(interaction, client);
+        return;
     }
 
 
@@ -72,19 +64,14 @@ async function handleAddGameWithoutDescriptionButton (interaction, client) {
     const embed = createEmbed(title, description, color);
 
     userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+    await interaction.reply({ embeds: [embed] });
     cancelThread(interaction, client);
 
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-        },
-    };
 }
 
 async function handleManageGamesButton(interaction, client) {
     try {
-        const games = await Games.find({ guild_id: interaction.guild_id });
+        const games = await Games.find({ guild_id: interaction.guildId });
         
         if(games.length > 0) {
             let games_list = "";
@@ -95,16 +82,16 @@ async function handleManageGamesButton(interaction, client) {
 
             // Store interaction data for the specific user
             userExchangeData.set(interaction.member.user.id, {
-                threadId: interaction.channel_id,
+                threadId: interaction.channelId,
                 name: "manage-games",
-                action: interaction.data.custom_id,
+                action: interaction.customId,
                 games: games,
             });
             
             let action;
-            if (interaction.data.custom_id == "update-game") {
+            if (interaction.customId == "update-game") {
                 action = "update";
-            } else if (interaction.data.custom_id == "remove-game") {
+            } else if (interaction.customId == "remove-game") {
                 action = "remove";
             }
 
@@ -113,25 +100,22 @@ async function handleManageGamesButton(interaction, client) {
             const title = `${capitalizedAction} Game`;
             const description = `Please reply with the number next to the game to ${action} that game.\n\n${games_list}`;
             const embed = createEmbed(title, description, "");
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    components: [
-                        {
-                            type: 1, // Action Row
-                            components: [
-                                {
-                                    type: 2, // Button
-                                    style: 4, // Danger style (for removing a game)
-                                    label: "Cancel",
-                                    custom_id: "cancel-thread"
-                                }
-                            ],
-                        },
-                    ],
-                },
-            };
+            await interaction.reply({
+                embeds: [embed],
+                components: [
+                    {
+                        type: 1, // Action Row
+                        components: [
+                            {
+                                type: 2, // Button
+                                style: 4, // Danger style (for removing a game)
+                                label: "Cancel",
+                                custom_id: "cancel-thread"
+                            }
+                        ],
+                    },
+                ],
+            });
         } else {
             const title = "No games found";
             const description = `I couldn't find any games, please add one first using the \`/manage-games\` command.`;
@@ -139,27 +123,24 @@ async function handleManageGamesButton(interaction, client) {
             const embed = createEmbed(title, description, color);
 
             userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-            cancelThread(interaction, client);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    components: [
-                        {
-                            type: 1, // Action Row
-                            components: [
-                                {
-                                    type: 2, // Button
-                                    style: 4, // Danger style (for removing a game)
-                                    label: "Cancel",
-                                    custom_id: "cancel-thread"
-                                }
-                            ],
-                        },
-                    ],
-                },
-            };
+            await interaction.reply({
+                embeds: [embed],
+                components: [
+                    {
+                        type: 1, // Action Row
+                        components: [
+                            {
+                                type: 2, // Button
+                                style: 4, // Danger style (for removing a game)
+                                label: "Cancel",
+                                custom_id: "cancel-thread"
+                            }
+                        ],
+                    },
+                ],
+            });
+            cancelThread(interaction, client);
         }
 
     } catch (error) {
@@ -170,14 +151,8 @@ async function handleManageGamesButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+        await interaction.reply({ embeds: [embed] });
         cancelThread(interaction, client);
-
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            },
-        };
     }
 }
 
@@ -195,32 +170,29 @@ async function handleUpdateGameNameButton(interaction, client) {
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);
 
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            components: [
-                {
-                    type: 1, // Action Row
-                    components: [
-                        {
-                            type: 2, // Button
-                            style: 3, // Green style
-                            label: "Proceed",
-                            emoji: { name: "✅" },
-                            custom_id: "update-game-description"
-                        },
-                        {
-                            type: 2, // Button
-                            style: 4, // Danger style (for removing a game)
-                            label: "Cancel",
-                            custom_id: "cancel-thread"
-                        }
-                    ],
-                },
-            ],
-        }
-    };
+    await interaction.reply({
+        embeds: [embed],
+        components: [
+            {
+                type: 1, // Action Row
+                components: [
+                    {
+                        type: 2, // Button
+                        style: 3, // Green style
+                        label: "Proceed",
+                        emoji: { name: "✅" },
+                        custom_id: "update-game-description"
+                    },
+                    {
+                        type: 2, // Button
+                        style: 4, // Danger style (for removing a game)
+                        label: "Cancel",
+                        custom_id: "cancel-thread"
+                    }
+                ],
+            },
+        ],
+    });
 }
 
 async function handleUpdateGameDescriptionButton(interaction, client) {
@@ -241,14 +213,8 @@ async function handleUpdateGameDescriptionButton(interaction, client) {
                 const embed = createEmbed(title, description, color);
 
                 userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-                cancelThread(interaction, client);
-            
-                return {
-                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                    data: {
-                        embeds: [embed],
-                    }
-                };
+                await interaction.reply({ embeds: [embed] });
+                cancelThread(interaction, client);            
 
             } else {
                 throw new Error("Couldn't update game to database");
@@ -260,18 +226,10 @@ async function handleUpdateGameDescriptionButton(interaction, client) {
             const embed = createEmbed(title, description, color);
             
             userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+            await interaction.reply({ embeds: [embed] });
             cancelThread(interaction, client);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                }
-            };
         }
-
-        
-
     } catch (error) {
         logger.error("Error Updating Game To Database:", error);
 
@@ -281,14 +239,9 @@ async function handleUpdateGameDescriptionButton(interaction, client) {
         const embed = createEmbed(title, description, color);
         
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+        await interaction.reply({ embeds: [embed] });
         cancelThread(interaction, client);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            }
-        };
     }
 }
 

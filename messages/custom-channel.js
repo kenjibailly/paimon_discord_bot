@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const { ChannelType } = require('discord.js');
 const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');

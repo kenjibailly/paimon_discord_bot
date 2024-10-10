@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../helpers/embed');
 const { createImageSettingsUsersDataCache, loadUserSettingsIntoCache, createImageSettingsTemporaryCache } = require('../../helpers/create-image-settings-cache');
 const createImageSettings = require('../../models/create-image-settings');
@@ -17,7 +16,7 @@ async function handleRemoveLoraButton(interaction, client) {
     };
     
     try {
-        const userId = interaction.user.id;
+        const userId = interaction.userId;
 
         // Unset the lora field from the user's settings in the database
         await createImageSettings.findOneAndUpdate(
@@ -39,13 +38,7 @@ async function handleRemoveLoraButton(interaction, client) {
         const color = ""; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                components: [buttonComponent],
-            },
-        };
+        await interaction.update({ embeds: [embed], components: [buttonComponent] });
     } catch (error) {
         logger.error("Handle Remove Lora Button:", error);
 
@@ -54,13 +47,7 @@ async function handleRemoveLoraButton(interaction, client) {
         const color = "error"; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                components: [buttonComponent],
-            },
-        };
+        await interaction.reply({ embeds: [embed], components: [buttonComponent] });
     }
 }
 

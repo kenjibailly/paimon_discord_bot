@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../../helpers/embed');
 const userExchangeData = require('../../../helpers/userExchangeData');
 
@@ -9,29 +8,26 @@ async function handleCustomChannel(name, interaction) {
 
     // Store interaction data for the specific user
     userExchangeData.set(interaction.member.user.id, {
-        threadId: interaction.channel_id,
+        threadId: interaction.channelId,
         name: name,
     });
 
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            components: [
-                {
-                    type: 1,
-                    components: [
-                        {
-                            type: 2,
-                            style: 4,
-                            label: "Cancel",
-                            custom_id: "cancel-thread"
-                        }
-                    ]
-                }
-            ],
-        },
-    };
+    await interaction.update({
+        embeds: [embed],
+        components: [
+            {
+                type: 1,
+                components: [
+                    {
+                        type: 2,
+                        style: 4,
+                        label: "Cancel",
+                        custom_id: "cancel-thread"
+                    }
+                ]
+            }
+        ],
+    });
 
 }
 

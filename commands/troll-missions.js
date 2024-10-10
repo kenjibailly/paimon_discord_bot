@@ -1,25 +1,19 @@
-const { InteractionResponseType } = require('discord-interactions');
 const TrollMissions = require('../models/troll-missions');
 const createEmbed = require('../helpers/embed');
 
 
 async function handleTrollMissionsCommand(interaction, client) {
-    const { guild_id } = interaction;
+    const { guildId } = interaction;
     try {
-        const troll_missions = await TrollMissions.find({guild_id: guild_id });
+        const troll_missions = await TrollMissions.find({guild_id: guildId });
 
         if(troll_missions.length === 0) {
             const title = "Troll Missions";
             const description = `I couldn't find any troll missions.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
 
 
@@ -38,12 +32,7 @@ async function handleTrollMissionsCommand(interaction, client) {
         const embed = createEmbed(title, description, "");
         embed.addFields(troll_missions_list); // Add the fields to the embed
         
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            },
-        };
+        await interaction.reply({ embeds: [embed] });
 
     } catch (error) {
         logger.error('Troll Missions error: ', error);
@@ -52,13 +41,7 @@ async function handleTrollMissionsCommand(interaction, client) {
         const description = `Something went wrong while trying to get the troll missions list, please contact the administrator.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        }
+        await interaction.reply({ embeds: [embed] });
     }
 }
 

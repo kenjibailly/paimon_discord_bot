@@ -1,15 +1,14 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../helpers/embed');
 const Rewards = require('../../models/rewards');
 
 async function handleExchangeShopButton(interaction, client) {
     // Step 1: Create a thread
-    const guild = await client.guilds.fetch(interaction.guild_id);
-    const channel = await guild.channels.fetch(interaction.channel_id);
+    const guild = await client.guilds.fetch(interaction.guildId);
+    const channel = await guild.channels.fetch(interaction.channelId);
 
     // Create a private thread that is only visible to the user who clicked the button
     const thread = await channel.threads.create({
-        name: `Shop - ${interaction.member.user.global_name}`, // Ensure you use the correct user property
+        name: `Shop - ${interaction.member.user.globalName}`, // Ensure you use the correct user property
         autoArchiveDuration: 60, // Archive the thread after 60 minutes of inactivity
         reason: 'User initiated exchange shop interaction',
         invitable: false, // Don't allow other users to join the thread
@@ -35,13 +34,8 @@ async function handleExchangeShopButton(interaction, client) {
         const title = "Error Rewards";
         const description = `I could not find the rewards in the database. Pleae contact the administrator.`;
         const embed = createEmbed(title, description, "");
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+        return;
     }
     
 
@@ -84,13 +78,7 @@ async function handleExchangeShopButton(interaction, client) {
     title = "Shop";
     description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
     embed = createEmbed(title, description, "");
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            flags: 64,
-        },
-    };
+    await interaction.reply({ embeds: [embed], ephemeral: true });
 }
 
 module.exports = handleExchangeShopButton;

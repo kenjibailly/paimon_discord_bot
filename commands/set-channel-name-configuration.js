@@ -1,19 +1,18 @@
-const { InteractionResponseType } = require('discord-interactions');
 const ChannelNameConfig = require('../models/channel-name-config');
 const createEmbed = require('../helpers/embed');
 
 
 async function handleSetChannelNameConfigurationCommand (interaction, client) {
-    const { data, guild_id, channel_id } = interaction;
+    const { guildId, channelId } = interaction;
 
     try {
 
-        const guild = await client.guilds.fetch(guild_id);
-        const channel = await guild.channels.fetch(channel_id);
+        const guild = await client.guilds.fetch(guildId);
+        const channel = await guild.channels.fetch(channelId);
 
         // Create a private thread that is only visible to the user who clicked the button
         const thread = await channel.threads.create({
-            name: `Channel Name Configuration - ${interaction.member.user.global_name}`, // Ensure you use the correct user property
+            name: `Channel Name Configuration - ${interaction.member.user.globalName}`, // Ensure you use the correct user property
             autoArchiveDuration: 60, // Archive the thread after 60 minutes of inactivity
             reason: 'User initiated channel name configuration interaction',
             invitable: false, // Don't allow other users to join the thread
@@ -23,7 +22,7 @@ async function handleSetChannelNameConfigurationCommand (interaction, client) {
         // Add the user who clicked the button to the thread
         await thread.members.add(interaction.member.user.id);
         
-        const channel_name_config = await ChannelNameConfig.find({ guild_id: guild_id });
+        const channel_name_config = await ChannelNameConfig.find({ guild_id: guildId });
 
         let title = "Channel Name Configuration";
         let description = `Your current configuration is set to: \n` +
@@ -67,13 +66,8 @@ async function handleSetChannelNameConfigurationCommand (interaction, client) {
         title = "Channel Name Configuration";
         description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
         embed = createEmbed(title, description, "");
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
 
     } catch (error) {
         logger.error('Error handling Set Channel Name Configuration command:', error);
@@ -83,12 +77,7 @@ async function handleSetChannelNameConfigurationCommand (interaction, client) {
         const errorColor = "error";
         const errorEmbed = createEmbed(errorTitle, errorDescription, errorColor);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [errorEmbed]
-            }
-        };
+        await interaction.reply({ embeds: [errorEmbed] });
     }
 
 }

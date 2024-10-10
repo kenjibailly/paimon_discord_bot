@@ -1,20 +1,14 @@
-const { InteractionResponseType } = require('discord-interactions');
 const Wallet = require('../models/wallet');
 const createEmbed = require('../helpers/embed');
 const getTokenEmoji = require('../helpers/get-token-emoji');
 
 
 async function handleAwardUserCommand(interaction, client) {
-    const { member, guild_id, data } = interaction;
+    const { member, guildId, data } = interaction;
 
-    const userOption = data.options.find(opt => opt.name === 'user');
-    const amountOption = data.options.find(opt => opt.name === 'amount');
-    const reasonOption = data.options.find(opt => opt.name === 'reason');
-    
-    const userId = userOption ? userOption.value : null;
-    const amount = amountOption ? amountOption.value : null;
-    const reason = reasonOption ? reasonOption.value : "No reason provided"; // Default value if no reason is provided
-    
+    const userId = interaction.options.getUser('user').id;
+    const amount = interaction.options.getInteger('amount');
+    const reason = interaction.options.getString('reason');
     
     if (!userId || !amount) {
         const title = "Invalid Input";
@@ -22,39 +16,29 @@ async function handleAwardUserCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+        return;
     }
 
     try {
 
         // Fetch the token emoji using getTokenEmoji function
-        const tokenEmoji = await getTokenEmoji(interaction.guild_id);
+        const tokenEmoji = await getTokenEmoji(guildId);
 
         // Check if tokenEmoji is an embed (error case)
         if (tokenEmoji.data) {
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [tokenEmoji],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [tokenEmoji], ephemeral: true });
+            return;
         }
 
         // Find the wallet for the specified user and guild
-        let wallet = await Wallet.findOne({ user_id: userId, guild_id: guild_id });
+        let wallet = await Wallet.findOne({ user_id: userId, guild_id: guildId });
 
         if (!wallet) {
             // Create a new wallet if it doesn't exist
             wallet = new Wallet({
                 user_id: userId,
-                guild_id: guild_id,
+                guild_id: guildId,
                 amount: amount,
             });
             await wallet.save();
@@ -66,12 +50,8 @@ async function handleAwardUserCommand(interaction, client) {
             const color = "";
             const embed = createEmbed(title, description, color);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                },
-            };
+            await interaction.reply({ embeds: [embed] });
+            return;
         }
 
         // Award the amount to the existing wallet
@@ -86,12 +66,7 @@ async function handleAwardUserCommand(interaction, client) {
         const color = "";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            },
-        };
+        await interaction.reply({ embeds: [embed] });
 
     } catch (error) {
         // Handle errors during database operations
@@ -102,13 +77,8 @@ async function handleAwardUserCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
     }
 }
 

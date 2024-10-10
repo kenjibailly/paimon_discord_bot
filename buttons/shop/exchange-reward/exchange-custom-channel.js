@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../../helpers/embed');
 const AwardedReward = require('../../../models/awarded-reward');
 const checkRequiredBalance = require('../../../helpers/check-required-balance');
@@ -13,26 +12,21 @@ async function handleExchangeCustomChannelButton(interaction, client) {
         const user_exchange_data = userExchangeData.get(interaction.member.user.id);
         userExchangeData.delete(interaction.member.user.id);
 
-        const guild = await client.guilds.fetch(interaction.guild_id);
-        const thread = await guild.channels.fetch(interaction.channel_id);
+        const guild = await client.guilds.fetch(interaction.guildId);
+        const thread = await guild.channels.fetch(interaction.channelId);
     
         const wallet = await checkRequiredBalance(interaction, client, user_exchange_data.rewardPrice, thread);
         if(!wallet) { // if wallet has return error message
-            return {
-                type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
-            };
+            await interaction.deferUpdate();
         }
 
         
         // Check bot permissions
         const permissionCheck = await checkPermissions(interaction, client, 'MANAGE_CHANNELS', guild);
         if (permissionCheck) {
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [permissionCheck],
-                },
-            };
+            await interaction.update({ embeds: [permissionCheck] });
+            handleCancelThread(interaction, client);
+            return;
         }
 
 
@@ -48,12 +42,11 @@ async function handleExchangeCustomChannelButton(interaction, client) {
                 const color = "error";
                 const embed = createEmbed(title, description, color);
 
-                return {
-                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                    data: {
-                        embeds: [embed],
-                    },
-                };
+                await interaction.update({
+                    embeds: [embed],
+                    components: []  // Ensure this is an empty array
+                });                
+                return;
             }
         }
 
@@ -63,7 +56,7 @@ async function handleExchangeCustomChannelButton(interaction, client) {
             
             const reward = "custom-channel"; // Example reward value
             const awardedReward = new AwardedReward({
-                guild_id: interaction.guild_id,
+                guild_id: interaction.guildId,
                 awarded_user_id: interaction.member.user.id,
                 user_id: interaction.member.user.id,
                 value: user_exchange_data.channelName,
@@ -81,12 +74,11 @@ async function handleExchangeCustomChannelButton(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                },
-            };
+            await interaction.update({
+                embeds: [embed],
+                components: []  // Ensure this is an empty array
+            });            
+            return;
         }
 
         try {
@@ -99,16 +91,13 @@ async function handleExchangeCustomChannelButton(interaction, client) {
             const title = "Transaction Error";
             const description = "There was an error while processing your wallet transaction. Please try again later.";
             const color = "error"; // Assuming you have a color constant for errors
-            const embed = createEmbed(title, description, color);
-            
+            const embed = createEmbed(title, description, color);            
+            await interaction.update({
+                embeds: [embed],
+                components: []  // Ensure this is an empty array
+            });            
             handleCancelThread(interaction, client);
-
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                },
-            }
+            return;
         }
 
         try {
@@ -128,7 +117,10 @@ async function handleExchangeCustomChannelButton(interaction, client) {
                 const embed = createEmbed(title, description, color);
 
                 // Send success message before canceling the thread message
-                await thread.send({ embeds: [embed] });
+                await interaction.update({
+                    embeds: [embed],
+                    components: []
+                });
 
                 handleCancelThread(interaction, client);
 
@@ -143,10 +135,6 @@ async function handleExchangeCustomChannelButton(interaction, client) {
                         embeds: [parentEmbed],
                     });
                 }
-
-                return {
-                    type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
-                };
                 
             } catch (error) {
                 logger.error("Error creating channel:", error);
@@ -155,15 +143,11 @@ async function handleExchangeCustomChannelButton(interaction, client) {
                 const description = `There was an issue adding the channel to the server. Please try again later.`;
                 const color = "error";
                 const embed = createEmbed(title, description, color);
-
+                await interaction.update({
+                    embeds: [embed],
+                    components: []  // Ensure this is an empty array
+                });                
                 handleCancelThread(interaction, client);
-
-                return {
-                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                    data: {
-                        embeds: [embed],
-                    },
-                };
             }
 
         } catch (error) {
@@ -173,15 +157,11 @@ async function handleExchangeCustomChannelButton(interaction, client) {
             const description = `There was an issue adding the channel to the server. Please try again later.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-
+            await interaction.update({
+                embeds: [embed],
+                components: []  // Ensure this is an empty array
+            });            
             handleCancelThread(interaction, client);
-
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                },
-            };
         }
 
     } catch (error) {
@@ -198,15 +178,12 @@ async function handleExchangeCustomChannelButton(interaction, client) {
 
         const color = "error";
         const embed = createEmbed(title, description, color);
-
+        await interaction.update({
+            embeds: [embed],
+            components: []  // Ensure this is an empty array
+        });
+        
         handleCancelThread(interaction, client);
-
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            },
-        };
     }
 
 }

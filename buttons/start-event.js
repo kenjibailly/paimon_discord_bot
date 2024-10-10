@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const Games = require('../models/games');
 const Events = require('../models/events');
@@ -8,7 +7,7 @@ const cancelThread = require('./cancel-thread');
 
 async function handleStartEventAddGameButton(interaction, client) {
     try {
-        const games = await Games.find({ guild_id: interaction.guild_id });
+        const games = await Games.find({ guild_id: interaction.guildId });
         
         if(games.length > 0) {
             let games_list = "";
@@ -23,7 +22,7 @@ async function handleStartEventAddGameButton(interaction, client) {
             // Update or add new values to the existing data
             userExchangeData.set(interaction.member.user.id, {
                 ...existingData, // Spread the existing data to keep it intact
-                threadId: interaction.channel_id,
+                threadId: interaction.channelId,
                 name: "start-event-choose-game",
                 games: existingData.games || games 
             });
@@ -32,26 +31,23 @@ async function handleStartEventAddGameButton(interaction, client) {
             const title = `Start Event`;
             const description = `Please reply with the number next to the game to add that game to your event.\n\n${games_list}`;
             const embed = createEmbed(title, description, "");
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    components: [
-                        {
-                            type: 1, // Action Row
-                            components: [
-                                {
-                                    type: 2, // Button
-                                    style: 4, // Danger style (for removing a game)
-                                    label: "Cancel",
-                                    custom_id: "cancel-thread"
-                                }
-                            ],
-                        },
-                    ],
-                    flags: 64,
-                },
-        };
+            await interaction.reply({
+                embeds: [embed],
+                components: [
+                    {
+                        type: 1, // Action Row
+                        components: [
+                            {
+                                type: 2, // Button
+                                style: 4, // Danger style (for removing a game)
+                                label: "Cancel",
+                                custom_id: "cancel-thread"
+                            }
+                        ],
+                    },
+                ],
+                ephemeral: true,
+            });
         } else {
             const title = "No games found";
             const description = `I couldn't find any games, please add one first using the \`/add-game\` command.`;
@@ -59,27 +55,23 @@ async function handleStartEventAddGameButton(interaction, client) {
             const embed = createEmbed(title, description, color);
 
             userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+            await interaction.reply({
+                embeds: [embed],
+                components: [
+                    {
+                        type: 1, // Action Row
+                        components: [
+                            {
+                                type: 2, // Button
+                                style: 4, // Danger style (for removing a game)
+                                label: "Cancel",
+                                custom_id: "cancel-thread"
+                            }
+                        ],
+                    },
+                ],
+            });
             cancelThread(interaction, client);
-
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    components: [
-                        {
-                            type: 1, // Action Row
-                            components: [
-                                {
-                                    type: 2, // Button
-                                    style: 4, // Danger style (for removing a game)
-                                    label: "Cancel",
-                                    custom_id: "cancel-thread"
-                                }
-                            ],
-                        },
-                    ],
-                },
-            };
         }
 
     } catch (error) {
@@ -89,15 +81,9 @@ async function handleStartEventAddGameButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+        await interaction.reply({ embeds: [embed], ephemeral: true });
         cancelThread(interaction, client);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
     }
 }
 
@@ -106,7 +92,7 @@ async function handleStartEventNoGameButton(interaction, client) {
     let newEvent;
         try {
             newEvent = new Events({
-                guild_id: interaction.guild_id,
+                guild_id: interaction.guildId,
                 channel_id: user_exchange_data.channel_id,
                 name: user_exchange_data.event_name,
                 description: user_exchange_data.event_description,
@@ -127,13 +113,8 @@ async function handleStartEventNoGameButton(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
 
         const eventTitle = user_exchange_data.event_name || 'Event Started!';
@@ -143,7 +124,6 @@ async function handleStartEventNoGameButton(interaction, client) {
         embedEvent.setImage(user_exchange_data.image || undefined);
         
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        cancelThread(interaction, client);
 
         const channel = await client.channels.fetch(user_exchange_data.channel_id);
         await channel.send(
@@ -174,12 +154,8 @@ async function handleStartEventNoGameButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         // Send the embed with the button to the specified channel
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            }
-        };
+        await interaction.reply({ embeds: [embed] });
+        cancelThread(interaction, client);
 
 }
 

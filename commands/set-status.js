@@ -1,16 +1,12 @@
-const { InteractionResponseType } = require('discord-interactions');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
 const { ActivityType } = require('discord.js');
 
 
 async function handleSetStatusCommand(interaction, client) {
-    const { data, guild_id } = interaction;
 
     // Find each option by name
-    const statusOption = data.options.find(opt => opt.name === 'status');
-
-    const status = statusOption ? statusOption.value : null;
+    const status = interaction.options.getString('status');
 
     try {
         client.user.setPresence({
@@ -23,13 +19,8 @@ async function handleSetStatusCommand(interaction, client) {
         const color = "";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
     } catch (error) {
         logger.error("Set Status Error:", error);
         const title = "Status Set Error";
@@ -37,13 +28,8 @@ async function handleSetStatusCommand(interaction, client) {
         const color = "";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
     }
 
 

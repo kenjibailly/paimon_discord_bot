@@ -1,14 +1,12 @@
-const { InteractionResponseType } = require('discord-interactions');
 const TokenEmoji = require('../models/token-emoji');
 const createEmbed = require('../helpers/embed');
 
 
 async function handleSetTokenEmojiCommand(interaction, client) {
-    const { data, guild_id } = interaction;
+    const { guildId } = interaction;
 
     // Find the token emoji option
-    const tokenEmojiOption = data.options.find(opt => opt.name === 'token_emoji');
-    const tokenEmoji = tokenEmojiOption ? tokenEmojiOption.value : null;
+    const tokenEmoji = interaction.options.getString('token_emoji');
 
     // Validate that token emoji is provided
     if (!tokenEmoji) {
@@ -17,13 +15,8 @@ async function handleSetTokenEmojiCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+        return;
     }
 
     try {
@@ -53,7 +46,7 @@ async function handleSetTokenEmojiCommand(interaction, client) {
 
         // Upsert operation: find one by guild_id and update it, or create if not exists
         const result = await TokenEmoji.findOneAndUpdate(
-            { guild_id: guild_id }, 
+            { guild_id: guildId }, 
             update,
             { upsert: true, new: true } // Create if not exists, return the updated document
         );
@@ -63,13 +56,8 @@ async function handleSetTokenEmojiCommand(interaction, client) {
         const color = "";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
 
     } catch (error) {
         logger.error('Error updating token emoji:', error);
@@ -79,13 +67,8 @@ async function handleSetTokenEmojiCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
     }
 }
 

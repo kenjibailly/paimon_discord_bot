@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../../helpers/embed');
 const checkRequiredBalance = require('../../../helpers/check-required-balance');
 const handleCancelThread = require('../../cancel-thread');
@@ -14,26 +13,24 @@ async function handleExchangeChooseGameButton(interaction, client) {
     let next_games;
     let wallet;
 
-    const guild = await client.guilds.fetch(interaction.guild_id);
-    const thread = await guild.channels.fetch(interaction.channel_id);
+    const guild = await client.guilds.fetch(interaction.guildId);
+    const thread = await guild.channels.fetch(interaction.channelId);
 
     try {
 
         wallet = await checkRequiredBalance(interaction, client, user_exchange_data.rewardPrice, thread);
         if(!wallet) { // if wallet has return error message
-            return {
-                type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
-            };
+            await interaction.deferUpdate();
         }
 
         const newNextGame = new NextGames({
-            guild_id: interaction.guild_id,
+            guild_id: interaction.guildId,
             game_id: user_exchange_data.game._id,
             user_id: interaction.member.user.id,
         });
 
         const savedNextGame = await newNextGame.save();
-        next_games = await NextGames.find({ guild_id: interaction.guild_id });
+        next_games = await NextGames.find({ guild_id: interaction.guildId });
         next_game_position = next_games.length;
 
         if (!savedNextGame) {
@@ -46,16 +43,13 @@ async function handleExchangeChooseGameButton(interaction, client) {
         const description = `I could not add the game to the database. Please contact your administrator, or try again later.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-
-        handleCancelThread(interaction, client);
-
         // Send a confirmation message before closing the thread
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            },
-        };
+        await interaction.update({
+            embeds: [embed],
+            components: []  // Ensure this is an empty array
+        });        
+        handleCancelThread(interaction, client);
+        return;
     }
 
     // Step 1: Combine next_games with corresponding game details from user_exchange_data.games
@@ -94,7 +88,10 @@ async function handleExchangeChooseGameButton(interaction, client) {
     embed.addFields(next_games_list);
 
     // Send success message before canceling the thread message
-    await thread.send({ embeds: [embed] });
+    await interaction.update({
+        embeds: [embed],
+        components: []
+    });
 
     await handleCancelThread(interaction, client);
     
@@ -112,10 +109,6 @@ async function handleExchangeChooseGameButton(interaction, client) {
             embeds: [parentEmbed],
         });
     }
-
-    return {
-        type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
-    };
 }
 
 module.exports = handleExchangeChooseGameButton;

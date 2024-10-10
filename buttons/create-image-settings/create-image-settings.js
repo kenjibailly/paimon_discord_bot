@@ -1,11 +1,10 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../helpers/embed');
 const { createImageSettingsUsersDataCache } = require('../../helpers/create-image-settings-cache');
 
-async function handleDimensionsButton (interaction, client) {
+async function handleCreateImageSettingsButton (interaction, client) {
 
-    if (createImageSettingsUsersDataCache.get(interaction.user.id)) {
-        createImageSettingsUsersDataCache.delete(interaction.user.id);
+    if (createImageSettingsUsersDataCache.get(interaction.userId)) {
+        createImageSettingsUsersDataCache.delete(interaction.userId);
     }
 
     const title = "Create Image Settings";
@@ -39,13 +38,7 @@ async function handleDimensionsButton (interaction, client) {
         ]
     };
 
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embedDM],
-            components: [buttonComponent],
-        },
-    };
+    await interaction.update({ embeds: [embedDM], components: [buttonComponent] });
 }
 
-module.exports = handleDimensionsButton;
+module.exports = handleCreateImageSettingsButton;

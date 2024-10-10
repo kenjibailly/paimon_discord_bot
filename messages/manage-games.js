@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
 const cancelThread = require('../helpers/cancel-thread');
@@ -152,7 +151,7 @@ async function handleAddGameDescription (message, client) {
 
     const title = `Add Game`;
     const description = `New game added:\n` +
-    `Name: **${user_exchange_data.name}**\n` +
+    `Name: **${user_exchange_data.new_game_name}**\n` +
     `Description: **${messageContent}**.\n\n`;
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);
@@ -209,13 +208,8 @@ async function removeGame(game, client, message) {
         
             // Check if tokenEmoji is an embed (error case)
             if (tokenEmoji.data) {
-                return {
-                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                    data: {
-                        embeds: [tokenEmoji],
-                        flags: 64,
-                    },
-                };
+                await interaction.reply({ embeds: [tokenEmoji], ephemeral: true });
+                return;
             }
         
             // Build the description string with user reimbursements

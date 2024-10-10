@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const getTokenEmoji = require('../helpers/get-token-emoji');
 const Rewards = require('../models/rewards');
@@ -14,12 +13,8 @@ async function handleShopCommand(interaction, client) {
 
         // Check if we got an embed back instead of token emoji data
         if (tokenEmoji && tokenEmoji.type === 'error') {
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [tokenEmoji], // Return the error embed
-                }
-            };
+            await interaction.reply({ embeds: [tokenEmoji] });
+            return;
         }
 
         const rewards = await Rewards.find();
@@ -43,13 +38,9 @@ async function handleShopCommand(interaction, client) {
         const description = `I could not find the rewards in the database. Pleae contact the administrator.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+        return;
+
     }
     const title = "Shop";
     const description = `Exchange your ${tokenEmoji.token_emoji} for the following rewards:\n\u200B\n`;
@@ -70,18 +61,15 @@ async function handleShopCommand(interaction, client) {
         };
         
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                components: [
-                    {
-                        type: 1, // Action row type
-                        components: [buttonComponent] // Add the button component
-                    }
-                ]
-            }
-        };
+        await interaction.reply({
+            embeds: [embed],
+            components: [
+                {
+                    type: 1, // Action row type
+                    components: [buttonComponent] // Add the button component
+                }
+            ]
+        });
 
     } catch (error) {
         logger.error('Error handling shop command:', error);
@@ -91,12 +79,7 @@ async function handleShopCommand(interaction, client) {
         const errorColor = "error";
         const errorEmbed = createEmbed(errorTitle, errorDescription, errorColor);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [errorEmbed]
-            }
-        };
+        await interaction.reply({ embeds: [errorEmbed] });
     }
 }
 

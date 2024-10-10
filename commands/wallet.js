@@ -1,28 +1,22 @@
-const { InteractionResponseType } = require('discord-interactions');
 const Wallet = require('../models/wallet');
 const createEmbed = require('../helpers/embed');
 const getTokenEmoji = require('../helpers/get-token-emoji');
 
 
 async function handleWalletCommand(interaction, client) {
-    const { member, guild_id } = interaction;
+    const { member, guildId } = interaction;
 
     try {
         // Retrieve the wallet for the user
-        const wallet = await Wallet.findOne({ user_id: member.user.id, guild_id: guild_id });
+        const wallet = await Wallet.findOne({ user_id: member.user.id, guild_id: guildId });
 
         // Retrieve the token emoji using the getTokenEmoji helper
-        const tokenEmoji = await getTokenEmoji(guild_id);
+        const tokenEmoji = await getTokenEmoji(guildId);
 
         // Check if tokenEmoji is an embed (error case)
         if (tokenEmoji.data) {
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [tokenEmoji],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [tokenEmoji], ephemeral: true });
+            return;
         }
 
         if (wallet) {
@@ -30,26 +24,14 @@ async function handleWalletCommand(interaction, client) {
             const description = `You have **${wallet.amount}** ${tokenEmoji.token_emoji} in your wallet.`;
             const embed = createEmbed(title, description, "");
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
         } else {
             const title = "Wallet";
             const description = `You have not been awarded any ${tokenEmoji.token_emoji} yet.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
         }
     } catch (error) {
         logger.error('Error during finding wallet:', error);
@@ -59,13 +41,8 @@ async function handleWalletCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
     }
 }
 

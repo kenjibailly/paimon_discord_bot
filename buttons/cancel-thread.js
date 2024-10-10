@@ -1,14 +1,13 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 
 
 async function handleCancelThreadButton(interaction, client) {
     try {
         // Fetch the guild (server) using the guild_id from the interaction
-        const guild = await client.guilds.fetch(interaction.guild_id);
+        const guild = await client.guilds.fetch(interaction.guildId);
         
         // Fetch the thread channel using the channel_id from the interaction
-        const thread = await guild.channels.fetch(interaction.channel_id);
+        const thread = await guild.channels.fetch(interaction.channelId);
 
         // Send a confirmation message before closing the thread
         const title = "Exit";
@@ -34,20 +33,18 @@ async function handleCancelThreadButton(interaction, client) {
         }, 20000);
 
         // Respond to the interaction to avoid the "This interaction failed" message
-        return {
-            type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
-        };
+        try {
+            await interaction.deferUpdate();
+        } catch {}
     } catch (error) {
         logger.error('Failed to close the thread:', error);
 
-        // In case of failure, send an error message as a response
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                content: 'Failed to close the thread. Please try again.',
-                flags: 64,
-            },
-        };
+        const title = "Exit";
+        const description = `This thread will be closed shortly.`;
+        const color = "error";
+        const embed = createEmbed(title, description, color);
+
+        await interaction.reply({ embeds: [embed], ephemeral: true });
     }
 }
 

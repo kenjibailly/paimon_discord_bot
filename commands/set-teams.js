@@ -1,17 +1,13 @@
-const { InteractionResponseType } = require('discord-interactions');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
 
 
 async function handleSetTeamsCommand(interaction, client) {
-    const { data, guild_id } = interaction;
+    const { guildId } = interaction;
 
     // Find each option by name
-    const team1Option = data.options.find(opt => opt.name === 'team_1');
-    const team2Option = data.options.find(opt => opt.name === 'team_2');
-
-    const team_1 = team1Option ? team1Option.value : null;
-    const team_2 = team2Option ? team2Option.value : null;
+    const team_1 = interaction.options.getRole('team_1');
+    const team_2 = interaction.options.getRole('team_2');
 
     // Validate that both teams are provided
     if (team_1 === null || team_2 === null) {
@@ -20,13 +16,8 @@ async function handleSetTeamsCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+        return;
     }
 
     try {
@@ -38,7 +29,7 @@ async function handleSetTeamsCommand(interaction, client) {
 
         // Upsert operation: find one by guild_id and update it, or create if not exists
         const result = await Teams.findOneAndUpdate(
-            { guild_id: guild_id },
+            { guild_id: guildId },
             update,
             { upsert: true, new: true } // Create if not exists, return the updated document
         );
@@ -51,13 +42,8 @@ async function handleSetTeamsCommand(interaction, client) {
         const color = "";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
 
     } catch (error) {
         logger.error('Error updating teams:', error);
@@ -67,13 +53,8 @@ async function handleSetTeamsCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
     }
 }
 

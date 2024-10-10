@@ -1,22 +1,14 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
-const axios = require('axios'); // You can use axios for HTTP requests
-const FormData = require('form-data'); // If needed to upload data
-const WebSocket = require('ws'); // Ensure you have the ws package installed
+const axios = require('axios');
+const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 const workflow = require('../AI/workflow.json');
 const { createImageSettingsTemporaryCache, loadUserSettingsIntoCache } = require('../helpers/create-image-settings-cache');
 const data_json = require('../AI/data.json');
 
-async function handleCreateImageCommand(interaction, client, res) {
-    const { data } = interaction;
+async function handleCreateImageCommand(interaction, client) {
 
-    let user_id;
-    if(interaction.user) {
-        user_id = interaction.user.id;
-    } else if (interaction.member) {
-        user_id = interaction.member.user.id;
-    }
+    let user_id = interaction.user.id;
 
     let parentModel;
 
@@ -59,8 +51,7 @@ async function handleCreateImageCommand(interaction, client, res) {
 
 
     // Find the options for the command
-    const promptOption = data.options.find(opt => opt.name === 'prompt');
-    const prompt = promptOption ? promptOption.value : 'default prompt';
+    const prompt = interaction.options.getString('prompt') ? interaction.options.getString('prompt') : 'default prompt';
 
     const dimensions = create_image_settings_user_data_cache.dimensions;
     const model = create_image_settings_user_data_cache.model;
@@ -92,10 +83,7 @@ async function handleCreateImageCommand(interaction, client, res) {
 
     try {
 
-        // Send a deferred response
-        await res.send({
-            type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-        });
+        await interaction.deferReply();
 
         const { previewImageKey } = editWorkflow(prompt, width, height, model, lora);
         // Make the POST request to ComfyUI API to queue the image generation
@@ -124,7 +112,7 @@ async function handleCreateImageCommand(interaction, client, res) {
         // Send an initial response to indicate that the image is being generated
         const initialEmbed = createEmbed(title, initialDescription, color);
 
-        await updateMessageWithRetry(followUpUrl, initialEmbed);
+        await interaction.editReply({ embeds: [initialEmbed] });
 
         ws.on('message', async (data) => {
             const message = JSON.parse(data);
@@ -139,7 +127,7 @@ async function handleCreateImageCommand(interaction, client, res) {
                     const updatedDescription = description + "\nProgress: **" + percentage_progress + "%**";
                     const initialEmbed = createEmbed(title, updatedDescription, color);
                     // Update the original message using the follow-up URL
-                    const result = await updateMessageWithRetry(followUpUrl, initialEmbed);
+                    const result = await interaction.editReply({ embeds: [initialEmbed] });
                     if (result instanceof Error) {
                         const errorEmbed = createEmbed(
                             "Error",
@@ -147,7 +135,7 @@ async function handleCreateImageCommand(interaction, client, res) {
                             "error"
                         );
                 
-                        await updateMessageWithRetry(followUpUrl, errorEmbed);
+                        await interaction.editReply({ embeds: [errorEmbed] });
                     }
             
                 } catch (error) {
@@ -157,7 +145,7 @@ async function handleCreateImageCommand(interaction, client, res) {
                     const color = "error";
                     const errorEmbed = createEmbed(title, description, color);
             
-                    await updateMessageWithRetry(followUpUrl, errorEmbed);
+                    await interaction.editReply({ embeds: [errorEmbed] });
                     
                 }
             }
@@ -173,14 +161,14 @@ async function handleCreateImageCommand(interaction, client, res) {
                     // Send an initial response to indicate that the image is being generated
                     const initialEmbed = createEmbed(title, initialDescription, color);
 
-                    const result = await updateMessageWithRetry(followUpUrl, initialEmbed);
+                    const result = await interaction.editReply({ embeds: [initialEmbed] });
                     if (result instanceof Error) {
                         const title = "Error";
                         const description = "Something went wrong while creating the image.";
                         const color = "error";
                         const errorEmbed = createEmbed(title, description, color);
                 
-                        await updateMessageWithRetry(followUpUrl, errorEmbed);
+                        await interaction.editReply({ embeds: [errorEmbed] });
                     }
                 }
             }
@@ -221,28 +209,21 @@ async function handleCreateImageCommand(interaction, client, res) {
                             const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
                             const imageBuffer = Buffer.from(response.data, 'binary'); // Convert the response to a buffer
             
-                            // Create a new FormData instance
-                            const formData = new FormData();
-            
-                            // Add the image buffer to formData with the expected "files" key
-                            formData.append('files[0]', imageBuffer, { filename: image.filename });
-            
-                            // Add the embed to formData, converted to a JSON string
-                            formData.append('payload_json', JSON.stringify({
+                            // Send a follow-up message with the image and embed
+                            await interaction.editReply({
                                 embeds: [embedObject],
-                                flags: 64 // Only visible to the user
-                            }));
-            
-                            const result = await updateFormDataWithRetry(followUpUrl, formData);
-                            if (result instanceof Error) {
-                                const errorEmbed = createEmbed(
-                                    "Error",
-                                    "Something went wrong while creating the image.",
-                                    "error"
-                                );
+                                files: [{ attachment: imageBuffer, name: image.filename }],
+                            });
+                            
+                            // if (result instanceof Error) {
+                            //     const errorEmbed = createEmbed(
+                            //         "Error",
+                            //         "Something went wrong while creating the image.",
+                            //         "error"
+                            //     );
                         
-                                await updateMessageWithRetry(followUpUrl, errorEmbed);
-                            }
+                            //     await interaction.editReply({ embeds: [errorEmbed] });
+                            // }
                     
                         } catch (error) {
                             logger.error('Error updating message:', error.response ? error.response.data : error.message);
@@ -253,7 +234,7 @@ async function handleCreateImageCommand(interaction, client, res) {
                                 "error"
                             );
                     
-                            await updateMessageWithRetry(followUpUrl, errorEmbed);
+                            await interaction.editReply({ embeds: [errorEmbed] });
                             
                         }
                     } else {
@@ -264,7 +245,7 @@ async function handleCreateImageCommand(interaction, client, res) {
                             "error"
                         );
                 
-                        await updateMessageWithRetry(followUpUrl, errorEmbed);
+                        await interaction.editReply({ embeds: [errorEmbed] });
                     }
                 } catch (error) {
                     logger.error('Error fetching image from history:', error.message);
@@ -282,7 +263,7 @@ async function handleCreateImageCommand(interaction, client, res) {
             "error"
         );
 
-        await updateMessageWithRetry(followUpUrl, errorEmbed);
+        await interaction.editReply({ embeds: [errorEmbed] });
     }
 }
 
@@ -385,41 +366,6 @@ function editWorkflow(prompt, width, height, modelFile, loraFile) {
     });
   
     return { previewImageKey };
-}
-  
-  
-
-async function updateMessageWithRetry(followUpUrl, initialEmbed, retries = 3) {
-  try {
-      await axios.patch(followUpUrl, {
-          embeds: [initialEmbed],
-      });
-  } catch (error) {
-      if (retries > 0 && error.response?.data?.code === 10015) { // Webhook error
-          logger.warn('Retrying message update...');
-          return updateMessageWithRetry(followUpUrl, initialEmbed, retries - 1);
-      }
-      logger.error('Error updating message:', error.response ? error.response.data : error.message);
-      return error;
-  }
-}
-
-
-async function updateFormDataWithRetry(followUpUrl, formData, retries = 3) {
-  try {
-      await axios.patch(followUpUrl, formData, {
-          headers: {
-              ...formData.getHeaders() // Include necessary headers for multipart/form-data
-          }
-      });
-  } catch (error) {
-      if (retries > 0 && error.response?.data?.code === 10015) { // Webhook error
-          logger.warn('Retrying form data message update...');
-          return updateFormDataWithRetry(followUpUrl, formData, retries - 1);
-      }
-      logger.error('Error updating form data message:', error.response ? error.response.data : error.message);
-      return error;
-  }
 }
 
 

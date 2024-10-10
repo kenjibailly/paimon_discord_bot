@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const getTokenEmoji = require('../helpers/get-token-emoji');
 const Wallet = require('../models/wallet');
 const handleCancelThread = require('../buttons/cancel-thread');
@@ -6,21 +5,16 @@ const createEmbed = require('./embed');
 
 
 async function checkRequiredBalance(interaction, client, price, thread) {
-    const tokenEmoji = await getTokenEmoji(interaction.guild_id);
+    const tokenEmoji = await getTokenEmoji(interaction.guildId);
     // Check if tokenEmoji is an embed (error case)
     if (tokenEmoji.data) {
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [tokenEmoji],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [tokenEmoji], ephemeral: true });
+        return;
     }
 
     try {
         // Fetch the wallet
-        const wallet = await Wallet.findOne({ user_id: interaction.member.user.id, guild_id: interaction.guild_id });
+        const wallet = await Wallet.findOne({ user_id: interaction.member.user.id, guild_id: interaction.guildId });
         if (!wallet) {
             const title = "Wallet";
             const description = `I could not find your wallet.`;

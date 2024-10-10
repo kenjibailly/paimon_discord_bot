@@ -6,8 +6,7 @@ const handleTrollUser = require('./menu-handler/handle-troll-user');
 const handleChooseGame = require('./menu-handler/handle-choose-game');
 
 async function handleExchangeShopMenuButton(interaction, client) {
-    const {data} = interaction;
-    const name = data.values[0];
+    const name = interaction.values[0];
 
     switch (name) {
         case "change-own-nickname":

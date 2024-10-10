@@ -1,31 +1,25 @@
-const { InteractionResponseType } = require('discord-interactions');
 const NextGames = require('../models/next-games');
 const Games = require('../models/games');
 const createEmbed = require('../helpers/embed');
 
 async function handleNextGamesCommand(interaction, client) {
-    const { guild_id } = interaction;
+    const { guildId } = interaction;
     try {
-        const upcoming_games = await NextGames.find({ guild_id: guild_id }).sort({ date: 1 }); // Sort by date ascending
+        const upcoming_games = await NextGames.find({ guild_id: guildId }).sort({ date: 1 }); // Sort by date ascending
         if (upcoming_games.length === 0) {
             const title = "Upcoming Games";
             const description = `I couldn't find any upcoming games.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
 
         // Get only the required game IDs from upcoming games
         const gameIds = upcoming_games.map(game => game.game_id);
 
         // Fetch only the games with those IDs
-        const games = await Games.find({ guild_id: guild_id, _id: { $in: gameIds } });
+        const games = await Games.find({ guild_id: guildId, _id: { $in: gameIds } });
 
         // Create a lookup map of games by their _id
         const gameMap = new Map();
@@ -48,12 +42,7 @@ async function handleNextGamesCommand(interaction, client) {
         const embed = createEmbed(title, description, "");
         embed.addFields(upcoming_games_list); // Add the fields to the embed
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-            },
-        };
+        await interaction.reply({ embeds: [embed] });
 
     } catch (error) {
         logger.error('Upcoming Games error: ', error);
@@ -62,13 +51,7 @@ async function handleNextGamesCommand(interaction, client) {
         const description = `Something went wrong while trying to get the upcoming games list, please contact the administrator.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        }
+        await interaction.reply({ embeds: [embed] });
     }
 }
 

@@ -1,16 +1,15 @@
-const { InteractionResponseType } = require('discord-interactions');
 const Teams = require('../models/teams');
 const createEmbed = require('../helpers/embed');
 
 
 async function handleResetTeamsCommand(interaction, client) {
-    const { member, guild_id } = interaction;
+    const { guildId } = interaction;
 
     try {
-        const teams = await Teams.findOne({ guild_id: guild_id });
+        const teams = await Teams.findOne({ guild_id: guildId });
 
         if (teams) {
-            const guild = await client.guilds.fetch(guild_id);
+            const guild = await client.guilds.fetch(guildId);
             const members = await guild.members.fetch(); // Fetch all members in the guild
 
             for (const member of members.values()) {
@@ -27,13 +26,7 @@ async function handleResetTeamsCommand(interaction, client) {
             const color = "";
             const embed = createEmbed(title, description, color);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-        };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
             
         } else {
             const title = "Error Teams";
@@ -41,13 +34,7 @@ async function handleResetTeamsCommand(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true })
         }
     } catch (error) {
         logger.error("Error Reset Teams:", error);

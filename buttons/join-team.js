@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const { EmbedBuilder } = require('discord.js');
 const Teams = require('../models/teams');
@@ -7,7 +6,7 @@ const TeamAssignments = require('../models/team-assignments');
 
 
 async function handleJoinTeamButton(interaction, client) {
-    const customIdParts = interaction.data.custom_id.split(':');
+    const customIdParts = interaction.customId.split(':');
     const customId = customIdParts[0];
     const eventId = customIdParts[1];
     try {
@@ -35,18 +34,13 @@ async function handleJoinTeamButton(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
 
         
 
-        const teams = await Teams.find({ guild_id: interaction.guild_id });
+        const teams = await Teams.find({ guild_id: interaction.guildId });
 
         // Validate that both teams are provided
         if (teams.team_1 === null || teams.team_2 === null) {
@@ -55,18 +49,13 @@ async function handleJoinTeamButton(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
 
         // First, check if the user has already applied
         const existingApplication = await TeamAssignments.findOne({
-            guild_id: interaction.guild_id,
+            guild_id: interaction.guildId,
             event_id: eventId,
             user: user.id,
         });
@@ -78,18 +67,13 @@ async function handleJoinTeamButton(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
 
         // If no existing application, proceed with saving a new one
         const newUserApplication = new TeamAssignments({
-            guild_id: interaction.guild_id,
+            guild_id: interaction.guildId,
             event_id: eventId,
             user: user.id,
         });
@@ -109,28 +93,18 @@ async function handleJoinTeamButton(interaction, client) {
         const color = "";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
 
     } catch (error) {
-        logger.error("Join Event Error: " + error);
+        logger.error("Join Event Error:", error);
         const title = "Join Event Error";
         const description = `You could not join the event at this time, the event might have ended already. Please try again later or contact the administrator.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
     }
 
 }
@@ -154,12 +128,12 @@ async function updateEmbedWithNewMember(interaction, client, user) {
             let appliedMembersField = embed.data.fields.find(field => field.name === 'Applied Members');
             if (appliedMembersField) {
                 // Append new member to the existing list
-                appliedMembersField.value += `\n- **${user.global_name}**`;
+                appliedMembersField.value += `\n- **${user.globalName}**`;
             } else {
-                embed.addFields({ name: 'Applied Members', value: `- **${user.global_name}**` });
+                embed.addFields({ name: 'Applied Members', value: `- **${user.globalName}**` });
             }
         } else {
-            embed.addFields({ name: 'Applied Members', value: `- **${user.global_name}**` });
+            embed.addFields({ name: 'Applied Members', value: `- **${user.globalName}**` });
         }
 
         // Edit the message with the updated embed

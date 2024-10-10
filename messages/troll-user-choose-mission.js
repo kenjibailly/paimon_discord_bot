@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const validateNumber = require('../helpers/validate-number');
 const TrollMissions = require('../models/troll-missions');
 const TrolledUser = require('../models/trolled-users');

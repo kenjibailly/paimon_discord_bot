@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../helpers/embed');
 const { createImageSettingsUsersDataCache, createImageSettingsTemporaryCache, loadUserSettingsIntoCache } = require('../../helpers/create-image-settings-cache');
 const data = require('../../AI/data.json');
@@ -87,7 +86,7 @@ async function handleLorabutton (interaction, client) {
             // Push the lora details into loras_list
             loras_list.push({
                 name: `${loraNumber}. ${lora.name}`, // E.g., "1. Aesthetic Anime V1"
-                value: lora.description ? lora.description : "No description available.",
+                value: lora.description ? lora.description + `\n[More Information](${lora.link})`  : "No description available.",
                 inline: false // You can set this to `true` to display fields inline
             });
 
@@ -100,13 +99,8 @@ async function handleLorabutton (interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                components: [buttonComponent],
-            },
-        };
+        await interaction.reply({ embeds: [embed], components: [buttonComponent] });
+        return;
     }
 
     let description;
@@ -144,13 +138,7 @@ async function handleLorabutton (interaction, client) {
         embed.addFields(loras_list);
     }
 
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            components: [buttonComponent],
-        },
-    };
+    await interaction.update({ embeds: [embed], components: [buttonComponent] });
 }
 
 module.exports = handleLorabutton;

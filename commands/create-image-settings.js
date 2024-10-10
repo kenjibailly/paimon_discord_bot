@@ -1,8 +1,6 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 
 async function handleCreateImageCommand(interaction, client) {
-
     const title = "Create Image Settings";
     const description = `Change a model, a LoRa or dimensions.\n\n` + 
     `- **Model**: A foundational AI framework trained on extensive data, shaping the overall style of your creations.\n` + 
@@ -34,30 +32,22 @@ async function handleCreateImageCommand(interaction, client) {
         ]
     };
 
-    let user;
-    if(interaction.user) {
-        user = interaction.user;
-    } else if (interaction.member) {
-        user = interaction.member.user;
-    }
+    const user = interaction.user;
 
     // Get the DM channel of the bot
     const botDMChannel = await client.users.createDM(user.id);
 
     // Check if the interaction is in a DM to the bot itself
-    const isDMToBot = !interaction.guild_id && interaction.channel.id === botDMChannel.id;
+    const isDMToBot = !interaction.guildId && interaction.channel.id === botDMChannel.id;
 
     // Check if the interaction is in a DM with the bot itself
     if (isDMToBot) {
         // If it's a DM with the bot, just send the DM, no message in the channel
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embedDM],
-                components: [buttonComponent],
-                flags: 64, // Ephemeral message
-            },
-        };
+        interaction.reply({
+            embeds: [embedDM],
+            components: [buttonComponent],
+            flags: 64, // Ephemeral message
+        });
     } else {
         // If it's not a DM with the bot (server channel, thread, group DM, or DM with someone else)
         const messageLink = `https://discord.com/channels/@me/${botDMChannel.id}`;
@@ -70,13 +60,10 @@ async function handleCreateImageCommand(interaction, client) {
         const embed = createEmbed(title, description, color);
         
         // Send a response in the channel where the command was triggered
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
+        interaction.reply({
                 embeds: [embed],
                 flags: 64, // Ephemeral message, only visible to the user
-            },
-        };
+        });
     }
 }
 

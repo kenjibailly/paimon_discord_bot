@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const Events = require('../models/events');
 const Teams = require('../models/teams');
 const TeamAssignments = require('../models/team-assignments');
@@ -6,12 +5,12 @@ const createEmbed = require('../helpers/embed');
 const getBotChannel = require('../helpers/get-bot-channel');
 
 async function handleCancelEventCommand(interaction, client) {
-    const { data, guild_id } = interaction;
+    const { guildId } = interaction;
 
     try {
-        const event = await Events.findOneAndDelete({ guild_id: guild_id });
-        const removeTeamAssignments = await TeamAssignments.deleteMany({ guild_id: guild_id });
-        await resetTeams(client, guild_id);
+        const event = await Events.findOneAndDelete({ guild_id: guildId });
+        const removeTeamAssignments = await TeamAssignments.deleteMany({ guild_id: guildId });
+        await resetTeams(client, guildId);
 
         const title = "Event Canceled";
 
@@ -25,7 +24,7 @@ async function handleCancelEventCommand(interaction, client) {
         };
         embed.addFields(event_fields); // Add the fields to the embed
 
-        const bot_channel = await getBotChannel(guild_id);
+        const bot_channel = await getBotChannel(guildId);
         const botChannel = await client.channels.fetch(bot_channel.channel);
         if (botChannel) {
             await botChannel.send({
@@ -38,7 +37,7 @@ async function handleCancelEventCommand(interaction, client) {
         embed = createEmbed(title, description, color);
 
         try {
-            const events = await Events.find({ guild_id: guild_id });
+            const events = await Events.find({ guild_id: guildId });
             const list_type = "events";
             if(events){
                 let events_list = [];
@@ -60,22 +59,12 @@ async function handleCancelEventCommand(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
     
-            return {
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    embeds: [embed],
-                    flags: 64,
-                },
-            };
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
     } catch (error) {
         logger.error("Error Canceling Event:", error);
 
@@ -84,22 +73,17 @@ async function handleCancelEventCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
     }
 }
 
-async function resetTeams(client, guild_id) {
+async function resetTeams(client, guildId) {
     try {
-        const teams = await Teams.findOne({ guild_id: guild_id });
+        const teams = await Teams.findOne({ guild_id: guildId });
 
         if (teams) {
-            const guild = await client.guilds.fetch(guild_id);
+            const guild = await client.guilds.fetch(guildId);
             const members = await guild.members.fetch(); // Fetch all members in the guild
 
             for (const member of members.values()) {

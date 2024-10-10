@@ -128,15 +128,11 @@ async function registerCommands(guildId) {
         required: false,
       },
       {
-        type: 3, // STRING
+        type: 5, // BOOLEAN
         name: 'enable',
         description: 'Enable or disable the reward',
         required: false,
-        choices: [
-          { name: 'Enable', value: 'true' },
-          { name: 'Disable', value: 'false' },
-        ],
-      },
+      }
     ],
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
     dm_permission: false, // Command can’t be used in DMs

@@ -1,15 +1,14 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 
 async function handleManageGamesCommand(interaction, client) {
-    const { guild_id, channel_id } = interaction;
+    const { guildId, channelId } = interaction;
 
-    const guild = await client.guilds.fetch(guild_id);
-    const channel = await guild.channels.fetch(channel_id);
+    const guild = await client.guilds.fetch(guildId);
+    const channel = await guild.channels.fetch(channelId);
 
     // Create a private thread that is only visible to the user who clicked the button
     const thread = await channel.threads.create({
-        name: `Manage Games - ${interaction.member.user.global_name}`, // Ensure you use the correct user property
+        name: `Manage Games - ${interaction.member.user.globalName}`, // Ensure you use the correct user property
         autoArchiveDuration: 60, // Archive the thread after 60 minutes of inactivity
         reason: 'User initiated manage games interaction',
         invitable: false, // Don't allow other users to join the thread
@@ -68,13 +67,7 @@ async function handleManageGamesCommand(interaction, client) {
     title = "Manage Games";
     description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
     embed = createEmbed(title, description, "");
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            flags: 64,
-        },
-    };
+    await interaction.reply({ embeds: [embed], ephemeral: true });
 }
 
 module.exports = handleManageGamesCommand;

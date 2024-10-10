@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../helpers/embed');
 const data = require('../../AI/data.json');
 const { createImageSettingsUsersDataCache, loadUserSettingsIntoCache, createImageSettingsTemporaryCache } = require('../../helpers/create-image-settings-cache');
@@ -17,7 +16,7 @@ async function handleModelButton (interaction, client) {
             // Push the checkpoint details into models_list
             models_list.push({
                 name: `${checkpointNumber}. ${checkpoint.name}`, // E.g., "1. DreamShaper XL Lightning"
-                value: checkpoint.description ? checkpoint.description : "No description available.",
+                value: checkpoint.description ? checkpoint.description + `\n[More Information](${checkpoint.link})` : "No description available.",
                 inline: false // You can set this to `true` to display fields inline
             });
 
@@ -66,13 +65,11 @@ async function handleModelButton (interaction, client) {
         ]
     };
 
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            components: [buttonComponent],
-        },
-    };
+
+    await interaction.update({
+        embeds: [embed],
+        components: [buttonComponent]
+    });
 }
 
 module.exports = handleModelButton;

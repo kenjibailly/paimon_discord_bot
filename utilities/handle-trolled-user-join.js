@@ -14,7 +14,7 @@ async function handleTrolledUserJoin(member) {
 
             if (role) {
                 await member.roles.add(role);
-                console.log(`Assigned "Trolled" role to ${member.user.tag}`);
+                logger.success(`Assigned "Trolled" role to ${member.user.tag}`);
             }
 
             if (trollChannel) {
@@ -33,7 +33,7 @@ async function handleTrolledUserJoin(member) {
                     deny: true,
                 });
 
-                console.log(`Granted access to troll channel for ${member.user.tag}`);
+                logger.success(`Granted access to troll channel for ${member.user.tag}`);
             }
         }
     } catch (error) {

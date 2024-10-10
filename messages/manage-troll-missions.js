@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../helpers/embed');
 const userExchangeData = require('../helpers/userExchangeData');
 const cancelThread = require('../helpers/cancel-thread');
@@ -147,7 +146,7 @@ async function handleAddTrollMissionDescription (message, client) {
 
     const title = `Add Troll Mission`;
     const description = `New troll mission added:\n` +
-    `Name: **${user_exchange_data.name}**\n` +
+    `Name: **${user_exchange_data.new_troll_mission_name}**\n` +
     `Description: **${messageContent}**.\n\n`;
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);

@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const commandHandlers = require('../commands');
 const buttonHandlers = require('../buttons');
 const messageHandlers = require('../messages');
@@ -9,51 +8,52 @@ const trolledUserCache = require('../helpers/trolled-user-cache');
 const TrolledUser = require('../models/trolled-users');
 const handleTrollUserChooseMission = require('../messages/troll-user-choose-mission');
 
-async function handleSlashCommand(interaction, client, res) {
-    const { data } = interaction;
-    const { name } = data;
+async function handleSlashCommand(interaction, client) {
+    const { commandName } = interaction;
 
-    if (commandHandlers[name]) {
-        return commandHandlers[name](interaction, client, res);
+    // Check if the command exists in your command handlers
+    if (commandHandlers[commandName]) {
+        // Execute the corresponding command handler
+        await commandHandlers[commandName](interaction, client);
     } else {
-        logger.error(`Unknown command: ${name}`);
+        logger.error(`Unknown command: ${commandName}`);
 
+        // Create an embed for the unknown command response
         const title = "Unknown Command";
-        const description = `I do not know this command.`;
-        const color = "error";
+        const description = `I do not recognize this command.`;
+        const color = "#FF0000"; // Use a hex color for 'error'
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        // Reply to the user with an ephemeral message
+        await interaction.reply({
+            embeds: [embed],
+            ephemeral: true, // This will make the reply visible only to the user
+        });
     }
 }
 
 
 async function handleButtonClicks(interaction, client) {
-    const name = interaction.data.custom_id.split(':')[0];
+    const name = interaction.customId.split(':')[0];
 
+    // Check if the button click handler exists
     if (buttonHandlers[name]) {
-        return buttonHandlers[name](interaction, client);
+        // Execute the corresponding button handler
+        await buttonHandlers[name](interaction, client);
     } else {
         logger.error(`Unknown button: ${name}`);
 
+        // Create an embed for the unknown button response
         const title = "Unknown Button";
-        const description = `I do not know this button.`;
-        const color = "error";
+        const description = `I do not recognize this button.`;
+        const color = "#FF0000"; // Use a hex color for 'error'
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                flags: 64,
-            },
-        };
+        // Update the interaction with an error message (ephemeral)
+        await interaction.reply({
+            embeds: [embed],
+            ephemeral: true, // This will make the reply visible only to the user
+        });
     }
 }
 

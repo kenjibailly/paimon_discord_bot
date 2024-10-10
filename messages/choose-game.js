@@ -54,8 +54,8 @@ async function handleChooseGame(message, client) {
 
         const title = "Shop";
         const description = `Do you want to choose this next game to play?\n\n` +
-        `- Game name: **${game.name}**\n` + 
-        (game.description ? `  Game description: **${game.description}**\n\n` : "  No description available.\n\n") + 
+        `- **${game.name}**\n` + 
+        (game.description ? `  ${game.description}\n\n` : "  No description available.\n\n") + 
         `This will deduct **${reward.price}** ${emojiDisplay} from your wallet.`;    
         const embed = createEmbed(title, description, "");
 

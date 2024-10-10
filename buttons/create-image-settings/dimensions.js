@@ -1,4 +1,3 @@
-const { InteractionResponseType } = require('discord-interactions');
 const createEmbed = require('../../helpers/embed');
 const { createImageSettingsUsersDataCache, createImageSettingsTemporaryCache, loadUserSettingsIntoCache } = require('../../helpers/create-image-settings-cache');
 const data = require('../../AI/data.json');
@@ -67,13 +66,8 @@ async function handleDimensionsButton (interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        return {
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                embeds: [embed],
-                components: [buttonComponent],
-            },
-        };
+        await interaction.reply({ embeds: [embed], components: [buttonComponent] });
+        return;
     }
 
     let description;
@@ -111,13 +105,7 @@ async function handleDimensionsButton (interaction, client) {
         embed.addFields(dimensions_list);
     }
 
-    return {
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-            embeds: [embed],
-            components: [buttonComponent],
-        },
-    };
+    await interaction.update({ embeds: [embed], components: [buttonComponent] });
 }
 
 module.exports = handleDimensionsButton;
