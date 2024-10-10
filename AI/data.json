@@ -40,7 +40,7 @@
             }
         ]
     },
-    "SDXL": {
+    "Pony": {
         "dimensions": {
             "1:1 square": "768x768",
             "3:4 portrait": "672x864",
@@ -76,6 +76,14 @@
                 "file": "aesthetic_anime_v1s.safetensors",
                 "description": "Enhances the aesthetic style of anime creations.",
                 "link": "https://civitai.com/models/295100/aesthetic-anime-lora",
+                "model_weight": 1,
+                "clip_weight": 1
+            },
+            {
+                "name": "The Shorekeeper / Wuthering Waves",
+                "file": "the_shorekeeper_pony_sobsynapse-000004.safetensors",
+                "description": "The Shorekeeper is a character from wuthering waves.\nThese can be some helpful triggerwords:\nohwx, 1girl, solo, blue_hair, purple_eyes, breasts, hair_between_eyes, long_hair, cleavage, parted_lips, large_breasts, medium_hair, medium_breasts, nail_polish, thighs, blue_nails, jewelry, dress, bug, butterfly, veil, white_dress, blue_butterfly, flower, sleeveless, white_veil, bare_shoulders, alternate_costume, sleeveless_dress, choker, hood, armlet, blue_dress",
+                "link": "https://civitai.com/models/839095/the-shorekeeper-wuthering-waves",
                 "model_weight": 1,
                 "clip_weight": 1
             }
@@ -123,6 +131,22 @@
                     "clip_skip": -2,
                     "positive_prompt": "masterpiece, best quality, ultra-detailed, illustration, connection, harmony, balance, texture, detail, realism, depth, perspective, composition, color, light, shadow, reflection, refraction, tone, contrast, foreground, middle ground, background, naturalistic, figurative, representational, impressionistic, expressionistic, abstract, innovative, experimental, unique",
                     "negative_prompt": "EasyNegative, Deep Negative, bad_prompt_version2, bad-artist, bad-artist-anime, bad-quality"    
+                },
+                "default": false
+            },
+            {
+                "name": "KM Mix Experiment Stage 1 Cute Style 1",
+                "file": "km_cuteStyle1.safetensors",
+                "description": "This model generates cute anime characters.",
+                "link": "https://civitai.com/models/397967?modelVersionId=443944",
+                "settings": {
+                    "cfg": 7,
+                    "steps": 40,
+                    "sampler_name": "heun",
+                    "scheduler": "normal",
+                    "clip_skip": -2,
+                    "positive_prompt": "(masterpiece),best quality,",
+                    "negative_prompt": "(low quality,worst quality:1.2),poorly drawn,(poorly drawn face),(deformed,disfigured),(bad anatomy,wrong anatomy),bextra lim,missing lim,floating lim,disconnected lim,(mutated hands and fingers),ugly|fingernails,blurry,(signature|watermark|text),(mutant feet and toes),Mix the feet together,Mixed limbs,"
                 },
                 "default": false
             }
