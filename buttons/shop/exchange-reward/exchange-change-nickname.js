@@ -17,8 +17,8 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
         const thread = await guild.channels.fetch(interaction.channelId);
     
         const wallet = await checkRequiredBalance(interaction, client, user_exchange_data.rewardPrice, thread);
-        if(!wallet) { // if wallet has return error message
-            await interaction.deferUpdate();
+        if (!wallet) {
+            return;
         }
 
         // Check bot permissions

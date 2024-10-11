@@ -20,7 +20,7 @@ async function handleExchangeChooseGameButton(interaction, client) {
 
         wallet = await checkRequiredBalance(interaction, client, user_exchange_data.rewardPrice, thread);
         if(!wallet) { // if wallet has return error message
-            await interaction.deferUpdate();
+            return;
         }
 
         const newNextGame = new NextGames({

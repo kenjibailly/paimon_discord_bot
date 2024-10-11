@@ -21,7 +21,7 @@ async function handleExchangeTrollUserButton(interaction, client) {
     
         const wallet = await checkRequiredBalance(interaction, client, user_exchange_data.rewardPrice, thread);
         if(!wallet) { // if wallet has return error message
-            await interaction.deferUpdate();
+            return;
         }
 
         

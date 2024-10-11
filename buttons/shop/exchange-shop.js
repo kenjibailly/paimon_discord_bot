@@ -20,7 +20,7 @@ async function handleExchangeShopButton(interaction, client) {
 
     let options_list = [];
     try {
-        const rewards = await Rewards.find();
+        const rewards = await Rewards.find({ guild_id: interaction.guildId });
         rewards.forEach(reward => {
             if (reward.enable === true) {
                 const add_reward = {
@@ -78,7 +78,7 @@ async function handleExchangeShopButton(interaction, client) {
     title = "Shop";
     description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
     embed = createEmbed(title, description, "");
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.followUp({ embeds: [embed], ephemeral: true });
 }
 
 module.exports = handleExchangeShopButton;

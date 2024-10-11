@@ -73,7 +73,7 @@ async function removeReward(client, reward) {
     }
 }
 
-async function findOldRewards() {
+async function findOldRewards(guildId) {
     let rewardsMap = new Map();
 
     try {
@@ -89,7 +89,7 @@ async function findOldRewards() {
         let oldAwardedRewards = [];
 
         // Fetch all awarded rewards
-        const awardedRewards = await AwardedReward.find();
+        const awardedRewards = await AwardedReward.find({ guild_id: guildId });
 
         for (const awardedReward of awardedRewards) {
             const rewardTime = rewardsMap.get(awardedReward.reward);

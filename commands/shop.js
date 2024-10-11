@@ -17,7 +17,7 @@ async function handleShopCommand(interaction, client) {
             return;
         }
 
-        const rewards = await Rewards.find();
+        const rewards = await Rewards.find({ guild_id: interaction.guildId });
         rewards.forEach((reward) => {
             // Create a field for each reward
             if (reward.enable === true) {
