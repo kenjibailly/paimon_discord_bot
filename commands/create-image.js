@@ -8,6 +8,26 @@ const data_json = require('../AI/data.json');
 
 async function handleCreateImageCommand(interaction, client) {
 
+    try {
+        // Defer the reply immediately to avoid hitting the 3-second limit
+        await interaction.deferReply();
+  
+        // Your image creation logic here
+        await createImage(interaction); // Example function
+  
+      } catch (error) {
+        console.error('Error creating image:', error);
+  
+        // If there is an error, edit the deferred reply with the error message
+        try {
+          await interaction.editReply({ content: 'There was an error processing your request.' });
+        } catch (err) {
+          console.error('Error handling interaction:', err);
+        }
+      }
+}
+
+async function createImage(interaction) {
     let user_id = interaction.user.id;
 
     let parentModel;
@@ -99,8 +119,6 @@ async function handleCreateImageCommand(interaction, client) {
     }
 
     try {
-
-        await interaction.deferReply();
 
         const { previewImageKey } = editWorkflow(prompt, width, height, model, lora);
         // Make the POST request to ComfyUI API to queue the image generation
