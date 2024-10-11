@@ -11,6 +11,10 @@ const eventsSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    message_id: {
+        type: String,
+        required: false,
+    },
     name: {
         type: String,
         required: true,

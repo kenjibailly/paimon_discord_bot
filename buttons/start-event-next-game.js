@@ -53,7 +53,7 @@ async function handleStartEventNextGameButton(interaction, client) {
     ]);
 
     const channel = await client.channels.fetch(user_exchange_data.channel_id);
-    await channel.send(
+    const sentMessage = await channel.send(
         { 
             embeds: [embedEvent],
             components: [
@@ -74,6 +74,27 @@ async function handleStartEventNextGameButton(interaction, client) {
             ]
         }
     );
+
+    try {
+        // Get the message ID from the sent message
+        const messageId = sentMessage.id;
+        await Events.findOneAndUpdate(
+            { _id: newEvent._id },
+            { message_id: messageId }
+        );
+
+    } catch (error) {
+        logger.error("Add Event Error:", error);
+        const title = "Add Event Error";
+        const description = `I could not add the event's message ID to the database. Please contact your administrator.`;
+        const color = "error";
+        const embed = createEmbed(title, description, color);
+
+        // Send a confirmation message before closing the thread
+        await message.channel.send({
+            embeds: [embed],
+        });
+    }
     
 
     const title = "Event Posted";
@@ -82,7 +103,11 @@ async function handleStartEventNextGameButton(interaction, client) {
     const embed = createEmbed(title, description, color);
 
     userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    // Send the embed with the button to the specified channel
+    await interaction.editReply({
+        embeds: [embed],
+        components: []  // Ensure this is an empty array
+    });
     cancelThread(interaction, client);
 }
 

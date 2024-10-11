@@ -60,7 +60,7 @@ async function handleStartEventChooseGame(message, client) {
         await message.channel.send({
             embeds: [embed],
         });
-
+        return;
     }
 
     const embedEvent = new EmbedBuilder()
@@ -75,7 +75,7 @@ async function handleStartEventChooseGame(message, client) {
 
 
     const channel = await client.channels.fetch(user_exchange_data.channel_id);
-    await channel.send(
+    const sentMessage = await channel.send(
         { 
             embeds: [embedEvent],
             components: [
@@ -96,7 +96,27 @@ async function handleStartEventChooseGame(message, client) {
             ]
         }
     );
-    
+
+    try {
+        // Get the message ID from the sent message
+        const messageId = sentMessage.id;
+        await Events.findOneAndUpdate(
+            { _id: newEvent._id },
+            { message_id: messageId }
+        );
+
+    } catch (error) {
+        logger.error("Add Event Error:", error);
+        const title = "Add Event Error";
+        const description = `I could not add the event's message ID to the database. Please contact your administrator.`;
+        const color = "error";
+        const embed = createEmbed(title, description, color);
+
+        // Send a confirmation message before closing the thread
+        await message.channel.send({
+            embeds: [embed],
+        });
+    }
 
     const title = "Event Posted";
     const description = `Your event has been posted where you started the \`/start-event\` command.`;

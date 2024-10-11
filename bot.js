@@ -94,12 +94,12 @@ client.on('interactionCreate', async (interaction) => {
 
           // Check if the command requires an ephemeral reply
           const isEphemeral = ephemeralCommands.includes(commandName);
-
           // Defer the reply and specify if it should be ephemeral
           await interaction.deferReply({ ephemeral: isEphemeral });
           await handleSlashCommand(interaction, client);
       } else if (type === InteractionType.MESSAGE_COMPONENT) {
-          await handleButtonClicks(interaction, client);
+        await interaction.deferUpdate();
+        await handleButtonClicks(interaction, client);
       }
   } catch (error) {
       console.error('Error handling interaction:', error);

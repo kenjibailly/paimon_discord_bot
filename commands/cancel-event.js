@@ -9,6 +9,10 @@ async function handleCancelEventCommand(interaction, client) {
 
     try {
         const event = await Events.findOneAndDelete({ guild_id: guildId });
+        if (event) {
+            // Call the function to delete the event message from the server
+            await deleteEventMessage(client, event.guild_id, event.channel_id, event.message_id);
+        }
         const removeTeamAssignments = await TeamAssignments.deleteMany({ guild_id: guildId });
         await resetTeams(client, guildId);
 
@@ -98,6 +102,21 @@ async function resetTeams(client, guildId) {
         return;
     } catch (error) {
         logger.error("Error Reset Teams:", error);
+    }
+}
+
+async function deleteEventMessage(client, guildId, channelId, messageId) {
+    try {
+        const guild = await client.guilds.fetch(guildId);
+        const channel = await guild.channels.fetch(channelId); // Fetch and delete the message by messageId
+        const message = await channel.messages.fetch(messageId);
+        if (message) {
+            await message.delete();
+        } else {
+            logger.warn(`Event message with ID ${messageId} not found.`);
+        }
+    } catch (error) {
+        logger.error(`Error deleting message (event) with ID ${messageId}:`, error);
     }
 }
 
