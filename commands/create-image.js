@@ -9,8 +9,6 @@ const data_json = require('../AI/data.json');
 async function handleCreateImageCommand(interaction, client) {
 
     try {
-        // Defer the reply immediately to avoid hitting the 3-second limit
-        await interaction.deferReply();
   
         // Your image creation logic here
         await createImage(interaction); // Example function
@@ -93,14 +91,18 @@ async function createImage(interaction) {
         dimensions_description = `⚠️ *You have incompatible dimensions in your settings for this model, I have changed them to the standard 1:1 square.*`
     }
 
-    // Check if the current lora exist in the loras object
+    // Check if the current lora exists in the loras object
     let loraExists = parentModel.loras.some(loraObj => loraObj.file === lora);
     let lora_description;
-    // If lora doesn't exist, remove it
-    if (!loraExists) {
+
+    // If lora is not empty and doesn't exist, remove it and set the warning message
+    if (lora && !loraExists) {
         lora = "";
         lora_description = `⚠️ *You have an incompatible LoRa in your settings for this model, I have removed the LoRa for this creation.*`
+    } else {
+        lora_description = ""; // No warning if the lora is empty or undefined
     }
+
 
 
 

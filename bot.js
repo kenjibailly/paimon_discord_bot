@@ -73,11 +73,13 @@ client.on('interactionCreate', async (interaction) => {
       const { type } = interaction;
 
       if (type === InteractionType.APPLICATION_COMMAND) {
-          await handleSlashCommand(interaction, client);
+        // Defer the reply immediately to avoid hitting the 3-second limit
+        await interaction.deferReply();
+        await handleSlashCommand(interaction, client);
       } else if (type === InteractionType.MESSAGE_COMPONENT) {
-          // For buttons or other message components, defer the update early
-          await interaction.deferUpdate(); // Defers for buttons (if needed)
-          await handleButtonClicks(interaction, client);
+        // For buttons or other message components, defer the update early
+        await interaction.deferUpdate(); // Defers for buttons (if needed)
+        await handleButtonClicks(interaction, client);
       }
   } catch (error) {
       console.error('Error handling interaction:', error);
