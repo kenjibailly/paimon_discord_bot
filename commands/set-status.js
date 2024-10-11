@@ -31,9 +31,6 @@ async function handleSetStatusCommand(interaction, client) {
         await interaction.editReply({ embeds: [embed], ephemeral: true });
 
     }
-
-
-
 }
 
 module.exports = handleSetStatusCommand;

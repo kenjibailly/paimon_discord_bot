@@ -73,18 +73,38 @@ client.on('interactionCreate', async (interaction) => {
       const { type } = interaction;
 
       if (type === InteractionType.APPLICATION_COMMAND) {
-        // Defer the reply immediately to avoid hitting the 3-second limit
-        await interaction.deferReply();
-        await handleSlashCommand(interaction, client);
+          // Define ephemeral commands
+          const ephemeralCommands = [
+              'create-image-settings',
+              'set-teams', 
+              'set-reward', 
+              'set-all-rewards', 
+              'set-token-emoji', 
+              'set-bot-channel', 
+              'set-channel-name-configuration',
+              'start-event', 
+              'manage-games', 
+              'manage-troll-missions', 
+              'cancel-event', 
+              'reset-teams',
+              'set-status',
+          ];
+
+          const commandName = interaction.commandName;
+
+          // Check if the command requires an ephemeral reply
+          const isEphemeral = ephemeralCommands.includes(commandName);
+
+          // Defer the reply and specify if it should be ephemeral
+          await interaction.deferReply({ ephemeral: isEphemeral });
+          await handleSlashCommand(interaction, client);
       } else if (type === InteractionType.MESSAGE_COMPONENT) {
-        // For buttons or other message components, defer the update early
-        await interaction.deferUpdate(); // Defers for buttons (if needed)
-        await handleButtonClicks(interaction, client);
+          await handleButtonClicks(interaction, client);
       }
   } catch (error) {
       console.error('Error handling interaction:', error);
       if (interaction.isRepliable()) {
-          await interaction.editReply({ content: 'There was an error processing your request.', ephemeral: true });
+          await interaction.reply({ content: 'There was an error processing your request.', ephemeral: true });
       }
   }
 });
