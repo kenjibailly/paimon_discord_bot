@@ -29,7 +29,7 @@ async function handleAwardTeamCommand(interaction, client) {
 
         // Check if tokenEmoji is an embed (error case)
         if (tokenEmoji.data) {
-            await interaction.reply({ embeds: [tokenEmoji], ephemeral: true });
+            await interaction.editReply({ embeds: [tokenEmoji], ephemeral: true });
             return;
         }
 
@@ -39,7 +39,7 @@ async function handleAwardTeamCommand(interaction, client) {
         `\nReason: **${reason}**`;
         const embed = createEmbed(title, description, "");
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     } catch (error) {
         logger.error('Error during bulkWrite:', error);
 
@@ -48,7 +48,7 @@ async function handleAwardTeamCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     }
 }
 

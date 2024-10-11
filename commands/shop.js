@@ -13,7 +13,7 @@ async function handleShopCommand(interaction, client) {
 
         // Check if we got an embed back instead of token emoji data
         if (tokenEmoji && tokenEmoji.type === 'error') {
-            await interaction.reply({ embeds: [tokenEmoji] });
+            await interaction.editReply({ embeds: [tokenEmoji] });
             return;
         }
 
@@ -38,7 +38,7 @@ async function handleShopCommand(interaction, client) {
         const description = `I could not find the rewards in the database. Pleae contact the administrator.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
 
     }
@@ -61,7 +61,7 @@ async function handleShopCommand(interaction, client) {
         };
         
 
-        await interaction.reply({
+        await interaction.editReply({
             embeds: [embed],
             components: [
                 {
@@ -79,7 +79,7 @@ async function handleShopCommand(interaction, client) {
         const errorColor = "error";
         const errorEmbed = createEmbed(errorTitle, errorDescription, errorColor);
 
-        await interaction.reply({ embeds: [errorEmbed] });
+        await interaction.editReply({ embeds: [errorEmbed] });
     }
 }
 

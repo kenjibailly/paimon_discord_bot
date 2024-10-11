@@ -38,7 +38,7 @@ async function handleCreateImageSettingsButton (interaction, client) {
         ]
     };
 
-    await interaction.update({ embeds: [embedDM], components: [buttonComponent] });
+    await interaction.editReply({ embeds: [embedDM], components: [buttonComponent] });
 }
 
 module.exports = handleCreateImageSettingsButton;

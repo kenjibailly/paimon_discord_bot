@@ -12,7 +12,7 @@ async function handleTrollMissionsCommand(interaction, client) {
             const description = `I couldn't find any troll missions.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
             return;
         }
 
@@ -32,7 +32,7 @@ async function handleTrollMissionsCommand(interaction, client) {
         const embed = createEmbed(title, description, "");
         embed.addFields(troll_missions_list); // Add the fields to the embed
         
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
 
     } catch (error) {
         logger.error('Troll Missions error: ', error);
@@ -41,7 +41,7 @@ async function handleTrollMissionsCommand(interaction, client) {
         const description = `Something went wrong while trying to get the troll missions list, please contact the administrator.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     }
 }
 

@@ -16,7 +16,7 @@ async function handleRemoveLoraButton(interaction, client) {
     };
     
     try {
-        const userId = interaction.userId;
+        const userId = interaction.user.id; // Corrected userId reference
 
         // Unset the lora field from the user's settings in the database
         await createImageSettings.findOneAndUpdate(
@@ -38,16 +38,20 @@ async function handleRemoveLoraButton(interaction, client) {
         const color = ""; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
-        await interaction.update({ embeds: [embed], components: [buttonComponent] });
+        // Ensure the interaction is updated after deferring
+        await interaction.editReply({ embeds: [embed], components: [buttonComponent] });
     } catch (error) {
-        logger.error("Handle Remove Lora Button:", error);
+        console.error("Handle Remove Lora Button:", error);
 
         const title = `Remove LoRa Error`;
         const description = `I couldn't remove your LoRa from the database, please try again later.`;
         const color = "error"; // Changed to hex code for red
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], components: [buttonComponent] });
+        // Ensure error reply is sent only if the interaction wasn't already deferred/replied to
+        if (!interaction.replied) {
+            await interaction.followUp({ embeds: [embed], components: [buttonComponent], ephemeral: true });
+        }
     }
 }
 

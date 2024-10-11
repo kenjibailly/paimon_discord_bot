@@ -14,7 +14,7 @@ async function handleAddTrollMissionNameButton(interaction, client) {
     const title = `Add Troll Mission`;
     const description = `Please reply with the new name of your troll mission.`;
     const embed = createEmbed(title, description, "");
-    await interaction.reply({
+    await interaction.editReply({
         embeds: [embed],
         components: [
             {
@@ -50,7 +50,7 @@ async function handleAddTrollMissionWithoutDescriptionButton (interaction, clien
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
         cancelThread(interaction, client);
     
         return;
@@ -64,7 +64,7 @@ async function handleAddTrollMissionWithoutDescriptionButton (interaction, clien
     const embed = createEmbed(title, description, color);
 
     userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
     cancelThread(interaction, client);
 
 }
@@ -100,7 +100,7 @@ async function handleManageTrollMissionsButton(interaction, client) {
             const title = `${capitalizedAction} Troll Mission`;
             const description = `Please reply with the number next to the troll mission to ${action} that troll mission.\n\n${troll_missions_list}`;
             const embed = createEmbed(title, description, "");
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [embed],
                 components: [
                     {
@@ -124,7 +124,7 @@ async function handleManageTrollMissionsButton(interaction, client) {
 
             userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
 
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [embed],
                 components: [
                     {
@@ -151,7 +151,7 @@ async function handleManageTrollMissionsButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
         cancelThread(interaction, client);
 
     }
@@ -171,7 +171,7 @@ async function handleUpdateTrollMissionNameButton(interaction, client) {
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);
 
-    await interaction.reply({
+    await interaction.editReply({
         embeds: [embed],
         components: [
             {
@@ -214,7 +214,7 @@ async function handleUpdateTrollMissionDescriptionButton(interaction, client) {
                 const embed = createEmbed(title, description, color);
 
                 userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-                await interaction.reply({ embeds: [embed] });
+                await interaction.editReply({ embeds: [embed] });
                 cancelThread(interaction, client);            
 
             } else {
@@ -227,7 +227,7 @@ async function handleUpdateTrollMissionDescriptionButton(interaction, client) {
             const embed = createEmbed(title, description, color);
             
             userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-            await interaction.reply({ embeds: [embed] });
+            await interaction.editReply({ embeds: [embed] });
             cancelThread(interaction, client);
 
         }
@@ -241,7 +241,7 @@ async function handleUpdateTrollMissionDescriptionButton(interaction, client) {
         const embed = createEmbed(title, description, color);
         
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
         cancelThread(interaction, client);
 
     }

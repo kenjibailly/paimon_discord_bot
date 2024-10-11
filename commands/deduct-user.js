@@ -16,7 +16,7 @@ async function handleDeductUserCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
 
@@ -27,7 +27,7 @@ async function handleDeductUserCommand(interaction, client) {
 
         // Check if tokenEmoji is an embed (error case)
         if (tokenEmoji.data) {
-            await interaction.reply({ embeds: [tokenEmoji], ephemeral: true });
+            await interaction.editReply({ embeds: [tokenEmoji], ephemeral: true });
             return;
         }
 
@@ -41,7 +41,7 @@ async function handleDeductUserCommand(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
             return;
         }
 
@@ -53,7 +53,7 @@ async function handleDeductUserCommand(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
             return;
         }
 
@@ -69,7 +69,7 @@ async function handleDeductUserCommand(interaction, client) {
         const color = "";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
 
     } catch (error) {
         // Handle errors during database operations
@@ -80,7 +80,7 @@ async function handleDeductUserCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
 
     }
 }

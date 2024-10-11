@@ -15,7 +15,7 @@ async function handleWalletCommand(interaction, client) {
 
         // Check if tokenEmoji is an embed (error case)
         if (tokenEmoji.data) {
-            await interaction.reply({ embeds: [tokenEmoji], ephemeral: true });
+            await interaction.editReply({ embeds: [tokenEmoji], ephemeral: true });
             return;
         }
 
@@ -24,14 +24,14 @@ async function handleWalletCommand(interaction, client) {
             const description = `You have **${wallet.amount}** ${tokenEmoji.token_emoji} in your wallet.`;
             const embed = createEmbed(title, description, "");
 
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
         } else {
             const title = "Wallet";
             const description = `You have not been awarded any ${tokenEmoji.token_emoji} yet.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
         }
     } catch (error) {
         logger.error('Error during finding wallet:', error);
@@ -41,7 +41,7 @@ async function handleWalletCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
 
     }
 }

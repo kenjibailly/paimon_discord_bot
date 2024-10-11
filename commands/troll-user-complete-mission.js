@@ -116,7 +116,7 @@ async function handleTrollUserCompleteMissionCommand(interaction, client) {
         const description = `I could not complete the troll mission, please try again later.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     }
 }
 

@@ -43,7 +43,7 @@ async function handleCreateImageCommand(interaction, client) {
     // Check if the interaction is in a DM with the bot itself
     if (isDMToBot) {
         // If it's a DM with the bot, just send the DM, no message in the channel
-        interaction.reply({
+        interaction.editReply({
             embeds: [embedDM],
             components: [buttonComponent],
             flags: 64, // Ephemeral message
@@ -60,7 +60,7 @@ async function handleCreateImageCommand(interaction, client) {
         const embed = createEmbed(title, description, color);
         
         // Send a response in the channel where the command was triggered
-        interaction.reply({
+        interaction.editReply({
                 embeds: [embed],
                 flags: 64, // Ephemeral message, only visible to the user
         });

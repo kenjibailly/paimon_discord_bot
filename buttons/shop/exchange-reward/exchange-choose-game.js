@@ -44,7 +44,7 @@ async function handleExchangeChooseGameButton(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
         // Send a confirmation message before closing the thread
-        await interaction.update({
+        await interaction.editReply({
             embeds: [embed],
             components: []  // Ensure this is an empty array
         });        
@@ -88,7 +88,7 @@ async function handleExchangeChooseGameButton(interaction, client) {
     embed.addFields(next_games_list);
 
     // Send success message before canceling the thread message
-    await interaction.update({
+    await interaction.editReply({
         embeds: [embed],
         components: []
     });

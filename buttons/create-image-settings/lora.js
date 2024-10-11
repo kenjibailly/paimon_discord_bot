@@ -99,7 +99,7 @@ async function handleLorabutton (interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], components: [buttonComponent] });
+        await interaction.editReply({ embeds: [embed], components: [buttonComponent] });
         return;
     }
 
@@ -138,7 +138,7 @@ async function handleLorabutton (interaction, client) {
         embed.addFields(loras_list);
     }
 
-    await interaction.update({ embeds: [embed], components: [buttonComponent] });
+    await interaction.editReply({ embeds: [embed], components: [buttonComponent] });
 }
 
 module.exports = handleLorabutton;

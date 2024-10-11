@@ -66,7 +66,7 @@ async function handleModelButton (interaction, client) {
     };
 
 
-    await interaction.update({
+    await interaction.editReply({
         embeds: [embed],
         components: [buttonComponent]
     });

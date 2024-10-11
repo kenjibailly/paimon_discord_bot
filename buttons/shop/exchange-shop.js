@@ -34,7 +34,7 @@ async function handleExchangeShopButton(interaction, client) {
         const title = "Error Rewards";
         const description = `I could not find the rewards in the database. Pleae contact the administrator.`;
         const embed = createEmbed(title, description, "");
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
     
@@ -78,7 +78,7 @@ async function handleExchangeShopButton(interaction, client) {
     title = "Shop";
     description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
     embed = createEmbed(title, description, "");
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], ephemeral: true });
 }
 
 module.exports = handleExchangeShopButton;

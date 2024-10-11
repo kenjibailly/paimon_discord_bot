@@ -24,7 +24,7 @@ async function handleExchangeCustomRoleButton(interaction, client) {
         // Check bot permissions
         const permissionCheck = await checkPermissions(interaction, client, 'MANAGE_ROLES', guild);
         if (permissionCheck) {
-            await interaction.update({ embeds: [permissionCheck] });
+            await interaction.editReply({ embeds: [permissionCheck] });
             handleCancelThread(interaction, client);
             return;
         }
@@ -53,7 +53,7 @@ async function handleExchangeCustomRoleButton(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            await interaction.update({
+            await interaction.editReply({
                 embeds: [embed],
                 components: []  // Ensure this is an empty array
             });
@@ -72,7 +72,7 @@ async function handleExchangeCustomRoleButton(interaction, client) {
             const description = "There was an error while processing your wallet transaction. Please try again later.";
             const color = "error"; // Assuming you have a color constant for errors
             const embed = createEmbed(title, description, color);
-            await interaction.update({
+            await interaction.editReply({
                 embeds: [embed],
                 components: []  // Ensure this is an empty array
             });                        
@@ -111,7 +111,7 @@ async function handleExchangeCustomRoleButton(interaction, client) {
                 const embed = createEmbed(title, description, color);
 
                 // Send success message before canceling the thread message
-                await interaction.update({
+                await interaction.editReply({
                     embeds: [embed],
                     components: []
                 });
@@ -141,7 +141,7 @@ async function handleExchangeCustomRoleButton(interaction, client) {
             const description = `There was an issue creating the role. Please try again later.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-            await interaction.update({
+            await interaction.editReply({
                 embeds: [embed],
                 components: []  // Ensure this is an empty array
             });            
@@ -162,7 +162,7 @@ async function handleExchangeCustomRoleButton(interaction, client) {
 
         const color = "error";
         const embed = createEmbed(title, description, color);
-        await interaction.update({
+        await interaction.editReply({
             embeds: [embed],
             components: []  // Ensure this is an empty array
         });        

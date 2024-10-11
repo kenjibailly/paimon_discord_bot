@@ -19,7 +19,7 @@ async function handleSetRewardCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
 
@@ -51,7 +51,7 @@ async function handleSetRewardCommand(interaction, client) {
             const color = "";
             const embed = createEmbed(title, description, color);
 
-            await interaction.reply({ embeds: [embed], ephemeral: true })
+            await interaction.editReply({ embeds: [embed], ephemeral: true })
         } else {
             // Handle the case where the reward was not found
             const title = "Reward Not Found";
@@ -59,7 +59,7 @@ async function handleSetRewardCommand(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            await interaction.reply({ embeds: [embed], ephemeral: true })
+            await interaction.editReply({ embeds: [embed], ephemeral: true })
         }
 
     } catch (error) {
@@ -70,7 +70,7 @@ async function handleSetRewardCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
 
     }
 }

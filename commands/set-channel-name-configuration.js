@@ -66,7 +66,7 @@ async function handleSetChannelNameConfigurationCommand (interaction, client) {
         title = "Channel Name Configuration";
         description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
         embed = createEmbed(title, description, "");
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
 
 
     } catch (error) {
@@ -77,7 +77,7 @@ async function handleSetChannelNameConfigurationCommand (interaction, client) {
         const errorColor = "error";
         const errorEmbed = createEmbed(errorTitle, errorDescription, errorColor);
 
-        await interaction.reply({ embeds: [errorEmbed] });
+        await interaction.editReply({ embeds: [errorEmbed] });
     }
 
 }

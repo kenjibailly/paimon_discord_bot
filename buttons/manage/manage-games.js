@@ -14,7 +14,7 @@ async function handleAddGameNameButton(interaction, client) {
     const title = `Add Game`;
     const description = `Please reply with the new name of your game.`;
     const embed = createEmbed(title, description, "");
-    await interaction.reply({
+    await interaction.editReply({
         embeds: [embed],
         components: [
             {
@@ -51,7 +51,7 @@ async function handleAddGameWithoutDescriptionButton (interaction, client) {
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
     
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
         cancelThread(interaction, client);
         return;
     }
@@ -64,7 +64,7 @@ async function handleAddGameWithoutDescriptionButton (interaction, client) {
     const embed = createEmbed(title, description, color);
 
     userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
     cancelThread(interaction, client);
 
 }
@@ -100,7 +100,7 @@ async function handleManageGamesButton(interaction, client) {
             const title = `${capitalizedAction} Game`;
             const description = `Please reply with the number next to the game to ${action} that game.\n\n${games_list}`;
             const embed = createEmbed(title, description, "");
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [embed],
                 components: [
                     {
@@ -124,7 +124,7 @@ async function handleManageGamesButton(interaction, client) {
 
             userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
 
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [embed],
                 components: [
                     {
@@ -151,7 +151,7 @@ async function handleManageGamesButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
         cancelThread(interaction, client);
     }
 }
@@ -170,7 +170,7 @@ async function handleUpdateGameNameButton(interaction, client) {
     const color = ""; // Changed to hex code for red
     const embed = createEmbed(title, description, color);
 
-    await interaction.reply({
+    await interaction.editReply({
         embeds: [embed],
         components: [
             {
@@ -213,7 +213,7 @@ async function handleUpdateGameDescriptionButton(interaction, client) {
                 const embed = createEmbed(title, description, color);
 
                 userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-                await interaction.reply({ embeds: [embed] });
+                await interaction.editReply({ embeds: [embed] });
                 cancelThread(interaction, client);            
 
             } else {
@@ -226,7 +226,7 @@ async function handleUpdateGameDescriptionButton(interaction, client) {
             const embed = createEmbed(title, description, color);
             
             userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-            await interaction.reply({ embeds: [embed] });
+            await interaction.editReply({ embeds: [embed] });
             cancelThread(interaction, client);
 
         }
@@ -239,7 +239,7 @@ async function handleUpdateGameDescriptionButton(interaction, client) {
         const embed = createEmbed(title, description, color);
         
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
         cancelThread(interaction, client);
 
     }

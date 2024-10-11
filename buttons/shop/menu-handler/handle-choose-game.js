@@ -36,7 +36,7 @@ async function handleChooseGame(name, interaction, client) {
             description = "The staff hasn't added any games yet, please ask them to add some games.";
             color = "error";
             const embed = createEmbed(title, description, color);
-            await interaction.update({ embeds: [embed] });
+            await interaction.editReply({ embeds: [embed] });
             handleCancelThread(interaction, client);
             return;
         }
@@ -46,7 +46,7 @@ async function handleChooseGame(name, interaction, client) {
         description = "I couldn't retrieve the list of games, please try again later.";
         color = "error";
         const embed = createEmbed(title, description, color);
-        await interaction.update({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
         handleCancelThread(interaction, client);
         return;
     }
@@ -56,7 +56,7 @@ async function handleChooseGame(name, interaction, client) {
         embed.addFields(games_list);
     }
 
-    await interaction.update({
+    await interaction.editReply({
         embeds: [embed],
         components: [
             {

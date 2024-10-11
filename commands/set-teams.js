@@ -16,7 +16,7 @@ async function handleSetTeamsCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
     }
 
@@ -42,7 +42,7 @@ async function handleSetTeamsCommand(interaction, client) {
         const color = "";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
 
 
     } catch (error) {
@@ -53,7 +53,7 @@ async function handleSetTeamsCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
 
     }
 }

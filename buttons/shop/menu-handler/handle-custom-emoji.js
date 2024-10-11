@@ -12,7 +12,7 @@ async function handleCustomEmoji(name, interaction) {
         name: name,
     });
 
-    await interaction.update({
+    await interaction.editReply({
         embeds: [embed],
         components: [
             {

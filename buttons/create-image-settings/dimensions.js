@@ -66,7 +66,7 @@ async function handleDimensionsButton (interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], components: [buttonComponent] });
+        await interaction.editReply({ embeds: [embed], components: [buttonComponent] });
         return;
     }
 
@@ -105,7 +105,7 @@ async function handleDimensionsButton (interaction, client) {
         embed.addFields(dimensions_list);
     }
 
-    await interaction.update({ embeds: [embed], components: [buttonComponent] });
+    await interaction.editReply({ embeds: [embed], components: [buttonComponent] });
 }
 
 module.exports = handleDimensionsButton;

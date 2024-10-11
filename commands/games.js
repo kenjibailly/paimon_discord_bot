@@ -12,7 +12,7 @@ async function handleGamesCommand(interaction, client) {
             const description = `I couldn't find any games.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
             return;
         }
 
@@ -31,7 +31,7 @@ async function handleGamesCommand(interaction, client) {
         const embed = createEmbed(title, description, "");
         embed.addFields(games_list); // Add the fields to the embed
         
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
 
     } catch (error) {
         logger.error('Games error: ', error);
@@ -40,7 +40,7 @@ async function handleGamesCommand(interaction, client) {
         const description = `Something went wrong while trying to get the games list, please contact the administrator.`;
         const color = "error";
         const embed = createEmbed(title, description, color);
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     }
 }
 

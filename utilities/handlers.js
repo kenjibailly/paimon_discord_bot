@@ -25,7 +25,7 @@ async function handleSlashCommand(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         // Reply to the user with an ephemeral message
-        await interaction.reply({
+        await interaction.editReply({
             embeds: [embed],
             ephemeral: true, // This will make the reply visible only to the user
         });
@@ -50,7 +50,7 @@ async function handleButtonClicks(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         // Update the interaction with an error message (ephemeral)
-        await interaction.reply({
+        await interaction.editReply({
             embeds: [embed],
             ephemeral: true, // This will make the reply visible only to the user
         });

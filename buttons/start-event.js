@@ -31,7 +31,7 @@ async function handleStartEventAddGameButton(interaction, client) {
             const title = `Start Event`;
             const description = `Please reply with the number next to the game to add that game to your event.\n\n${games_list}`;
             const embed = createEmbed(title, description, "");
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [embed],
                 components: [
                     {
@@ -55,7 +55,7 @@ async function handleStartEventAddGameButton(interaction, client) {
             const embed = createEmbed(title, description, color);
 
             userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [embed],
                 components: [
                     {
@@ -81,7 +81,7 @@ async function handleStartEventAddGameButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         cancelThread(interaction, client);
 
     }
@@ -113,7 +113,7 @@ async function handleStartEventNoGameButton(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
 
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
             return;
         }
 
@@ -154,7 +154,7 @@ async function handleStartEventNoGameButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         // Send the embed with the button to the specified channel
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
         cancelThread(interaction, client);
 
 }

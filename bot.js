@@ -75,12 +75,14 @@ client.on('interactionCreate', async (interaction) => {
       if (type === InteractionType.APPLICATION_COMMAND) {
           await handleSlashCommand(interaction, client);
       } else if (type === InteractionType.MESSAGE_COMPONENT) {
+          // For buttons or other message components, defer the update early
+          await interaction.deferUpdate(); // Defers for buttons (if needed)
           await handleButtonClicks(interaction, client);
       }
   } catch (error) {
       console.error('Error handling interaction:', error);
       if (interaction.isRepliable()) {
-          await interaction.reply({ content: 'There was an error processing your request.', ephemeral: true });
+          await interaction.editReply({ content: 'There was an error processing your request.', ephemeral: true });
       }
   }
 });

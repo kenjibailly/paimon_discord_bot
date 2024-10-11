@@ -59,11 +59,11 @@ async function handleCancelEventCommand(interaction, client) {
             const color = "error";
             const embed = createEmbed(title, description, color);
     
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
             return;
         }
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
 
     } catch (error) {
         logger.error("Error Canceling Event:", error);
@@ -73,7 +73,7 @@ async function handleCancelEventCommand(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
 
     }
 }

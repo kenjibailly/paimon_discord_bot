@@ -208,7 +208,7 @@ async function removeGame(game, client, message) {
         
             // Check if tokenEmoji is an embed (error case)
             if (tokenEmoji.data) {
-                await interaction.reply({ embeds: [tokenEmoji], ephemeral: true });
+                await interaction.editReply({ embeds: [tokenEmoji], ephemeral: true });
                 return;
             }
         

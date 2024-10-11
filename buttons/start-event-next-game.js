@@ -37,7 +37,7 @@ async function handleStartEventNextGameButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         // Send a confirmation message before closing the thread
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
 
     }
@@ -82,7 +82,7 @@ async function handleStartEventNextGameButton(interaction, client) {
     const embed = createEmbed(title, description, color);
 
     userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], ephemeral: true });
     cancelThread(interaction, client);
 }
 

@@ -23,7 +23,7 @@ async function handleChannelNameConfigurationButton(interaction, client) {
         const title = `Channel Name Configuration`;
         const description = `Please reply with your channel separator symbol, if you don't have any then please press **No**.\n\nExamples of separators being used:\n\n"┋" is the separator in this example:\n\`\`\`\n#💡┋info\`\`\`\n\n"-" is the separator in this example:\n\`\`\`\n#-info\`\`\``;
         const embed = createEmbed(title, description, "");
-        await interaction.reply({
+        await interaction.editReply({
             embeds: [embed],
             components: [
                 {
@@ -55,7 +55,7 @@ async function handleChannelNameConfigurationButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         cancelThread(interaction, client);
 
 
@@ -88,7 +88,7 @@ async function handleChannelNameConfigurationFinishButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         cancelThread(interaction, client);
 
 
@@ -99,7 +99,7 @@ async function handleChannelNameConfigurationFinishButton(interaction, client) {
         const embed = createEmbed(title, description, color);
 
         userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
         cancelThread(interaction, client);
 
     }

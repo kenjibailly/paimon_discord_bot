@@ -24,7 +24,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
         // Check bot permissions
         const permissionCheck = await checkPermissions(interaction, client, 'MANAGE_EMOJIS_AND_STICKERS', guild);
         if (permissionCheck) {
-            await interaction.update({ embeds: [permissionCheck] });
+            await interaction.editReply({ embeds: [permissionCheck] });
             handleCancelThread(interaction, client);
             return;
         }
@@ -57,7 +57,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             const description = `This server has reached its custom emoji limit (${maxEmojis}). Please remove some emojis or upgrade the server to add more.`;
             const color = "error"; // Assuming you have color constants, adjust accordingly
             const embed = createEmbed(title, description, color);
-            await interaction.update({
+            await interaction.editReply({
                 embeds: [embed],
                 components: []  // Ensure this is an empty array
             });            
@@ -76,7 +76,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             const color = "error"; // Assuming you have a color constant for errors
             const embed = createEmbed(title, description, color);
 
-            await interaction.update({
+            await interaction.editReply({
                 embeds: [embed],
                 components: []  // Ensure this is an empty array
             });
@@ -104,7 +104,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             let description = `I could not add the reward to the database. Please contact the administrator.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-            await interaction.update({
+            await interaction.editReply({
                 embeds: [embed],
                 components: []  // Ensure this is an empty array
             });            
@@ -123,7 +123,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             const description = "There was an error while processing your wallet transaction. Please try again later.";
             const color = "error"; // Assuming you have a color constant for errors
             const embed = createEmbed(title, description, color);
-            await interaction.update({
+            await interaction.editReply({
                 embeds: [embed],
                 components: []  // Ensure this is an empty array
             });            
@@ -147,7 +147,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
                 const embed = createEmbed(title, description, color);
 
                 // Send success message before canceling the thread message
-                await interaction.update({
+                await interaction.editReply({
                     embeds: [embed],
                     components: []
                 });
@@ -177,7 +177,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
             const description = `There was an issue adding the emoji to the server. Please try again later.`;
             const color = "error";
             const embed = createEmbed(title, description, color);
-            await interaction.update({
+            await interaction.editReply({
                 embeds: [embed],
                 components: []  // Ensure this is an empty array
             });            
@@ -198,7 +198,7 @@ async function handleExchangeCustomEmojiButton(interaction, client) {
 
         const color = "error";
         const embed = createEmbed(title, description, color);
-        await interaction.update({
+        await interaction.editReply({
             embeds: [embed],
             components: []  // Ensure this is an empty array
         });        

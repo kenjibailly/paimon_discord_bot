@@ -8,7 +8,7 @@ async function checkRequiredBalance(interaction, client, price, thread) {
     const tokenEmoji = await getTokenEmoji(interaction.guildId);
     // Check if tokenEmoji is an embed (error case)
     if (tokenEmoji.data) {
-        await interaction.reply({ embeds: [tokenEmoji], ephemeral: true });
+        await interaction.editReply({ embeds: [tokenEmoji], ephemeral: true });
         return;
     }
 
