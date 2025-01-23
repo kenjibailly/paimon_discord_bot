@@ -5,7 +5,7 @@ services:
     container_name: discord_bot_paimon
     restart: unless-stopped
     command: "nodemon bot.js"
-    volumes: 
+    volumes:
       - ./:/home/ubuntu/paimon/
       - /home/ubuntu/paimon/node_modules
     networks:
@@ -31,5 +31,5 @@ services:
       - docker_swag
 
 networks:
-    docker_swag:
-        external: true
+  docker_swag:
+    external: true
