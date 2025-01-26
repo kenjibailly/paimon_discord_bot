@@ -31,19 +31,6 @@ async function InstallGuildCommands(appId, commands, guildId) {
   }
 }
 
-async function RemoveGuildCommands(appId, commands, guildId) {
-  const endpoint = `applications/${appId}/guilds/${guildId}/commands`;
-
-  try {
-    // Delete all existing commands first
-    await DiscordRequest(endpoint, { method: "DELETE" });
-
-    logger.success("Commands removed.");
-  } catch (err) {
-    logger.error("Error registering commands:", err);
-  }
-}
-
 // Register global commands (works in DMs and all servers)
 async function InstallGlobalCommands(appId, commands) {
   const endpoint = `applications/${appId}/commands`; // No guildId needed

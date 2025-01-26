@@ -2,7 +2,6 @@ require("dotenv/config");
 const {
   InstallGuildCommands,
   InstallGlobalCommands,
-  RemoveGuildCommands,
 } = require("../utilities/utils.js");
 
 async function registerCommands(guildId) {
@@ -401,8 +400,6 @@ async function registerCommands(guildId) {
 
   // Register or update the existing commands
   try {
-    // Remove guild commands manually
-    // await RemoveGuildCommands(process.env.APP_ID, NEW_COMMANDS, guildId);
     // Pass guildId to register commands for a specific guild
     await InstallGuildCommands(process.env.APP_ID, NEW_COMMANDS, guildId);
     await InstallGlobalCommands(process.env.APP_ID, [
