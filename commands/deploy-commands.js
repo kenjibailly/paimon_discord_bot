@@ -1,30 +1,33 @@
-require('dotenv/config');
-const { InstallGuildCommands, InstallGlobalCommands } = require('../utilities/utils.js');
-
+require("dotenv/config");
+const {
+  InstallGuildCommands,
+  InstallGlobalCommands,
+  RemoveGuildCommands,
+} = require("../utilities/utils.js");
 
 async function registerCommands(guildId) {
   const defaultManageGuildPermission = 0x0000000000000020; // MANAGE_GUILD permission
   // Define commands
   const AWARD_TEAM_COMMAND = {
-    name: 'award-team',
-    description: 'Award shop coins to a team/role',
+    name: "award-team",
+    description: "Award shop coins to a team/role",
     options: [
       {
         type: 8, // ROLE
-        name: 'role',
-        description: 'Select a role to award coins to',
+        name: "role",
+        description: "Select a role to award coins to",
         required: true,
       },
       {
         type: 4, // INTEGER
-        name: 'amount',
-        description: 'Amount of coins to award',
+        name: "amount",
+        description: "Amount of coins to award",
         required: true,
       },
       {
         type: 3, // STRING
-        name: 'reason',
-        description: 'Reason for the awarding',
+        name: "reason",
+        description: "Reason for the awarding",
         required: false,
       },
     ],
@@ -33,30 +36,30 @@ async function registerCommands(guildId) {
   };
 
   const WALLET_COMMAND = {
-    name: 'wallet',
-    description: 'Check your wallet balance',
+    name: "wallet",
+    description: "Check your wallet balance",
   };
 
   const DEDUCT_USER_COMMAND = {
-    name: 'deduct-user',
-    description: 'Deduct shop coins from wallet of user by amount',
+    name: "deduct-user",
+    description: "Deduct shop coins from wallet of user by amount",
     options: [
       {
         type: 6, // USER
-        name: 'user',
-        description: 'Select a user to deduct wallet',
+        name: "user",
+        description: "Select a user to deduct wallet",
         required: true,
       },
       {
         type: 4, // INTEGER
-        name: 'amount',
-        description: 'Amount of coins to deduct',
+        name: "amount",
+        description: "Amount of coins to deduct",
         required: true,
       },
       {
         type: 3, // STRING
-        name: 'reason',
-        description: 'Reason for the deduction',
+        name: "reason",
+        description: "Reason for the deduction",
         required: false,
       },
     ],
@@ -65,25 +68,25 @@ async function registerCommands(guildId) {
   };
 
   const AWARD_USER_COMMAND = {
-    name: 'award-user',
-    description: 'Award shop coins to a user',
+    name: "award-user",
+    description: "Award shop coins to a user",
     options: [
       {
         type: 6, // USER
-        name: 'user',
-        description: 'Select a user to award wallet',
+        name: "user",
+        description: "Select a user to award wallet",
         required: true,
       },
       {
         type: 4, // INTEGER
-        name: 'amount',
-        description: 'Amount of coins to award',
+        name: "amount",
+        description: "Amount of coins to award",
         required: true,
       },
       {
         type: 3, // STRING
-        name: 'reason',
-        description: 'Reason for the awarding',
+        name: "reason",
+        description: "Reason for the awarding",
         required: false,
       },
     ],
@@ -92,66 +95,66 @@ async function registerCommands(guildId) {
   };
 
   const SHOP_COMMAND = {
-    name: 'shop',
-    description: 'Open the shop',
+    name: "shop",
+    description: "Open the shop",
   };
 
   const SET_REWARD_COMMAND = {
-    name: 'set-reward',
-    description: 'Set reward price, reset time, enable/disable reward',
+    name: "set-reward",
+    description: "Set reward price, reset time, enable/disable reward",
     options: [
       {
         type: 3, // STRING
-        name: 'reward',
-        description: 'Select the reward type',
+        name: "reward",
+        description: "Select the reward type",
         required: true,
         choices: [
-          { name: 'Change your nickname', value: 'change-own-nickname' },
-          { name: "Change someone's nickname", value: 'change-user-nickname' },
-          { name: 'Add a custom server emoji', value: 'custom-emoji' },
-          { name: 'Add a custom channel', value: 'custom-channel' },
-          { name: 'Add a custom role name and color', value: 'custom-role' },
-          { name: 'Choose next game', value: 'choose-game' },
-          { name: 'Troll someone', value: 'troll-user' },
+          { name: "Change your nickname", value: "change-own-nickname" },
+          { name: "Change someone's nickname", value: "change-user-nickname" },
+          { name: "Add a custom server emoji", value: "custom-emoji" },
+          { name: "Add a custom channel", value: "custom-channel" },
+          { name: "Add a custom role name and color", value: "custom-role" },
+          { name: "Choose next game", value: "choose-game" },
+          { name: "Troll someone", value: "troll-user" },
         ],
       },
       {
         type: 4, // INTEGER
-        name: 'price',
-        description: 'Price of the reward',
+        name: "price",
+        description: "Price of the reward",
         required: false,
       },
       {
         type: 4, // INTEGER
-        name: 'time',
-        description: 'Time in days before reward is removed',
+        name: "time",
+        description: "Time in days before reward is removed",
         required: false,
       },
       {
         type: 5, // BOOLEAN
-        name: 'enable',
-        description: 'Enable or disable the reward',
+        name: "enable",
+        description: "Enable or disable the reward",
         required: false,
-      }
+      },
     ],
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
     dm_permission: false, // Command can’t be used in DMs
   };
 
   const SET_ALL_REWARDS_COMMAND = {
-    name: 'set-all-rewards',
-    description: 'Set reward price and time for all rewards',
+    name: "set-all-rewards",
+    description: "Set reward price and time for all rewards",
     options: [
       {
         type: 4, // INTEGER
-        name: 'price',
-        description: 'Price of the rewards',
+        name: "price",
+        description: "Price of the rewards",
         required: false,
       },
       {
         type: 4, // INTEGER
-        name: 'time',
-        description: 'Time in days before rewards are removed',
+        name: "time",
+        description: "Time in days before rewards are removed",
         required: false,
       },
     ],
@@ -160,19 +163,19 @@ async function registerCommands(guildId) {
   };
 
   const SET_TEAMS_COMMAND = {
-    name: 'set-teams',
-    description: 'Choose 2 roles as teams for team generation',
+    name: "set-teams",
+    description: "Choose 2 roles as teams for team generation",
     options: [
       {
         type: 8, // ROLE
-        name: 'team_1',
-        description: 'First team role',
+        name: "team_1",
+        description: "First team role",
         required: true,
       },
       {
         type: 8, // ROLE
-        name: 'team_2',
-        description: 'Second team role',
+        name: "team_2",
+        description: "Second team role",
         required: true,
       },
     ],
@@ -181,13 +184,13 @@ async function registerCommands(guildId) {
   };
 
   const SET_TOKEN_EMOJI_COMMAND = {
-    name: 'set-token-emoji',
-    description: 'Set the token emoji',
+    name: "set-token-emoji",
+    description: "Set the token emoji",
     options: [
       {
         type: 3, // STRING
-        name: 'token_emoji',
-        description: 'Token Emoji (e.g., 😃)',
+        name: "token_emoji",
+        description: "Token Emoji (e.g., 😃)",
         required: true,
       },
     ],
@@ -196,13 +199,13 @@ async function registerCommands(guildId) {
   };
 
   const SET_BOT_CHANNEL_COMMAND = {
-    name: 'set-bot-channel',
-    description: 'Set the bot channel for updates',
+    name: "set-bot-channel",
+    description: "Set the bot channel for updates",
     options: [
       {
         type: 7, // CHANNEL
-        name: 'channel',
-        description: 'Choose a channel',
+        name: "channel",
+        description: "Choose a channel",
         required: true,
       },
     ],
@@ -211,30 +214,30 @@ async function registerCommands(guildId) {
   };
 
   const GAMES_COMMAND = {
-    name: 'games',
-    description: 'Show a list of all the games',
+    name: "games",
+    description: "Show a list of all the games",
   };
 
   const NEXT_GAMES_COMMAND = {
-    name: 'upcoming-games',
-    description: 'Show a list of all the upcoming games',
+    name: "upcoming-games",
+    description: "Show a list of all the upcoming games",
   };
 
   const RESET_TEAMS_COMMAND = {
-    name: 'reset-teams',
-    description: 'Remove all users from the set teams',
+    name: "reset-teams",
+    description: "Remove all users from the set teams",
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
     dm_permission: false, // Command can’t be used in DMs
   };
 
   const SET_STATUS_COMMAND = {
-    name: 'set-status',
-    description: 'Set a custom status for Paimon',
+    name: "set-status",
+    description: "Set a custom status for Paimon",
     options: [
       {
         type: 3, // STRING
-        name: 'status',
-        description: 'Choose a status',
+        name: "status",
+        description: "Choose a status",
         required: true,
       },
     ],
@@ -243,53 +246,54 @@ async function registerCommands(guildId) {
   };
 
   const MANAGE_GAMES_COMMAND = {
-    name: 'manage-games',
-    description: 'Add, remove a game from the list',
+    name: "manage-games",
+    description: "Add, remove a game from the list",
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
     dm_permission: false, // Command can’t be used in DMs
   };
 
   const START_EVENT_COMMAND = {
-    name: 'start-event',
-    description: 'Start an event with team generation',
+    name: "start-event",
+    description: "Start an event with team generation",
     options: [
       {
         type: 3, // STRING
-        name: 'name',
-        description: 'Choose the name / title of your event',
+        name: "name",
+        description: "Choose the name / title of your event",
         required: true,
       },
       {
         type: 3, // STRING
-        name: 'description',
-        description: 'Choose the description of your event',
+        name: "description",
+        description: "Choose the description of your event",
         required: true,
       },
       {
         type: 4, // NUMBER
-        name: 'expiration',
-        description: 'Select the number of hours for team generation and signup deadline (default: 24 hours)',
+        name: "expiration",
+        description:
+          "Select the number of hours for team generation and signup deadline (default: 24 hours)",
         required: false,
       },
       {
         type: 3, // STRING
-        name: 'image',
-        description: 'Add an image link to add to your event post',
+        name: "image",
+        description: "Add an image link to add to your event post",
         required: false,
       },
       {
         type: 3, // STRING
-        name: 'color',
-        description: 'Select the color of the embed',
+        name: "color",
+        description: "Select the color of the embed",
         required: false,
         choices: [
-          { name: 'purple', value: 'purple' },
-          { name: 'red', value: 'red' },
-          { name: 'yellow', value: 'yellow' },
-          { name: 'green', value: 'green' },
-          { name: 'cyan', value: 'cyan' },
-          { name: 'blue', value: 'blue' },
-          { name: 'pink', value: 'pink' },
+          { name: "purple", value: "purple" },
+          { name: "red", value: "red" },
+          { name: "yellow", value: "yellow" },
+          { name: "green", value: "green" },
+          { name: "cyan", value: "cyan" },
+          { name: "blue", value: "blue" },
+          { name: "pink", value: "pink" },
         ],
       },
     ],
@@ -298,45 +302,47 @@ async function registerCommands(guildId) {
   };
 
   const CANCEL_EVENT_COMMAND = {
-    name: 'cancel-event',
-    description: 'Cancel current event',
+    name: "cancel-event",
+    description: "Cancel current event",
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
     dm_permission: false, // Command can’t be used in DMs
   };
 
   const SET_CHANNEL_NAME_CONFIGURATION_COMMAND = {
-    name: 'set-channel-name-configuration',
-    description: 'Set the channel name configuration for the channel creation reward.',
+    name: "set-channel-name-configuration",
+    description:
+      "Set the channel name configuration for the channel creation reward.",
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
     dm_permission: false, // Command can’t be used in DMs
   };
 
   const TROLL_MISSIONS_COMMAND = {
-    name: 'troll-missions',
-    description: 'Show a list of all the troll missions',
+    name: "troll-missions",
+    description: "Show a list of all the troll missions",
   };
 
   const MANAGE_TROLL_MISSIONS_COMMAND = {
-    name: 'manage-troll-missions',
-    description: 'Add, remove or update a troll mission',
+    name: "manage-troll-missions",
+    description: "Add, remove or update a troll mission",
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
     dm_permission: false, // Command can’t be used in DMs
   };
 
   const TROLL_USER_COMPLETE_MISSION_COMMAND = {
-    name: 'troll-user-complete-mission',
+    name: "troll-user-complete-mission",
     description: `Complete a trolled user's mission, if no message link is added, last message will be used`,
     options: [
       {
         type: 6, // USER
-        name: 'user',
-        description: 'Select a user to complete its troll mission',
+        name: "user",
+        description: "Select a user to complete its troll mission",
         required: true,
       },
       {
         type: 3, // STRING
-        name: 'message-link',
-        description: 'Copy the message link of the completed mission to post it to server',
+        name: "message-link",
+        description:
+          "Copy the message link of the completed mission to post it to server",
         required: false,
       },
     ],
@@ -345,25 +351,26 @@ async function registerCommands(guildId) {
   };
 
   const CREATE_IMAGE_COMMAND = {
-    name: 'create-image',
-    description: 'Creates an image using AI',
+    name: "create-image",
+    description: "Creates an image using AI",
     options: [
       {
         type: 3, // STRING
-        name: 'prompt',
-        description: 'Choose a prompt for your image creation',
+        name: "prompt",
+        description: "Choose a prompt for your image creation",
         required: true,
       },
     ],
-    "integration_types": [0,1],
-    "contexts": [0,1,2],
+    integration_types: [0, 1],
+    contexts: [0, 1, 2],
   };
 
   const CREATE_IMAGE_SETTINGS_COMMAND = {
-    name: 'create-image-settings',
-    description: 'Open the settings for image creation, change models, dimensions or add LoRas.',
-    "integration_types": [0,1],
-    "contexts": [0,1,2],
+    name: "create-image-settings",
+    description:
+      "Open the settings for image creation, change models, dimensions or add LoRas.",
+    integration_types: [0, 1],
+    contexts: [0, 1, 2],
   };
 
   const NEW_COMMANDS = [
@@ -394,14 +401,18 @@ async function registerCommands(guildId) {
 
   // Register or update the existing commands
   try {
+    // Remove guild commands manually
+    // await RemoveGuildCommands(process.env.APP_ID, NEW_COMMANDS, guildId);
     // Pass guildId to register commands for a specific guild
     await InstallGuildCommands(process.env.APP_ID, NEW_COMMANDS, guildId);
     await InstallGlobalCommands(process.env.APP_ID, [
-      ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND, CREATE_IMAGE_SETTINGS_COMMAND] : []), // Register both commands globally if COMFYUI_ADDRESS is set
-  ]);  
-    logger.success('Successfully registered or updated commands.');
+      ...(process.env.COMFYUI_ADDRESS
+        ? [CREATE_IMAGE_COMMAND, CREATE_IMAGE_SETTINGS_COMMAND]
+        : []), // Register both commands globally if COMFYUI_ADDRESS is set
+    ]);
+    logger.success("Successfully registered or updated commands.");
   } catch (error) {
-    logger.error('Error registering commands:', error);
+    logger.error("Error registering commands:", error);
   }
 }
 
