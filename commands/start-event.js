@@ -27,6 +27,9 @@ async function handleStartEventCommand(interaction, client) {
     // Find each option by name
     const event_name = interaction.options.getString("name");
     const event_description = interaction.options.getString("description");
+    const max_members_per_team = interaction.options.getInteger(
+      "max_members_per_team"
+    );
     const image = interaction.options.getString("image");
     const color = interaction.options.getString("color");
     const expiration = interaction.options.getInteger("expiration");
@@ -81,6 +84,7 @@ async function handleStartEventCommand(interaction, client) {
     user_exchange_data.channel_id = channelId;
     user_exchange_data.event_name = event_name;
     user_exchange_data.event_description = event_description;
+    user_exchange_data.max_members_per_team = max_members_per_team;
     user_exchange_data.image = image;
     user_exchange_data.color = color_embed;
     user_exchange_data.expiration = time_generation;

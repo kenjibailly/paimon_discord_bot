@@ -268,6 +268,12 @@ async function registerCommands(guildId) {
         required: true,
       },
       {
+        type: 4, // STRING
+        name: "max_members_per_team",
+        description: "Choose the maximum amount of members per team",
+        required: false,
+      },
+      {
         type: 4, // NUMBER
         name: "expiration",
         description:

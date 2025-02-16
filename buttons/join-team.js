@@ -41,16 +41,18 @@ async function handleJoinTeamButton(interaction, client) {
 
     const teams = await Teams.find({ guild_id: interaction.guildId });
 
-    // Validate that both teams are provided
-    if (teams.team_1 === null || teams.team_2 === null) {
-      const title = "No teams found";
-      const description =
-        "Please contact your staff to set the teams with the `/set-teams` command.";
-      const color = "error";
-      const embed = createEmbed(title, description, color);
+    if (event.max_members_per_team === null) {
+      // Validate that both teams are provided
+      if (teams.team_1 === null || teams.team_2 === null) {
+        const title = "No teams found";
+        const description =
+          "Please contact your staff to set the teams with the `/set-teams` command.";
+        const color = "error";
+        const embed = createEmbed(title, description, color);
 
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
-      return;
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        return;
+      }
     }
 
     // First, check if the user has already applied
