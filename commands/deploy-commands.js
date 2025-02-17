@@ -378,6 +378,26 @@ async function registerCommands(guildId) {
     contexts: [0, 1, 2],
   };
 
+  const SEND_EMBED_FILE_COMMAND = {
+    name: "send-embed-file",
+    description: "Send an embed using a JSON file",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    options: [
+      {
+        type: 7, // CHANNEL
+        name: "channel",
+        description: "Select the channel to send the embed",
+        required: true,
+      },
+      {
+        type: 11, // ATTACHMENT
+        name: "file",
+        description: "Upload a JSON file containing the embed data",
+        required: true,
+      },
+    ],
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -400,6 +420,7 @@ async function registerCommands(guildId) {
     TROLL_MISSIONS_COMMAND,
     MANAGE_TROLL_MISSIONS_COMMAND,
     TROLL_USER_COMPLETE_MISSION_COMMAND,
+    SEND_EMBED_FILE_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];
