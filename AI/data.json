@@ -68,6 +68,22 @@
           "negative_prompt": "low-res, bad anatomy, bad hands, text, error, missing xfingers, extra digit, fewer digits, cropped, worst quality, xlow quality, normal quality, jpeg artifacts, signature, xwatermark, username, blurry, artist name,(deformed, xdistorted, disfigured:1.3), poorly drawn, bad anatomy, xwrong anatomy, extra limb, missing limb, floating limbs, x(mutated hands and fingers:1.4), disconnected limbs, xmutation, mutated, ugly, disgusting, blurry, amputation"
         },
         "default": true
+      },
+      {
+        "name": "Pony",
+        "file": "autismmixSDXL_autismmixPony.safetensors",
+        "description": "Pony Diffusion V6 is a versatile SDXL finetune capable of producing stunning SFW and NSFW visuals of various anthro, feral, or humanoids species and their interactions based on simple natural language prompts.",
+        "link": "https://civitai.com/models/288584?modelVersionId=324619",
+        "settings": {
+          "cfg": 7,
+          "steps": 25,
+          "sampler_name": "dpmpp_2m",
+          "scheduler": "normal",
+          "clip_skip": -2,
+          "positive_prompt": "score_9, score_8_up, score_7_up",
+          "negative_prompt": "low-res, bad anatomy, bad hands, text, error, missing xfingers, extra digit, fewer digits, cropped, worst quality, xlow quality, normal quality, jpeg artifacts, signature, xwatermark, username, blurry, artist name,(deformed, xdistorted, disfigured:1.3), poorly drawn, bad anatomy, xwrong anatomy, extra limb, missing limb, floating limbs, x(mutated hands and fingers:1.4), disconnected limbs, xmutation, mutated, ugly, disgusting, blurry, amputation"
+        },
+        "default": true
       }
     ],
     "loras": [
@@ -86,6 +102,15 @@
         "link": "https://civitai.com/models/839095/the-shorekeeper-wuthering-waves",
         "model_weight": 1,
         "clip_weight": 1
+      },
+      {
+        "name": "Bubble Trouble Amber",
+        "file": "Amber.safetensors",
+        "description": "A Brawl Stars Bubble Trouble Amber Lora.",
+        "link": "https://civitai.com/models/712669/bubble-trouble-amber-brawl-stars",
+        "model_weight": 1,
+        "clip_weight": 1,
+        "positive_prompt": "boamber,1 girl, multicolored hair, long hair,purple tank top,belt, yellow knee pads, shorts ,skirt, shorts under skirt, visor cap, pink headwear,fingerless gloves,white Arm band,"
       }
     ]
   },

@@ -35,7 +35,7 @@ async function createImage(interaction, client) {
   let create_image_settings_user_data_cache =
     createImageSettingsTemporaryCache.get(user_id);
   if (!create_image_settings_user_data_cache) {
-    await loadUserSettingsIntoCache(user_id, client.user.i);
+    await loadUserSettingsIntoCache(user_id, client.user.id);
     create_image_settings_user_data_cache =
       createImageSettingsTemporaryCache.get(user_id);
     if (!create_image_settings_user_data_cache) {
@@ -90,6 +90,9 @@ async function createImage(interaction, client) {
       ?.name || "Unknown Checkpoint";
   const loraName =
     parentModel.loras.find((lora_data) => lora_data.file === lora)?.name || "";
+  const loraPrompt =
+    parentModel.loras.find((lora_data) => lora_data.file === lora)
+      ?.positive_prompt || "";
 
   // Get the first dimensions from the parent model
   const first_dimensions = Object.entries(parentModel.dimensions)[0];
@@ -137,6 +140,7 @@ async function createImage(interaction, client) {
   try {
     const { previewImageKey } = editWorkflow(
       prompt,
+      loraPrompt,
       width,
       height,
       model,
@@ -350,7 +354,7 @@ function getRandomSeed() {
   return Number(randomNum);
 }
 
-function editWorkflow(prompt, width, height, modelFile, loraFile) {
+function editWorkflow(prompt, loraPrompt, width, height, modelFile, loraFile) {
   let previewImageKey = null;
 
   // Function to find model settings dynamically across all parent keys
@@ -400,7 +404,7 @@ function editWorkflow(prompt, width, height, modelFile, loraFile) {
       node.class_type === "CLIPTextEncode" &&
       node._meta.title === "CLIP Text Encode (Prompt) Positive"
     ) {
-      node.inputs.text = prompt; // Update prompt or fallback to the provided one
+      node.inputs.text = prompt + "," + loraPrompt; // Update prompt or fallback to the provided one
     }
 
     // Update text for CLIPTextEncode (Prompt) Positive node
