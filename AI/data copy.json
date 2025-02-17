@@ -1,0 +1,174 @@
+{
+    "SDXL_turbo": {
+        "dimensions": {
+            "1:1 square": "1024x1024",
+            "3:4 portrait": "896x1152",
+            "5:8 portrait": "832x1216",
+            "9:16 portrait": "768x1344",
+            "9:21 portrait": "640x1536",
+            "4:3 landscape": "1152x896",
+            "3:2 landscape": "1216x832",
+            "16:9 landscape": "1344x768",
+            "21:9 landscape": "1536x640"
+        },
+        "checkpoints": [
+            {
+                "name": "DreamShaper XL Lightning",
+                "file": "dreamshaperXL_lightningDPMSDE.safetensors",
+                "description": "A finetuned SDXL Turbo model, fast and more stunning results.",
+                "link": "https://civitai.com/models/112902?modelVersionId=355868",
+                "settings": {
+                    "cfg": 2,
+                    "steps": 6,
+                    "sampler_name": "dpmpp_sde",
+                    "scheduler": "karras",
+                    "clip_skip": -1,
+                    "positive_prompt": "",
+                    "negative_prompt": "text, watermark, low quality, medium quality, blurry, censored, wrinkles, deformed, mutated text, watermark, low quality, medium quality, blurry, censored, wrinkles, deformed, mutated"    
+                },
+                "default": false
+            }
+        ],
+        "loras": [
+            {
+                "name": "Aesthetic Anime V1",
+                "file": "aesthetic_anime_v1s.safetensors",
+                "description": "Enhances the aesthetic style of anime creations.",
+                "link": "https://civitai.com/models/295100/aesthetic-anime-lora",
+                "model_weight": 1,
+                "clip_weight": 1
+            }
+        ]
+    },
+    "Pony": {
+        "dimensions": {
+            "1:1 square": "768x768",
+            "3:4 portrait": "672x864",
+            "5:8 portrait": "624x912",
+            "9:16 portrait": "576x1008",
+            "9:21 portrait": "480x1152",
+            "4:3 landscape": "864x672",
+            "3:2 landscape": "912x624",
+            "16:9 landscape": "1008x576",
+            "21:9 landscape": "1152x480"
+        },
+        "checkpoints": [
+            {
+                "name": "Pony Diffusion V6 XL",
+                "file": "ponyDiffusionV6XL_v6StartWithThisOne.safetensors",
+                "description": "Pony Diffusion V6 is a versatile SDXL finetune capable of producing stunning SFW and NSFW visuals of various anthro, feral, or humanoids species and their interactions based on simple natural language prompts.",
+                "link": "https://civitai.com/models/257749?modelVersionId=290640",
+                "settings": {
+                    "cfg": 7,
+                    "steps": 25,
+                    "sampler_name": "euler_ancestral",
+                    "scheduler": "normal",
+                    "clip_skip": -2,
+                    "positive_prompt": "score_9, score_8_up, score_7_up, anime",
+                    "negative_prompt": "low-res, bad anatomy, bad hands, text, error, missing xfingers, extra digit, fewer digits, cropped, worst quality, xlow quality, normal quality, jpeg artifacts, signature, xwatermark, username, blurry, artist name,(deformed, xdistorted, disfigured:1.3), poorly drawn, bad anatomy, xwrong anatomy, extra limb, missing limb, floating limbs, x(mutated hands and fingers:1.4), disconnected limbs, xmutation, mutated, ugly, disgusting, blurry, amputation"    
+                },
+                "default": true
+            }
+        ],
+        "loras": [
+            {
+                "name": "Aesthetic Anime V1",
+                "file": "aesthetic_anime_v1s.safetensors",
+                "description": "Enhances the aesthetic style of anime creations.",
+                "link": "https://civitai.com/models/295100/aesthetic-anime-lora",
+                "model_weight": 1,
+                "clip_weight": 1
+            },
+            {
+                "name": "The Shorekeeper / Wuthering Waves",
+                "file": "the_shorekeeper_pony_sobsynapse-000004.safetensors",
+                "description": "The Shorekeeper is a character from wuthering waves.\nThese can be some helpful triggerwords:\nohwx, 1girl, solo, blue_hair, purple_eyes, breasts, hair_between_eyes, long_hair, cleavage, parted_lips, large_breasts, medium_hair, medium_breasts, nail_polish, thighs, blue_nails, jewelry, dress, bug, butterfly, veil, white_dress, blue_butterfly, flower, sleeveless, white_veil, bare_shoulders, alternate_costume, sleeveless_dress, choker, hood, armlet, blue_dress",
+                "link": "https://civitai.com/models/839095/the-shorekeeper-wuthering-waves",
+                "model_weight": 1,
+                "clip_weight": 1
+            }
+        ]
+    },
+    "SD15": {
+        "dimensions": {
+            "1:1 square": "512x512",
+            "3:4 portrait": "448x576",
+            "5:8 portrait": "416x608",
+            "9:16 portrait": "384x672",
+            "9:21 portrait": "320x768",
+            "4:3 landscape": "576x448",
+            "3:2 landscape": "608x416",
+            "16:9 landscape": "672x384",
+            "21:9 landscape": "768x320"
+        },        
+        "checkpoints": [
+            {
+                "name": "Abyss Orange Mix 3 (AOM3)",
+                "file": "abyssorangemix3AOM3_aom3a1b.safetensors",
+                "description": "AOM3 can generate illustrations with very realistic textures and can generate a wide variety of content. There are also three variant models based on the AOM3 that have been adjusted to a unique illustration style. These models will help you to express your ideas more clearly.",
+                "link": "https://civitai.com/models/9942?modelVersionId=17233",
+                "settings": {
+                    "cfg": 7,
+                    "steps": 20,
+                    "sampler_name": "dpmpp_sde",
+                    "scheduler": "karras",
+                    "clip_skip": -2,
+                    "positive_prompt": "masterpiece, best quality, ultra-detailed, illustration, texture, detail, realism, depth, perspective, composition, color, light, shadow, tone, contrast, naturalistic, figurative, representational, impressionistic, expressionistic",
+                    "negative_prompt": "(worst quality, low quality:1.4), (realistic, lip, nose, tooth, rouge, lipstick, eyeshadow:1.0), (dusty sunbeams:1.0),, (abs, muscular, rib:1.0), (depth of field, bokeh, blurry:1.4), (greyscale, monochrome:1.0), text, title, logo, signature,watermark,"    
+                },
+                "default": false
+            },
+            {
+                "name": "ReV Animated V2 Rebirth",
+                "file": "revAnimated_v2Rebirth.safetensors",
+                "description": "The model has the ability to create 2.5D like image generations.\nThese are some included styles for this model: fantasy, anime, semi-realistic, decent landscape.\nThis model likes: ((best quality)), ((masterpiece)), (detailed) in beginning of prompt if you want anime-2.5D type",
+                "link": "https://civitai.com/models/7371?modelVersionId=425083",
+                "settings": {
+                    "cfg": 8.5,
+                    "steps": 30,
+                    "sampler_name": "dpmpp_2m",
+                    "scheduler": "karras",
+                    "clip_skip": -2,
+                    "positive_prompt": "masterpiece, best quality, ultra-detailed, illustration, connection, harmony, balance, texture, detail, realism, depth, perspective, composition, color, light, shadow, reflection, refraction, tone, contrast, foreground, middle ground, background, naturalistic, figurative, representational, impressionistic, expressionistic, abstract, innovative, experimental, unique",
+                    "negative_prompt": "EasyNegative, Deep Negative, bad_prompt_version2, bad-artist, bad-artist-anime, bad-quality"    
+                },
+                "default": false
+            },
+            {
+                "name": "KM Mix Experiment Stage 1 Cute Style 1",
+                "file": "km_cuteStyle1.safetensors",
+                "description": "This model generates cute anime characters.",
+                "link": "https://civitai.com/models/397967?modelVersionId=443944",
+                "settings": {
+                    "cfg": 7,
+                    "steps": 40,
+                    "sampler_name": "heun",
+                    "scheduler": "normal",
+                    "clip_skip": -2,
+                    "positive_prompt": "(masterpiece),best quality,",
+                    "negative_prompt": "(low quality,worst quality:1.2),poorly drawn,(poorly drawn face),(deformed,disfigured),(bad anatomy,wrong anatomy),bextra lim,missing lim,floating lim,disconnected lim,(mutated hands and fingers),ugly|fingernails,blurry,(signature|watermark|text),(mutant feet and toes),Mix the feet together,Mixed limbs,"
+                },
+                "default": false
+            }
+        ],
+        "loras": [
+            {
+                "name": "The Shorekeeper (Wuthering Waves)",
+                "file": "TheShorekeeperSD15.safetensors",
+                "description": "The Shorekeeper is a character from wuthering waves.\nThese can be some helpful triggerwords:\nthe_shorekeeper,blue_hair,breasts,cleavage,navel,colored_eyelashes,purple_eyes,blue_veil,white_veil,white_dress,two-tone_veil,dress,jewelry,blue_butterfly,flower,veil,black_flower",
+                "link": "https://civitai.com/models/841471/the-shorekeeper-wuthering-waves",
+                "model_weight": 1,
+                "clip_weight": 1
+            },
+            {
+                "name": "Real Dragons",
+                "file": "dragon_real_base_V1_SD15.safetensors",
+                "description": "You can expect awe-inspiring dragon flames, powerful dragon strength, unparalleled dragon vision, and acute dragon perception, among other characteristics.\nThese can be some helpful triggerwords:\ndragon_real,flame",
+                "link": "https://civitai.com/models/82903/real-dragons",
+                "model_weight": 1,
+                "clip_weight": 1
+            }
+        ]
+    }
+}
+  
