@@ -96,6 +96,7 @@ client.on("interactionCreate", async (interaction) => {
         "cancel-event",
         "reset-teams",
         "set-status",
+        "send-embed-file",
       ];
 
       const commandName = interaction.commandName;
