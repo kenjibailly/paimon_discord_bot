@@ -44,6 +44,9 @@ async function createImage(interaction, client) {
           model.checkpoints.filter((checkpoint) => checkpoint.default === true)
         )
         .map((checkpoint) => checkpoint.file)[0]; // Get the file of the first found default checkpoint
+      const defaultLora = Object.values(data_json)
+        .flatMap((lora) => lora.loras.filter((lora) => lora.default === true))
+        .map((lora) => lora.file)[0]; // Get the file of the first found default lora
 
       // Find the model that contains the default checkpoint
       parentModel = Object.values(data_json).find((model) =>
@@ -51,6 +54,11 @@ async function createImage(interaction, client) {
           (checkpoint) => checkpoint.file === defaultCheckpoint
         )
       );
+
+      // If a parentModel is found and defaultLora exists, add it
+      if (parentModel && defaultLora) {
+        parentModel.defaultLora = defaultLora;
+      }
 
       // Get the first dimension from the found parent model
       const dimensions = Object.entries(parentModel.dimensions)[0]; // Get the first dimension entry (e.g., ['1:1 square', '1024x1024'])
@@ -84,7 +92,8 @@ async function createImage(interaction, client) {
 
   let dimensions = create_image_settings_user_data_cache.dimensions;
   const model = create_image_settings_user_data_cache.model;
-  let lora = create_image_settings_user_data_cache.lora;
+  let lora =
+    parentModel.defaultLora ?? create_image_settings_user_data_cache.lora;
   const checkpointName =
     parentModel.checkpoints.find((checkpoint) => checkpoint.file === model)
       ?.name || "Unknown Checkpoint";
