@@ -398,6 +398,40 @@ async function registerCommands(guildId) {
     ],
   };
 
+  const DOWNLOAD_EMBED_FILE_COMMAND = {
+    name: "download-embed-file",
+    description: "Download an embed as a JSON file",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    options: [
+      {
+        type: 3, // STRING
+        name: "message",
+        description: "Copy the link to the message and send it here",
+        required: true,
+      },
+    ],
+  };
+
+  const EDIT_EMBED_FILE_COMMAND = {
+    name: "edit-embed-file",
+    description: "Edit an already sent embed with a JSON file",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    options: [
+      {
+        type: 3, // STRING
+        name: "message",
+        description: "Copy the link to the message and send it here",
+        required: true,
+      },
+      {
+        type: 11, // ATTACHMENT
+        name: "file",
+        description: "Upload a JSON file containing the embed data",
+        required: true,
+      },
+    ],
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -421,6 +455,8 @@ async function registerCommands(guildId) {
     MANAGE_TROLL_MISSIONS_COMMAND,
     TROLL_USER_COMPLETE_MISSION_COMMAND,
     SEND_EMBED_FILE_COMMAND,
+    DOWNLOAD_EMBED_FILE_COMMAND,
+    EDIT_EMBED_FILE_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];

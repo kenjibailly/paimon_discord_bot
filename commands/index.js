@@ -22,6 +22,8 @@ const handleNextGamesCommand = require("./next-games");
 const handleCreateImageCommand = require("./create-image");
 const handleCreateImageSettingsCommand = require("./create-image-settings");
 const handleSendEmbedFileCommand = require("./send-embed-file");
+const handleDownloadEmbedFileCommand = require("./download-embed-file");
+const handleEditEmbedFileCommand = require("./edit-embed-file");
 
 module.exports = {
   "award-team": handleAwardTeamCommand,
@@ -48,4 +50,6 @@ module.exports = {
   "create-image": handleCreateImageCommand,
   "create-image-settings": handleCreateImageSettingsCommand,
   "send-embed-file": handleSendEmbedFileCommand,
+  "download-embed-file": handleDownloadEmbedFileCommand,
+  "edit-embed-file": handleEditEmbedFileCommand,
 };
