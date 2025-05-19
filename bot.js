@@ -100,6 +100,7 @@ client.on("interactionCreate", async (interaction) => {
         "download-embed-file",
         "edit-embed-file",
         "staff-role",
+        "introduction",
       ];
 
       const commandName = interaction.commandName;

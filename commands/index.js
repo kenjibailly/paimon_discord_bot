@@ -25,6 +25,7 @@ const handleSendEmbedFileCommand = require("./send-embed-file");
 const handleDownloadEmbedFileCommand = require("./download-embed-file");
 const handleEditEmbedFileCommand = require("./edit-embed-file");
 const handleStaffRoleCommand = require("./staff-role");
+const handleIntroductionCommand = require("./introduction");
 
 module.exports = {
   "award-team": handleAwardTeamCommand,
@@ -54,4 +55,5 @@ module.exports = {
   "download-embed-file": handleDownloadEmbedFileCommand,
   "edit-embed-file": handleEditEmbedFileCommand,
   "staff-role": handleStaffRoleCommand,
+  introduction: handleIntroductionCommand,
 };

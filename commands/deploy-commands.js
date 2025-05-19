@@ -446,6 +446,67 @@ async function registerCommands(guildId) {
     ],
   };
 
+  const INTRODUCTION_COMMAND = {
+    name: "introduction",
+    description: "Introduce yourself to the server!",
+    options: [
+      {
+        type: 3, // STRING
+        name: "name",
+        description: "Your name or nickname",
+        required: false,
+      },
+      {
+        type: 4, // INTEGER
+        name: "age",
+        description: "Your age",
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: "country",
+        description: "The country you're from",
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: "job_or_study",
+        description: "What you do (job, school, etc.)",
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: "hobbies",
+        description: "What do you like to do?",
+        required: false,
+      },
+      {
+        type: 11, // ATTACHMENT
+        name: "picture",
+        description: "Upload a profile picture or IRL photo",
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: "favorite_brawler",
+        description: "Your favorite Brawl Stars brawler",
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: "brawl_goal",
+        description: "Your goal in Brawl Stars",
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: "extra",
+        description: "Anything else you'd like to share",
+        required: false,
+      },
+    ],
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -472,6 +533,7 @@ async function registerCommands(guildId) {
     DOWNLOAD_EMBED_FILE_COMMAND,
     EDIT_EMBED_FILE_COMMAND,
     STAFF_ROLE_COMMAND,
+    INTRODUCTION_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];
