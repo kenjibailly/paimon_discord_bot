@@ -432,6 +432,20 @@ async function registerCommands(guildId) {
     ],
   };
 
+  const STAFF_ROLE = {
+    name: "staff-role",
+    description: "Configure the staff role",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    options: [
+      {
+        type: 8, // ROLE
+        name: "role",
+        description: "Select the role to assign as the staff role",
+        required: true,
+      },
+    ],
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -457,6 +471,7 @@ async function registerCommands(guildId) {
     SEND_EMBED_FILE_COMMAND,
     DOWNLOAD_EMBED_FILE_COMMAND,
     EDIT_EMBED_FILE_COMMAND,
+    STAFF_ROLE,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];

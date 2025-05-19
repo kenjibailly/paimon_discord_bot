@@ -2,6 +2,7 @@ const createEmbed = require("../../../helpers/embed");
 const AwardedReward = require("../../../models/awarded-reward");
 const TrollMissions = require("../../../models/troll-missions");
 const TrolledUser = require("../../../models/trolled-users");
+const StaffRole = require("../../../models/staff-role");
 const checkRequiredBalance = require("../../../helpers/check-required-balance");
 const handleCancelThread = require("../../cancel-thread");
 const userExchangeData = require("../../../helpers/userExchangeData");
@@ -218,35 +219,69 @@ async function trollUser(interaction, client, user_exchange_data) {
       taggedUser.user.globalName ||
       taggedUser.user.username;
 
-    // 2. Create a new channel named "Trolled - <username>"
+    // 1. Try to find the staff role for the guild
+    const staffRoleDoc = await StaffRole.findOne({ guild_id: guild_id });
+
+    let staffRoleMembers = [];
+    if (staffRoleDoc) {
+      const staffRole = guild.roles.cache.get(staffRoleDoc.id);
+
+      if (staffRole) {
+        // Get members of the role
+        staffRoleMembers = [...staffRole.members.values()];
+      } else {
+        logger.error(
+          `Staff role with ID ${staffRoleDoc.id} not found in guild`
+        );
+      }
+    } else {
+      logger.error("No staff role configured for this guild");
+    }
+
+    // 2. Build permission overwrites
+    const permissionOverwrites = [
+      {
+        id: guild.roles.everyone,
+        deny: [PermissionsBitField.Flags.ViewChannel],
+      },
+      {
+        id: taggedUser.id,
+        allow: [
+          PermissionsBitField.Flags.ViewChannel,
+          PermissionsBitField.Flags.SendMessages,
+          PermissionsBitField.Flags.AttachFiles,
+          PermissionsBitField.Flags.ReadMessageHistory,
+        ],
+      },
+      {
+        id: interaction.member.user.id,
+        allow: [
+          PermissionsBitField.Flags.ViewChannel,
+          PermissionsBitField.Flags.SendMessages,
+          PermissionsBitField.Flags.AttachFiles,
+          PermissionsBitField.Flags.ReadMessageHistory,
+          PermissionsBitField.Flags.ManageMessages,
+        ],
+      },
+    ];
+
+    // 3. Add each staff member to permissionOverwrites
+    for (const member of staffRoleMembers) {
+      permissionOverwrites.push({
+        id: member.user.id,
+        allow: [
+          PermissionsBitField.Flags.ViewChannel,
+          PermissionsBitField.Flags.SendMessages,
+          PermissionsBitField.Flags.ReadMessageHistory,
+        ],
+      });
+    }
+
+    // 4. Create the channel
     const trolledChannel = await guild.channels.create({
       name: `Trolled - ${displayName}`,
       type: ChannelType.GuildText,
-      permissionOverwrites: [
-        {
-          id: guild.roles.everyone, // Deny access to everyone else
-          deny: [PermissionsBitField.Flags.ViewChannel],
-        },
-        {
-          id: taggedUser.id, // Allow access to the trolled user
-          allow: [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages,
-            PermissionsBitField.Flags.AttachFiles,
-            PermissionsBitField.Flags.ReadMessageHistory,
-          ],
-        },
-        {
-          id: interaction.member.user.id, // Allow access to the user who triggered the interaction
-          allow: [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages,
-            PermissionsBitField.Flags.AttachFiles,
-            PermissionsBitField.Flags.ReadMessageHistory,
-            PermissionsBitField.Flags.ManageMessages, // Optional: for moderation
-          ],
-        },
-      ],
+      permissionOverwrites,
     });
 
     // 3. Add the "Trolled" role to the user and remove all roles

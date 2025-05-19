@@ -24,6 +24,7 @@ const handleCreateImageSettingsCommand = require("./create-image-settings");
 const handleSendEmbedFileCommand = require("./send-embed-file");
 const handleDownloadEmbedFileCommand = require("./download-embed-file");
 const handleEditEmbedFileCommand = require("./edit-embed-file");
+const handleStaffRoleCommand = require("./staff-role");
 
 module.exports = {
   "award-team": handleAwardTeamCommand,
@@ -52,4 +53,5 @@ module.exports = {
   "send-embed-file": handleSendEmbedFileCommand,
   "download-embed-file": handleDownloadEmbedFileCommand,
   "edit-embed-file": handleEditEmbedFileCommand,
+  "staff-role": handleStaffRoleCommand,
 };
