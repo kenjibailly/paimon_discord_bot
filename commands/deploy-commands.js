@@ -3,6 +3,7 @@ const {
   InstallGuildCommands,
   InstallGlobalCommands,
 } = require("../utilities/utils.js");
+const game = require("../introduction/game.json");
 
 async function registerCommands(guildId) {
   const defaultManageGuildPermission = 0x0000000000000020; // MANAGE_GUILD permission
@@ -53,7 +54,13 @@ async function registerCommands(guildId) {
         type: 4, // INTEGER
         name: "amount",
         description: "Amount of coins to deduct",
-        required: true,
+        required: false,
+      },
+      {
+        type: 4, // INTEGER
+        name: "extra_amount",
+        description: "Amount of extra coins to deduct",
+        required: false,
       },
       {
         type: 3, // STRING
@@ -182,8 +189,8 @@ async function registerCommands(guildId) {
     dm_permission: false, // Command can’t be used in DMs
   };
 
-  const SET_TOKEN_EMOJI_COMMAND = {
-    name: "set-token-emoji",
+  const SET_WALLET_CONFIG_COMMAND = {
+    name: "set-wallet-config",
     description: "Set the token emoji",
     options: [
       {
@@ -191,6 +198,18 @@ async function registerCommands(guildId) {
         name: "token_emoji",
         description: "Token Emoji (e.g., 😃)",
         required: true,
+      },
+      {
+        type: 5, // BOOLEAN
+        name: "extra_currency_active",
+        description: "Do you want to set the extra currency active?",
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: "extra_token_emoji",
+        description: "Token Emoji (e.g., 😃)",
+        required: false,
       },
     ],
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
@@ -432,8 +451,8 @@ async function registerCommands(guildId) {
     ],
   };
 
-  const STAFF_ROLE_COMMAND = {
-    name: "staff-role",
+  const SET_STAFF_ROLE_COMMAND = {
+    name: "set-staff-role",
     description: "Configure the staff role",
     default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
     options: [
@@ -452,32 +471,58 @@ async function registerCommands(guildId) {
     options: [
       {
         type: 3, // STRING
-        name: "name",
-        description: "Your name or nickname",
-        required: false,
+        name: "gamertag",
+        description: "Your in game name",
+        required: true,
       },
       {
         type: 4, // INTEGER
         name: "age",
         description: "Your age",
-        required: false,
+        required: true,
       },
       {
         type: 3, // STRING
         name: "country",
         description: "The country you're from",
-        required: false,
+        required: true,
+        autocomplete: true,
       },
       {
         type: 3, // STRING
         name: "job_or_study",
         description: "What you do (job, school, etc.)",
-        required: false,
+        required: true,
       },
       {
         type: 3, // STRING
         name: "hobbies",
         description: "What do you like to do?",
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: "favorite_character",
+        description: "Your favorite character",
+        required: true,
+        autocomplete: true,
+      },
+      {
+        type: 3, // STRING
+        name: "game_goal",
+        description: "Your goal in " + game.game,
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: "about_me",
+        description: "Anything else you'd like to share about you",
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: "name",
+        description: "Your name or nickname",
         required: false,
       },
       {
@@ -486,23 +531,26 @@ async function registerCommands(guildId) {
         description: "Upload a profile picture or IRL photo",
         required: false,
       },
+    ],
+  };
+
+  const MANAGE_DAILY_CHARACTER_POLL_COMMAND = {
+    name: "manage-daily-character-poll",
+    description: "Configure the daily character poll",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    options: [
       {
-        type: 3, // STRING
-        name: "favorite_brawler",
-        description: "Your favorite Brawl Stars brawler",
-        required: false,
+        type: 5, // BOOLEAN
+        name: "active",
+        description: "Is the daily character poll active?",
+        required: true,
       },
       {
-        type: 3, // STRING
-        name: "brawl_goal",
-        description: "Your goal in Brawl Stars",
-        required: false,
-      },
-      {
-        type: 3, // STRING
-        name: "extra",
-        description: "Anything else you'd like to share",
-        required: false,
+        type: 7, // ROLE
+        name: "channel",
+        description:
+          "In which channel should the daily character poll be posted?",
+        required: true,
       },
     ],
   };
@@ -516,7 +564,7 @@ async function registerCommands(guildId) {
     SET_REWARD_COMMAND,
     SET_ALL_REWARDS_COMMAND,
     SET_TEAMS_COMMAND,
-    SET_TOKEN_EMOJI_COMMAND,
+    SET_WALLET_CONFIG_COMMAND,
     SET_BOT_CHANNEL_COMMAND,
     GAMES_COMMAND,
     NEXT_GAMES_COMMAND,
@@ -532,8 +580,9 @@ async function registerCommands(guildId) {
     SEND_EMBED_FILE_COMMAND,
     DOWNLOAD_EMBED_FILE_COMMAND,
     EDIT_EMBED_FILE_COMMAND,
-    STAFF_ROLE_COMMAND,
+    SET_STAFF_ROLE_COMMAND,
     INTRODUCTION_COMMAND,
+    MANAGE_DAILY_CHARACTER_POLL_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];

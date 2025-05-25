@@ -1,88 +1,105 @@
-const Wallet = require('../models/wallet');
-const createEmbed = require('../helpers/embed');
-const getTokenEmoji = require('../helpers/get-token-emoji');
-
+const Wallet = require("../models/wallet");
+const createEmbed = require("../helpers/embed");
+const getWalletConfig = require("../helpers/get-wallet-config");
 
 async function handleDeductUserCommand(interaction, client) {
-    const { member,guildId } = interaction;
+  const { member, guildId } = interaction;
 
-    const userId = interaction.options.getUser('user').id;
-    const amount = interaction.options.getInteger('amount');
-    const reason = interaction.options.getString('reason') ? interaction.options.getString('reason') : "No reason provided";
+  await interaction.deferReply({ ephemeral: false });
 
-    if (!userId || !amount) {
-        const title = "Invalid Input";
-        const description = `User ID or amount is missing.`;
-        const color = "error";
-        const embed = createEmbed(title, description, color);
+  const userId = interaction.options.getUser("user").id;
+  const amount = interaction.options.getInteger("amount"); // Normal currency
+  const extraAmount = interaction.options.getInteger("extra_amount"); // Extra currency
+  const reason =
+    interaction.options.getString("reason") || "No reason provided";
 
-        await interaction.editReply({ embeds: [embed], ephemeral: true });
-        return;
+  // 🚫 Validate: At least one amount must be provided
+  if (!userId || (amount == null && extraAmount == null)) {
+    const embed = createEmbed(
+      "Invalid Input",
+      `You must specify at least one amount to deduct.`,
+      "error"
+    );
+    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return;
+  }
+
+  try {
+    const config = await getWalletConfig(guildId);
+
+    if (config.data) {
+      await interaction.editReply({ embeds: [config], ephemeral: true });
+      return;
     }
 
-    try {
+    const { token_emoji, extra_currency_active, extra_token_emoji } = config;
 
-        // Fetch the token emoji using getTokenEmoji function
-        const tokenEmoji = await getTokenEmoji(guildId);
+    const wallet = await Wallet.findOne({ user_id: userId, guild_id: guildId });
 
-        // Check if tokenEmoji is an embed (error case)
-        if (tokenEmoji.data) {
-            await interaction.editReply({ embeds: [tokenEmoji], ephemeral: true });
-            return;
-        }
-
-        // Find the wallet for the specified user and guild
-        const wallet = await Wallet.findOne({ user_id: userId, guild_id: guildId });
-
-        if (!wallet) {
-            // Handle case where the wallet doesn't exist
-            const title = "Wallet Not Found";
-            const description = `The specified user does not yet have a wallet.`;
-            const color = "error";
-            const embed = createEmbed(title, description, color);
-
-            await interaction.editReply({ embeds: [embed], ephemeral: true });
-            return;
-        }
-
-        if (wallet.amount < amount) {
-            // Handle case where there are insufficient funds
-            const title = "Insufficient Funds";
-            const description = `<@${userId}> only has **${wallet.amount}** ${tokenEmoji.token_emoji}. \n` +
-            `The wallet does not have enough ${tokenEmoji.token_emoji} to deduct **${amount}** ${tokenEmoji.token_emoji}.`;
-            const color = "error";
-            const embed = createEmbed(title, description, color);
-
-            await interaction.editReply({ embeds: [embed], ephemeral: true });
-            return;
-        }
-
-        // Deduct the amount from the wallet
-        wallet.amount -= amount;
-        await wallet.save();
-
-        // Successful deduction response
-        const title = "Wallet Updated";
-        const description = `<@${member.user.id}> deducted ${amount} ${tokenEmoji.token_emoji} from <@${userId}>'s wallet.\n` +
-        `New balance: **${wallet.amount}** ${tokenEmoji.token_emoji}.\n` +
-        `\nReason: **${reason}**`;
-        const color = "";
-        const embed = createEmbed(title, description, color);
-
-        await interaction.editReply({ embeds: [embed] });
-
-    } catch (error) {
-        // Handle errors during database operations
-        logger.error('Error during wallet operation:', error);
-
-        const title = "Error";
-        const description = `An error occurred while processing the request.`;
-        const color = "error";
-        const embed = createEmbed(title, description, color);
-
-        await interaction.editReply({ embeds: [embed], ephemeral: true });
-
+    if (!wallet) {
+      const embed = createEmbed(
+        "Wallet Not Found",
+        `The specified user does not yet have a wallet.`,
+        "error"
+      );
+      await interaction.editReply({ embeds: [embed], ephemeral: true });
+      return;
     }
+
+    // 🚫 Check sufficient balance
+    if (
+      (amount != null && wallet.amount < amount) ||
+      (extraAmount != null &&
+        extra_currency_active &&
+        wallet.extra_amount < extraAmount)
+    ) {
+      const embed = createEmbed(
+        "Insufficient Funds",
+        `<@${userId}> has **${wallet.amount}** ${token_emoji}` +
+          (extra_currency_active
+            ? ` and **${wallet.extra_amount || 0}** ${extra_token_emoji}`
+            : "") +
+          `.\nNot enough funds to complete the deduction.`,
+        "error"
+      );
+      await interaction.editReply({ embeds: [embed], ephemeral: true });
+      return;
+    }
+
+    // ✅ Deduct the values
+    if (amount != null) wallet.amount -= amount;
+    if (extraAmount != null && extra_currency_active) {
+      wallet.extra_amount -= extraAmount;
+    }
+
+    await wallet.save();
+
+    // 🧾 Response
+    let description =
+      `<@${member.user.id}> deducted ` +
+      (amount != null ? `**${amount}** ${token_emoji}` : "") +
+      (extraAmount != null && extra_currency_active
+        ? `${
+            amount != null ? " and " : ""
+          }**${extraAmount}** ${extra_token_emoji}`
+        : "") +
+      ` from <@${userId}>'s wallet.\n\nNew balance: **${wallet.amount}** ${token_emoji}` +
+      (extra_currency_active
+        ? ` and **${wallet.extra_amount || 0}** ${extra_token_emoji}`
+        : "") +
+      `\n\nReason: **${reason}**`;
+
+    const embed = createEmbed("Wallet Updated", description, "");
+    await interaction.editReply({ embeds: [embed] });
+  } catch (error) {
+    logger.error("Error during wallet operation:", error);
+    const embed = createEmbed(
+      "Error",
+      `An error occurred while processing the request.`,
+      "error"
+    );
+    await interaction.editReply({ embeds: [embed], ephemeral: true });
+  }
 }
 
 module.exports = handleDeductUserCommand;

@@ -6,7 +6,7 @@ const handleShopCommand = require("./shop");
 const handleSetRewardCommand = require("./set-reward");
 const handleSetAllRewardsCommand = require("./set-all-rewards");
 const handleSetTeamsCommand = require("./set-teams");
-const handleSetTokenEmojiCommand = require("./set-token-emoji");
+const handleSetWalletConfigCommand = require("./set-wallet-config");
 const handleSetBotChannelCommand = require("./set-bot-channel");
 const handleManageGamesCommand = require("./manage-games");
 const handleManageTrollMissionsCommand = require("./manage-troll-missions");
@@ -24,8 +24,9 @@ const handleCreateImageSettingsCommand = require("./create-image-settings");
 const handleSendEmbedFileCommand = require("./send-embed-file");
 const handleDownloadEmbedFileCommand = require("./download-embed-file");
 const handleEditEmbedFileCommand = require("./edit-embed-file");
-const handleStaffRoleCommand = require("./staff-role");
+const handleStaffRoleCommand = require("./set-staff-role");
 const handleIntroductionCommand = require("./introduction");
+const handleManageDailyCharacterPollCommand = require("./manage-daily-character-poll-command");
 
 module.exports = {
   "award-team": handleAwardTeamCommand,
@@ -36,7 +37,7 @@ module.exports = {
   "set-reward": handleSetRewardCommand,
   "set-all-rewards": handleSetAllRewardsCommand,
   "set-teams": handleSetTeamsCommand,
-  "set-token-emoji": handleSetTokenEmojiCommand,
+  "set-wallet-config": handleSetWalletConfigCommand,
   "set-bot-channel": handleSetBotChannelCommand,
   "manage-games": handleManageGamesCommand,
   "manage-troll-missions": handleManageTrollMissionsCommand,
@@ -54,6 +55,7 @@ module.exports = {
   "send-embed-file": handleSendEmbedFileCommand,
   "download-embed-file": handleDownloadEmbedFileCommand,
   "edit-embed-file": handleEditEmbedFileCommand,
-  "staff-role": handleStaffRoleCommand,
+  "set-staff-role": handleStaffRoleCommand,
   introduction: handleIntroductionCommand,
+  "manage-daily-character-poll": handleManageDailyCharacterPollCommand,
 };

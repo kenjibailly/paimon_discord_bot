@@ -1,81 +1,95 @@
 const Wallet = require("../models/wallet");
 const createEmbed = require("../helpers/embed");
-const getTokenEmoji = require("../helpers/get-token-emoji");
+const getWalletConfig = require("../helpers/get-wallet-config");
 
 async function handleAwardUserCommand(interaction, client) {
-  const { member, guildId, data } = interaction;
+  const { member, guildId } = interaction;
 
-  const userId = interaction.options.getUser("user").id;
+  await interaction.deferReply({ ephemeral: false });
+
+  const userId = interaction.options.getUser("user")?.id;
   const amount = interaction.options.getInteger("amount");
   const reason = interaction.options.getString("reason");
 
   if (!userId || !amount) {
-    const title = "Invalid Input";
-    const description = `User ID or amount is missing.`;
-    const color = "error";
-    const embed = createEmbed(title, description, color);
-
+    const embed = createEmbed(
+      "Invalid Input",
+      "User ID or amount is missing.",
+      "error"
+    );
     await interaction.editReply({ embeds: [embed], ephemeral: true });
     return;
   }
 
   try {
-    // Fetch the token emoji using getTokenEmoji function
-    const tokenEmoji = await getTokenEmoji(guildId);
+    // Fetch wallet config
+    const config = await getWalletConfig(guildId);
 
-    // Check if tokenEmoji is an embed (error case)
-    if (tokenEmoji.data) {
-      await interaction.editReply({ embeds: [tokenEmoji], ephemeral: true });
+    // Handle config errors returned as an embed
+    if (config.data) {
+      await interaction.editReply({ embeds: [config], ephemeral: true });
       return;
     }
 
-    // Find the wallet for the specified user and guild
+    // Destructure main and extra token settings
+    const { token_emoji, extra_currency_active, extra_token_emoji } = config;
+
+    // Fetch or create wallet
     let wallet = await Wallet.findOne({ user_id: userId, guild_id: guildId });
 
     if (!wallet) {
-      // Create a new wallet if it doesn't exist
       wallet = new Wallet({
         user_id: userId,
         guild_id: guildId,
         amount: amount,
+        extra_amount: extra_currency_active ? amount : 0,
       });
       await wallet.save();
 
-      const title = "Wallet Created";
       const description =
-        `<@${member.user.id}> awarded **${amount}** ${tokenEmoji.token_emoji} to <@${userId}>.\n` +
-        `New balance: **${wallet.amount}** ${tokenEmoji.token_emoji}.\n` +
-        (reason ? `\nReason: **${reason}**` : "");
-      const color = "";
-      const embed = createEmbed(title, description, color);
+        `<@${member.user.id}> awarded **${amount}** ${token_emoji}` +
+        (extra_currency_active
+          ? ` and **${amount}** ${extra_token_emoji}`
+          : "") +
+        ` to <@${userId}>.\n` +
+        `New balance: **${wallet.amount}** ${token_emoji}` +
+        (extra_currency_active
+          ? ` and **${wallet.extra_amount}** ${extra_token_emoji}`
+          : "") +
+        (reason ? `\n\nReason: **${reason}**` : "");
 
+      const embed = createEmbed("Wallet Created", description, "");
       await interaction.editReply({ embeds: [embed] });
       return;
     }
 
-    // Award the amount to the existing wallet
+    // Update existing wallet
     wallet.amount += amount;
+    if (extra_currency_active) {
+      wallet.extra_amount = (wallet.extra_amount || 0) + amount;
+    }
+
     await wallet.save();
 
-    // Successful award response
-    const title = "Wallet Updated";
     const description =
-      `<@${member.user.id}> awarded **${amount}** ${tokenEmoji.token_emoji} to <@${userId}>.\n` +
-      `New balance: **${wallet.amount}** ${tokenEmoji.token_emoji}.\n` +
-      (reason ? `\nReason: **${reason}**` : "");
-    const color = "";
-    const embed = createEmbed(title, description, color);
+      `<@${member.user.id}> awarded **${amount}** ${token_emoji}` +
+      (extra_currency_active ? ` and **${amount}** ${extra_token_emoji}` : "") +
+      ` to <@${userId}>.\n` +
+      `New balance: **${wallet.amount}** ${token_emoji}` +
+      (extra_currency_active
+        ? ` and **${wallet.extra_amount}** ${extra_token_emoji}`
+        : "") +
+      (reason ? `\n\nReason: **${reason}**` : "");
 
+    const embed = createEmbed("Wallet Updated", description, "");
     await interaction.editReply({ embeds: [embed] });
   } catch (error) {
-    // Handle errors during database operations
     logger.error("Error during wallet operation:", error);
-
-    const title = "Error";
-    const description = `An error occurred while processing the request.`;
-    const color = "error";
-    const embed = createEmbed(title, description, color);
-
+    const embed = createEmbed(
+      "Error",
+      "An error occurred while processing the request.",
+      "error"
+    );
     await interaction.editReply({ embeds: [embed], ephemeral: true });
   }
 }

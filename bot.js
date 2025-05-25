@@ -13,10 +13,13 @@ const {
 } = require("./utilities/handlers.js");
 const botJoinsGuild = require("./bot_joins_guild");
 const checkRemoveRewards = require("./check/remove-rewards");
+const checkDailyCharacterPoll = require("./check/daily-character-poll");
 const checkTeamAssignment = require("./check/team-assignment");
 const handleTrolledUserJoin = require("./utilities/handle-trolled-user-join");
 const Logger = require("./utilities/logger.js");
 global.logger = new Logger("Bot");
+const game = require("./introduction/game.json");
+const countries = require("./introduction/countries.json");
 
 const mongoose = require("mongoose");
 const mongodb_URI = require("./mongodb/URI");
@@ -38,6 +41,7 @@ const client = new Client({
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessagePolls,
   ],
   partials: [Partials.Channel],
 });
@@ -56,6 +60,7 @@ client.once(Events.ClientReady, () => {
 
   setInterval(() => {
     checkRemoveRewards(client);
+    checkDailyCharacterPoll(client);
   }, 86400000); // 24 hours in milliseconds 86400000
 
   setInterval(() => {
@@ -80,6 +85,49 @@ client.on("interactionCreate", async (interaction) => {
   try {
     const { type } = interaction;
 
+    if (type === InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE) {
+      // Handle autocomplete for "favorite_character" in "introduction" command
+      if (
+        interaction.commandName === "introduction" &&
+        interaction.options.getFocused(true).name === "favorite_character"
+      ) {
+        const focusedOption = interaction.options.getFocused(true);
+        const typed = focusedOption.value.toLowerCase();
+
+        // Filter characters by typed input and limit to 25
+        const filtered = game.characters
+          .filter((c) => c.name.toLowerCase().startsWith(typed))
+          .slice(0, 25);
+
+        const choices = filtered.map((c) => ({
+          name: c.name,
+          value: c.name,
+        }));
+
+        await interaction.respond(choices);
+        return;
+      } else if (
+        interaction.commandName === "introduction" &&
+        interaction.options.getFocused(true).name === "country"
+      ) {
+        const focusedOption = interaction.options.getFocused(true);
+        const typed = focusedOption.value.toLowerCase();
+
+        // Filter characters by typed input and limit to 25
+        const filtered = countries
+          .filter((c) => c.name.toLowerCase().startsWith(typed))
+          .slice(0, 25);
+
+        const choices = filtered.map((c) => ({
+          name: c.name,
+          value: c.name,
+        }));
+
+        await interaction.respond(choices);
+        return;
+      }
+    }
+
     if (type === InteractionType.APPLICATION_COMMAND) {
       // Define ephemeral commands
       const ephemeralCommands = [
@@ -87,7 +135,7 @@ client.on("interactionCreate", async (interaction) => {
         "set-teams",
         "set-reward",
         "set-all-rewards",
-        "set-token-emoji",
+        "set-wallet-config",
         "set-bot-channel",
         "set-channel-name-configuration",
         "start-event",
@@ -99,16 +147,18 @@ client.on("interactionCreate", async (interaction) => {
         "send-embed-file",
         "download-embed-file",
         "edit-embed-file",
-        "staff-role",
-        "introduction",
+        "set-staff-role",
+        "manage-daily-character-poll",
       ];
 
       const commandName = interaction.commandName;
 
       // Check if the command requires an ephemeral reply
       const isEphemeral = ephemeralCommands.includes(commandName);
-      // Defer the reply and specify if it should be ephemeral
-      await interaction.deferReply({ ephemeral: isEphemeral });
+      if (isEphemeral) {
+        // Defer the reply and specify if it should be ephemeral
+        await interaction.deferReply({ ephemeral: isEphemeral });
+      }
       await handleSlashCommand(interaction, client);
     } else if (type === InteractionType.MESSAGE_COMPONENT) {
       await interaction.deferUpdate();

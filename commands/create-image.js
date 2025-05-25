@@ -10,6 +10,7 @@ const {
 const data_json = require("../AI/data.json");
 
 async function handleCreateImageCommand(interaction, client) {
+  await interaction.deferReply({ ephemeral: false });
   try {
     // Your image creation logic here
     await createImage(interaction, client); // Example function

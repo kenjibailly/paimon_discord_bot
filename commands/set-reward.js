@@ -1,5 +1,5 @@
 const Rewards = require("../models/rewards");
-const TokenEmoji = require("../models/token-emoji");
+const TokenEmoji = require("../models/wallet-config");
 const createEmbed = require("../helpers/embed");
 
 async function handleSetRewardCommand(interaction, client) {

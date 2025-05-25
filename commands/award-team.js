@@ -1,55 +1,78 @@
-const Wallet = require('../models/wallet');
-const createEmbed = require('../helpers/embed');
-const getTokenEmoji = require('../helpers/get-token-emoji');
-
+const Wallet = require("../models/wallet");
+const createEmbed = require("../helpers/embed");
+const getWalletConfig = require("../helpers/get-wallet-config");
 
 async function handleAwardTeamCommand(interaction, client) {
-    const { member, guildId } = interaction;
+  const { member, guildId } = interaction;
 
-    // Find each option by name
-    const role = interaction.options.getRole('role').id;
-    const amount = interaction.options.getInteger('amount');
-    const reason = interaction.options.getString('reason') ? interaction.options.getString('reason') : "No reason provided";
+  await interaction.deferReply({ ephemeral: false });
 
-    const guild = await client.guilds.fetch(guildId);
-    const members = await guild.members.fetch();
-    const roleMembers = members.filter(member => member.roles.cache.has(role));
-    
-    let newWalletEntries = roleMembers.map(member => ({
-        updateOne: {
-            filter: { user_id: member.user.id, guild_id: guildId },
-            update: { $inc: { amount: amount } },
-            upsert: true,
-        }
-    }));
+  const role = interaction.options.getRole("role").id;
+  const amount = interaction.options.getInteger("amount");
+  const reason =
+    interaction.options.getString("reason") || "No reason provided";
 
-    try {
-        // Fetch the token emoji using getTokenEmoji function
-        const tokenEmoji = await getTokenEmoji(interaction.guildId);
+  const guild = await client.guilds.fetch(guildId);
+  const members = await guild.members.fetch();
+  const roleMembers = members.filter((member) => member.roles.cache.has(role));
 
-        // Check if tokenEmoji is an embed (error case)
-        if (tokenEmoji.data) {
-            await interaction.editReply({ embeds: [tokenEmoji], ephemeral: true });
-            return;
-        }
+  try {
+    // Fetch the token emoji config
+    const tokenEmojiConfig = await getWalletConfig(interaction.guildId);
 
-        const result = await Wallet.bulkWrite(newWalletEntries);
-        const title = "Tokens";
-        const description = `<@${member.user.id}> awarded **${amount}** ${tokenEmoji.token_emoji} to <@&${role}>!\n` +
-        `\nReason: **${reason}**`;
-        const embed = createEmbed(title, description, "");
-
-        await interaction.editReply({ embeds: [embed] });
-    } catch (error) {
-        logger.error('Error during bulkWrite:', error);
-
-        const title = "Tokens";
-        const description = `Failed to add tokens to the database, please try again.`;
-        const color = "error";
-        const embed = createEmbed(title, description, color);
-
-        await interaction.editReply({ embeds: [embed] });
+    if (tokenEmojiConfig.data) {
+      await interaction.editReply({
+        embeds: [tokenEmojiConfig],
+        ephemeral: true,
+      });
+      return;
     }
+
+    const { token_emoji, extra_currency_active, extra_token_emoji } =
+      tokenEmojiConfig;
+
+    // Prepare bulk write operations
+    const newWalletEntries = roleMembers.map((member) => {
+      const update = {
+        $inc: {
+          amount: amount,
+        },
+      };
+
+      if (extra_currency_active) {
+        update.$inc.extra_amount = amount;
+      }
+
+      return {
+        updateOne: {
+          filter: { user_id: member.user.id, guild_id: guildId },
+          update,
+          upsert: true,
+        },
+      };
+    });
+
+    const result = await Wallet.bulkWrite(newWalletEntries);
+
+    const title = "Tokens";
+    const description =
+      `<@${member.user.id}> awarded **${amount}** ${token_emoji}` +
+      (extra_currency_active ? ` and **${amount}** ${extra_token_emoji}` : "") +
+      ` to <@&${role}>!\n\n` +
+      `Reason: **${reason}**`;
+    const embed = createEmbed(title, description, "");
+
+    await interaction.editReply({ embeds: [embed] });
+  } catch (error) {
+    logger.error("Error during bulkWrite:", error);
+
+    const title = "Tokens";
+    const description = `Failed to add tokens to the database, please try again.`;
+    const color = "error";
+    const embed = createEmbed(title, description, color);
+
+    await interaction.editReply({ embeds: [embed] });
+  }
 }
 
 module.exports = handleAwardTeamCommand;
