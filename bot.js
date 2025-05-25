@@ -149,6 +149,7 @@ client.on("interactionCreate", async (interaction) => {
         "edit-embed-file",
         "set-staff-role",
         "manage-daily-character-poll",
+        "register-slash-commands",
       ];
 
       const commandName = interaction.commandName;

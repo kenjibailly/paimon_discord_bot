@@ -27,6 +27,7 @@ const handleEditEmbedFileCommand = require("./edit-embed-file");
 const handleStaffRoleCommand = require("./set-staff-role");
 const handleIntroductionCommand = require("./introduction");
 const handleManageDailyCharacterPollCommand = require("./manage-daily-character-poll-command");
+const handleRegisterSlashCommandsCommand = require("./register-slash-commands");
 
 module.exports = {
   "award-team": handleAwardTeamCommand,
@@ -58,4 +59,5 @@ module.exports = {
   "set-staff-role": handleStaffRoleCommand,
   introduction: handleIntroductionCommand,
   "manage-daily-character-poll": handleManageDailyCharacterPollCommand,
+  "register-slash-commands": handleRegisterSlashCommandsCommand,
 };

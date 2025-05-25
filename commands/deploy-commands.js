@@ -555,6 +555,12 @@ async function registerCommands(guildId) {
     ],
   };
 
+  const REGISTER_SLASH_COMMANDS_COMMAND = {
+    name: "register-slash-commands",
+    description: "Register new slash commands.",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -583,6 +589,7 @@ async function registerCommands(guildId) {
     SET_STAFF_ROLE_COMMAND,
     INTRODUCTION_COMMAND,
     MANAGE_DAILY_CHARACTER_POLL_COMMAND,
+    REGISTER_SLASH_COMMANDS_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];

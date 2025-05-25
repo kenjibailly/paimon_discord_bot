@@ -17,6 +17,7 @@ After X amount of time, the reward will be removed and can be configured in the 
 ## ⚙️ Technical information
 
 Used in this project:
+
 - Docker
 - MongoDB
 - Nodejs (Discordjs)
@@ -24,23 +25,24 @@ Used in this project:
 ## 💾 How to install
 
 ### 💻 Get Files
+
 <details>
 
 <summary>🛠️ Open for installation steps</summary>
 
 1. Clone the repository
 
-    ```bash 
-    git clone https://github.com/kenjibailly/paimon_discord_bot
-    ```
+   ```bash
+   git clone https://github.com/kenjibailly/paimon_discord_bot
+   ```
 
 2. Copy example .env file and make changes:
 
-    > We will fill in the variables later.
+   > We will fill in the variables later.
 
-    ```bash
-    cp .env.example .env
-    ```
+   ```bash
+   cp .env.example .env
+   ```
 
 </details>
 
@@ -52,13 +54,13 @@ Used in this project:
 
 Edit `docker-compose.yml`:
 
-> Network `docker_swag` is the network you put your swag / nginx-proxy-manager / nginx container in, change to your own existing network. 
+> Network `docker_swag` is the network you put your swag / nginx-proxy-manager / nginx container in, change to your own existing network.
 
 ```bash
 docker-compose up -d
 ```
-</details>
 
+</details>
 
 ### 🌀 Discord Developer Portal
 
@@ -71,11 +73,13 @@ Go to the [Discord Developer Portal](https://discord.com/developers/applications
 Under the `Installation` tab, find `Guild Install` at the bottom, add `bot` to scopes and add `Administrator` to permissions.
 
 Under the `Bot` tab, find `Privileged Gateway Intents` and enable:
+
 - `Presence Intent`
 - `Server Members Intent`
 - `Message Content Intent`
 
 Now we will fill in the .env file we created.
+
 - Under the `General Information` tab, find `Application ID` and click copy. Paste it in your .env file after `APP_ID=`.
 - Under the `General Information` tab, find `Public Key` and click copy. Paste it in your .env file after `PUBLIC_KEY=`.
 - Under the `Bot` tab, find `Token` and click reset token, copy it. Paste it in your .env file after `DISCORD_TOKEN=`.
@@ -92,14 +96,13 @@ docker restart discord_bot_paimon
 
 </details>
 
-
 ### 💾 Register Discord Slash Commands
 
 <details>
 
 <summary>✅ Information</summary>
 
-The slash commands are automatically registered when the bot enters the server. 
+The slash commands are automatically registered when the bot enters the server.
 
 > The Discord client has to be refreshed before the change in the slash command(s) get updated. `ctrl + R` on windows. Restart app on mobile.
 
@@ -116,7 +119,6 @@ Go to `Server Settings` > `Roles` and move the bot's role to the top of the hier
 Optional: Change the permissions of the commands of the bot. Go to `Server Settings` > `Integrations`, find the bot under `Bots and Apps` and click on `Manage`. Configure each command's permissions to your preference.
 
 </details>
-
 
 ### 🖼️ Optional: ComfyUI for AI image generation
 
@@ -162,60 +164,58 @@ Example:
 
 ```json
 {
-    "SDXL": {
-        "dimensions": {
-            "1:1 square": "768x768",
-            "3:4 portrait": "672x864",
-            "5:8 portrait": "624x912",
-            "9:16 portrait": "576x1008",
-            "9:21 portrait": "480x1152",
-            "4:3 landscape": "864x672",
-            "3:2 landscape": "912x624",
-            "16:9 landscape": "1008x576",
-            "21:9 landscape": "1152x480"
+  "SDXL": {
+    "dimensions": {
+      "1:1 square": "768x768",
+      "3:4 portrait": "672x864",
+      "5:8 portrait": "624x912",
+      "9:16 portrait": "576x1008",
+      "9:21 portrait": "480x1152",
+      "4:3 landscape": "864x672",
+      "3:2 landscape": "912x624",
+      "16:9 landscape": "1008x576",
+      "21:9 landscape": "1152x480"
+    },
+    "checkpoints": [
+      {
+        "name": "Pony Diffusion V6 XL",
+        "file": "ponyDiffusionV6XL_v6StartWithThisOne.safetensors",
+        "description": "Pony Diffusion V6 is a versatile SDXL finetune capable of producing stunning SFW and NSFW visuals of various anthro, feral, or humanoids species and their interactions based on simple natural language prompts.",
+        "link": "https://civitai.com/models/257749?modelVersionId=290640",
+        "settings": {
+          "cfg": 7,
+          "steps": 25,
+          "sampler_name": "euler_ancestral",
+          "scheduler": "normal",
+          "clip_skip": -2,
+          "positive_prompt": "score_9, score_8_up, score_7_up, anime",
+          "negative_prompt": "low-res, bad anatomy, bad hands, text, error, missing xfingers, extra digit, fewer digits, cropped, worst quality, xlow quality, normal quality, jpeg artifacts, signature, xwatermark, username, blurry, artist name,(deformed, xdistorted, disfigured:1.3), poorly drawn, bad anatomy, xwrong anatomy, extra limb, missing limb, floating limbs, x(mutated hands and fingers:1.4), disconnected limbs, xmutation, mutated, ugly, disgusting, blurry, amputation"
         },
-        "checkpoints": [
-            {
-                "name": "Pony Diffusion V6 XL",
-                "file": "ponyDiffusionV6XL_v6StartWithThisOne.safetensors",
-                "description": "Pony Diffusion V6 is a versatile SDXL finetune capable of producing stunning SFW and NSFW visuals of various anthro, feral, or humanoids species and their interactions based on simple natural language prompts.",
-                "link": "https://civitai.com/models/257749?modelVersionId=290640",
-                "settings": {
-                    "cfg": 7,
-                    "steps": 25,
-                    "sampler_name": "euler_ancestral",
-                    "scheduler": "normal",
-                    "clip_skip": -2,
-                    "positive_prompt": "score_9, score_8_up, score_7_up, anime",
-                    "negative_prompt": "low-res, bad anatomy, bad hands, text, error, missing xfingers, extra digit, fewer digits, cropped, worst quality, xlow quality, normal quality, jpeg artifacts, signature, xwatermark, username, blurry, artist name,(deformed, xdistorted, disfigured:1.3), poorly drawn, bad anatomy, xwrong anatomy, extra limb, missing limb, floating limbs, x(mutated hands and fingers:1.4), disconnected limbs, xmutation, mutated, ugly, disgusting, blurry, amputation"    
-                },
-                "default": true
-            }
-        ],
-        "loras": [
-            {
-                "name": "Aesthetic Anime V1",
-                "file": "aesthetic_anime_v1s.safetensors",
-                "description": "Enhances the aesthetic style of anime creations.",
-                "link": "https://civitai.com/models/295100/aesthetic-anime-lora",
-                "model_weight": 1,
-                "clip_weight": 1
-            }
-        ]
-    }
+        "default": true
+      }
+    ],
+    "loras": [
+      {
+        "name": "Aesthetic Anime V1",
+        "file": "aesthetic_anime_v1s.safetensors",
+        "description": "Enhances the aesthetic style of anime creations.",
+        "link": "https://civitai.com/models/295100/aesthetic-anime-lora",
+        "model_weight": 1,
+        "clip_weight": 1
+      }
+    ]
+  }
 }
 ```
 
-You can add multiple checkpoints to use with multiple loras with the same dimensions. 
+You can add multiple checkpoints to use with multiple loras with the same dimensions.
 You can add new objects with a different appropriate name, in our example: `SDXL`. This name is not used anywhere and only used for better visibility in the json file. This means you can name this anything you want.
 When you create a new object like this, you can specify different dimensions and loras you might want to couple with these checkpoints.
 
 You need to set a default checkpoint to be used in case the user hasn't configured any.
 You can do this by adding `"default": true` to your checkpoint. Make sure only one checkpoint has been set to `true`. The other checkpoints should be set to `"default": false`.
 
-
 </details>
-
 
 # Functionality
 
@@ -224,20 +224,20 @@ You can do this by adding `"default": true` to your checkpoint. Make sure only o
 #### 🎉 General Functions
 
 - ✅ /shop
-    - Opens the shop
+  - Opens the shop
 - ✅ /wallet
-    - Checks your wallet balance
+  - Checks your wallet balance
 - ✅ /games
-    - Lists all the available games
+  - Lists all the available games
 - ✅ /upcoming-games
-    - Lists the upcoming games
+  - Lists the upcoming games
 - ✅ /troll-missions
-    - Lists all the troll missions
+  - Lists all the troll missions
 - ✅ /create-image
-    - Generates an AI image using ComfyUI, note: a working instance of ComfyUI must be setup for this (not included)
-    - Input: Prompt
+  - Generates an AI image using ComfyUI, note: a working instance of ComfyUI must be setup for this (not included)
+  - Input: Prompt
 - ✅ /create-image-settings
-    - Opens a settings menu in a DM with the bot, where the user can change the model, lora and dimensions. The compatible loras and dimensions can be chosen per model.
+  - Opens a settings menu in a DM with the bot, where the user can change the model, lora and dimensions. The compatible loras and dimensions can be chosen per model.
 
 #### 🧑‍💼 Staff functions
 
@@ -245,33 +245,33 @@ These commands have a standard permission. All users who have the `Manage Server
 
 Optional: Change the permissions of the commands of the bot. Go to `Server Settings` > `Integrations`, find the bot under `Bots and Apps` and click on `Manage`. Configure each command's permissions to your preference.
 
-- ✅  /award-team
-    - Awards a role 🪙
-    - Input: `role`, `amount`, optional: `reason`
-- ✅  /award-user
-    - Awards a user 🪙
-    - Input: `user`, `amount`, optional: `reason`
-- ✅  /deduct-user
-    - Deducts 🪙 from a user
-    - Input: `user`, `amount`, optional: `reason`
+- ✅ /award-team
+  - Awards a role 🪙
+  - Input: `role`, `amount`, optional: `reason`
+- ✅ /award-user
+  - Awards a user 🪙
+  - Input: `user`, `amount`, optional: `reason`
+- ✅ /deduct-user
+  - Deducts 🪙 from a user
+  - Input: `user`, `amount`, optional: `reason`
 - ✅ /start-event
-    - Creates event, users can apply to this event to be added to the team generation
-    - Input: `event name`, `description`, optional: `expiration` optional: `image link`
+  - Creates event, users can apply to this event to be added to the team generation
+  - Input: `event name`, `description`, optional: `expiration` optional: `image link`
 - ✅ /reset-teams
-    - Removes all users from the roles created for the team generation to start over
-    - Input: `game`
+  - Removes all users from the roles created for the team generation to start over
+  - Input: `game`
 - ✅ /manage-games
-    - Add, remove or update a game
+  - Add, remove or update a game
 - ✅ /set-status
-    - Sets custom status of the bot, this can't be set per server, this is a custom status for the bot on all servers, so becareful with this. If you want to disable this edit commands/deploy-commands.js and remove `SET_STATUS_COMMAND,` line in `const NEW_COMMANDS = [`
-    - Input: `status`
+  - Sets custom status of the bot, this can't be set per server, this is a custom status for the bot on all servers, so becareful with this. If you want to disable this edit commands/deploy-commands.js and remove `SET_STATUS_COMMAND,` line in `const NEW_COMMANDS = [`
+  - Input: `status`
 - ✅ /manage-troll-missions
-    - Add, remove or update a troll mission
+  - Add, remove or update a troll mission
 - ✅ /cancel-event
-    - Cancels an ongoing event
+  - Cancels an ongoing event
 - ✅ /troll-user-complete-mission
-    - Completes the mission of a trolled user
-    - Input: `user`, optional: `message link` default: last message from trolled user
+  - Completes the mission of a trolled user
+  - Input: `user`, optional: `message link` default: last message from trolled user
 
 #### ⚙️ Settings
 
@@ -280,31 +280,31 @@ These commands have a standard permission. All users who have the `Manage Server
 Optional: Change the permissions of the commands of the bot. Go to `Server Settings` > `Integrations`, find the bot under `Bots and Apps` and click on `Manage`. Configure each command's permissions to your preference.
 
 - ✅ /set-teams
-    - Choose 2 roles to be assigned as teams for the team generation
-    - Input: `role`, `role`
+  - Choose 2 roles to be assigned as teams for the team generation
+  - Input: `role`, `role`
 - ✅ /set-reward
-    - Sets the price per reward and / or time the reward gets removed after and / or enable or disable the reward
-    - Input: `reward name list`, optional: `price`, optional: `time`, optional: `enable/disable`
+  - Sets the price per reward and / or time the reward gets removed after and / or enable or disable the reward
+  - Input: `reward name list`, optional: `price`, optional: `time`, optional: `enable/disable`
 - ✅ /set-all-rewards
-    - Sets the price of all rewards and / or time all the rewards gets removed after, default: `30 days`
-    - Input: `time`
+  - Sets the price of all rewards and / or time all the rewards gets removed after, default: `30 days`
+  - Input: `time`
 - ✅ /set-token-emoji
-    - Sets the token emoji to your preferred emoji, custom emoji are allowed, default: 🪙
-    - Input: `emoji`
+  - Sets the token emoji to your preferred emoji, custom emoji are allowed, default: 🪙
+  - Input: `emoji`
 - ✅ /set-bot-channel
-    - Sets the channel of the bot where updates are posted, like reset of awards
-    - Input: `channel`
+  - Sets the channel of the bot where updates are posted, like reset of awards
+  - Input: `channel`
 - ✅ /set-channel-name-configuration
-    - Configures the channel name options for the custom channel reward
-
+  - Configures the channel name options for the custom channel reward
 
 Rewards are automatically set to be all enabled and have a default price of 1 🪙;
 
-### 🏪 Shop 
+### 🏪 Shop
 
 When opening the shop, the user can click a button to start interacting with the bot in a private thread. The bot will guide the user and ask the required things needed in order for the reward to be claimed and the wallet to be deducted.
 
 #### 🏆 Rewards:
+
 - ✅ Change your nickname
 - ✅ Change someone's nickname
 - ✅ Add a custom server emoji
@@ -312,7 +312,7 @@ When opening the shop, the user can click a button to start interacting with the
 - ✅ Add a custom role name and color
 - ✅ Choose the upcoming game
 - ✅ Troll user
-    - The user gets the "Troll" role, with this role the user can only see 1 channel with a gif of Rick Roll. The bot sends out a message with a list of missions, the user can choose one to complete. The list is made by the staff. The missions could include things like: create an embarrassing picture, create an artwork, or touch grass for example. When the user has completed the mission, the staff can accept by clicking a button generated by the bot. The message of the user is then sent to the channel where `bot channel` is configured. The troll is then lifted and the user gets access to the server again.
+  - The user gets the "Troll" role, with this role the user can only see 1 channel with a gif of Rick Roll. The bot sends out a message with a list of missions, the user can choose one to complete. The list is made by the staff. The missions could include things like: create an embarrassing picture, create an artwork, or touch grass for example. When the user has completed the mission, the staff can accept by clicking a button generated by the bot. The message of the user is then sent to the channel where `bot channel` is configured. The troll is then lifted and the user gets access to the server again.
 
 ### 💪 Join event and assign team
 
