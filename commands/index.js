@@ -28,6 +28,9 @@ const handleStaffRoleCommand = require("./set-staff-role");
 const handleIntroductionCommand = require("./introduction");
 const handleManageDailyCharacterPollCommand = require("./manage-daily-character-poll-command");
 const handleRegisterSlashCommandsCommand = require("./register-slash-commands");
+const handleLevelConfigCommand = require("./level-config");
+const handleLevelCommand = require("./level");
+const handleSendEmbedCommand = require("./send-embed");
 
 module.exports = {
   "award-team": handleAwardTeamCommand,
@@ -60,4 +63,7 @@ module.exports = {
   introduction: handleIntroductionCommand,
   "manage-daily-character-poll": handleManageDailyCharacterPollCommand,
   "register-slash-commands": handleRegisterSlashCommandsCommand,
+  "level-config": handleLevelConfigCommand,
+  level: handleLevelCommand,
+  "send-embed": handleSendEmbedCommand,
 };

@@ -397,6 +397,32 @@ async function registerCommands(guildId) {
     contexts: [0, 1, 2],
   };
 
+  const SEND_EMBED_COMMAND = {
+    name: "send-embed",
+    description: "Send a simple embed",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    options: [
+      {
+        type: 3, // STRING
+        name: "title",
+        description: "Select the title for the embed",
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: "message",
+        description: "Select the message for the embed",
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: "color",
+        description: "Select the color in hex format for the embed",
+        required: false,
+      },
+    ],
+  };
+
   const SEND_EMBED_FILE_COMMAND = {
     name: "send-embed-file",
     description: "Send an embed using a JSON file",
@@ -561,6 +587,45 @@ async function registerCommands(guildId) {
     default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
   };
 
+  const LEVEL_CONFIG_COMMAND = {
+    name: "level-config",
+    description: "Configure the level system",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    options: [
+      {
+        type: 4, // INTEGER
+        name: "message_count",
+        description: "How many messages per level?",
+        required: true,
+      },
+      {
+        type: 4, // INTEGER
+        name: "exp_points",
+        description: "How many exp points per level?",
+        required: true,
+      },
+      {
+        type: 4, // INTEGER
+        name: "reward",
+        description:
+          "After how many levels should a coin be rewarded to the user? Use 0 to disable.",
+        required: true,
+      },
+      {
+        type: 4, // INTEGER
+        name: "reward_extra",
+        description:
+          "After how many levels should the extra currency be rewarded to the user? Use 0 to disable.",
+        required: true,
+      },
+    ],
+  };
+
+  const LEVEL_COMMAND = {
+    name: "level",
+    description: "Check out your current level",
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -583,6 +648,7 @@ async function registerCommands(guildId) {
     TROLL_MISSIONS_COMMAND,
     MANAGE_TROLL_MISSIONS_COMMAND,
     TROLL_USER_COMPLETE_MISSION_COMMAND,
+    SEND_EMBED_COMMAND,
     SEND_EMBED_FILE_COMMAND,
     DOWNLOAD_EMBED_FILE_COMMAND,
     EDIT_EMBED_FILE_COMMAND,
@@ -590,6 +656,8 @@ async function registerCommands(guildId) {
     INTRODUCTION_COMMAND,
     MANAGE_DAILY_CHARACTER_POLL_COMMAND,
     REGISTER_SLASH_COMMANDS_COMMAND,
+    LEVEL_CONFIG_COMMAND,
+    LEVEL_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];

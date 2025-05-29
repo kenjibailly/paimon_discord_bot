@@ -1,0 +1,31 @@
+const mongoose = require("mongoose");
+
+// Define the LevelConfig schema
+const levelConfigSchema = new mongoose.Schema({
+  guild_id: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  message_count: {
+    type: Number,
+    required: true,
+  },
+  exp_points: {
+    type: Number,
+    required: false,
+  },
+  reward: {
+    type: Number,
+    required: false,
+  },
+  reward_extra: {
+    type: Number,
+    required: false,
+  },
+});
+
+// Create a model using the schema
+const LevelConfig = mongoose.model("LevelConfig", levelConfigSchema);
+
+module.exports = LevelConfig;
