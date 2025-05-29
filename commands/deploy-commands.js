@@ -516,7 +516,7 @@ async function registerCommands(guildId) {
       },
       {
         type: 3, // STRING
-        name: "job_or_study",
+        name: "occupation",
         description: "What you do (job, school, etc.)",
         required: true,
       },
@@ -558,6 +558,21 @@ async function registerCommands(guildId) {
         required: false,
       },
     ],
+  };
+
+  const SET_INTRODUCTION_CHANNEL_COMMAND = {
+    name: "set-introduction-channel",
+    description: "Set the introduction channel where the bot should post",
+    options: [
+      {
+        type: 7, // CHANNEL
+        name: "channel",
+        description: "Choose a channel",
+        required: true,
+      },
+    ],
+    default_member_permissions: defaultManageGuildPermission, // Manage Server permission
+    dm_permission: false, // Command can’t be used in DMs
   };
 
   const MANAGE_DAILY_CHARACTER_POLL_COMMAND = {
@@ -654,6 +669,7 @@ async function registerCommands(guildId) {
     EDIT_EMBED_FILE_COMMAND,
     SET_STAFF_ROLE_COMMAND,
     INTRODUCTION_COMMAND,
+    SET_INTRODUCTION_CHANNEL_COMMAND,
     MANAGE_DAILY_CHARACTER_POLL_COMMAND,
     REGISTER_SLASH_COMMANDS_COMMAND,
     LEVEL_CONFIG_COMMAND,

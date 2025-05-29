@@ -14,6 +14,10 @@ const introductionsSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  channel_id: {
+    type: String,
+    required: false,
+  },
 });
 
 // Create a compound unique index on guild_id and name

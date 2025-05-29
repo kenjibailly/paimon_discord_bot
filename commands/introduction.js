@@ -1,9 +1,11 @@
 const { createCanvas, loadImage, registerFont } = require("canvas");
-const { AttachmentBuilder } = require("discord.js");
+const { AttachmentBuilder, ChannelType } = require("discord.js");
 const game = require("../introduction/game.json");
 const countries = require("../introduction/countries.json");
 const Introductions = require("../models/introductions");
+const IntroductionConfig = require("../models/introduction-config");
 const createEmbed = require("../helpers/embed");
+const { introduction } = require(".");
 let error = false;
 
 async function handleIntroductionCommand(interaction, client) {
@@ -16,7 +18,7 @@ async function handleIntroductionCommand(interaction, client) {
   const name = interaction.options.getString("name");
   const age = interaction.options.getInteger("age");
   const country = interaction.options.getString("country");
-  const jobOrStudy = interaction.options.getString("job_or_study");
+  const occupation = interaction.options.getString("occupation");
   const hobbies = interaction.options.getString("hobbies");
   const favoriteCharacter = interaction.options.getString("favorite_character");
   const picture = interaction.options.getAttachment("picture");
@@ -52,7 +54,7 @@ async function handleIntroductionCommand(interaction, client) {
   );
   await drawTextBox(
     ctx,
-    jobOrStudy,
+    occupation,
     "MY OCCUPATION:",
     offset,
     383 + 250,
@@ -97,52 +99,117 @@ async function handleIntroductionCommand(interaction, client) {
     user_id: userId,
   });
 
-  if (!existingIntro) {
-    // Defer the reply to allow time for processing
-    await interaction.deferReply({ ephemeral: false });
-    // No previous introduction, send a new message
-    const message = await interaction.editReply({
-      content: `📢 <@${userId}> has introduced themselves!`,
-      files: [attachment],
-    });
+  let message;
 
-    // Save message info to the database
-    await Introductions.create({
-      guild_id: guildId,
-      user_id: userId,
-      message_id: message.id,
-    });
-  } else {
-    try {
-      // Defer the reply to allow time for processing
-      await interaction.deferReply({ ephemeral: true });
-
-      // Fetch the channel and message
-      const channel = await client.channels.fetch(interaction.channelId);
-      const oldMessage = await channel.messages.fetch(existingIntro.message_id);
-
-      // Edit the existing message with new attachment
-      await oldMessage.edit({
-        content: `📢 <@${userId}> has introduced themselves (updated)!`,
-        files: [attachment],
+  try {
+    if (!existingIntro) {
+      const introductionConfig = await IntroductionConfig.findOne({
+        guild_id: guildId,
       });
 
-      // Send confirmation to user
-      const title = "Introduction";
-      const description = `✅ Your introduction has been updated!`;
-      const color = "";
-      const embed = createEmbed(title, description, color);
+      // No config or missing channel: fallback to replying directly
+      if (!introductionConfig || !introductionConfig.channel) {
+        // Defer reply once at the top
+        await interaction.deferReply({ ephemeral: false });
+        message = await interaction.editReply({
+          content: `📢 <@${userId}> has introduced themselves!`,
+          files: [attachment],
+        });
+        await Introductions.findOneAndUpdate(
+          { guild_id: guildId, user_id: userId },
+          { message_id: message.id, channel_id: interaction.channel.id },
+          { upsert: true }
+        );
+        return;
+      }
 
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
-    } catch (error) {
-      logger.error("Failed to edit previous introduction message:", error);
+      // Attempt to fetch the configured channel
+      const targetChannel = await interaction.guild.channels
+        .fetch(introductionConfig.channel)
+        .catch(() => null);
+      if (targetChannel) {
+        try {
+          message = await targetChannel.send({
+            content: `📢 <@${userId}> has introduced themselves!`,
+            files: [attachment],
+          });
+          const embed = createEmbed(
+            "Introduction",
+            `✅ Your introduction has been sent to <#${introductionConfig.channel}> !`,
+            ""
+          );
+          // Defer reply once at the top
+          await interaction.deferReply({ ephemeral: true });
+          await interaction.editReply({ embeds: [embed], ephemeral: true });
 
-      const title = "Introduction";
-      const description = `⚠️ Failed to update your existing introduction. Please try again.`;
-      const color = "error";
-      const embed = createEmbed(title, description, color);
+          await Introductions.findOneAndUpdate(
+            { guild_id: guildId, user_id: userId },
+            { message_id: message.id, channel_id: introductionConfig.channel },
+            { upsert: true }
+          );
+        } catch (err) {
+          logger.error("Failed to send intro to configured channel:", err);
+          const embed = createEmbed(
+            "Introduction",
+            "❌ Couldn't send the message in the configured channel. Please contact an admin.",
+            "error"
+          );
+          await interaction.editReply({ embeds: [embed], ephemeral: true });
+        }
+      } else {
+        const embed = createEmbed(
+          "Introduction",
+          "❌ Configured channel could not be found. Please contact an admin.",
+          "error"
+        );
+        await interaction.editReply({ embeds: [embed], ephemeral: true });
+      }
+    } else {
+      // Updating existing intro
+      try {
+        const channel = await client.channels.fetch(existingIntro.channel_id);
+        const oldMessage = await channel.messages.fetch(
+          existingIntro.message_id
+        );
 
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
+        await oldMessage.edit({
+          content: `📢 <@${userId}> has introduced themselves (updated)!`,
+          files: [attachment],
+        });
+
+        const embed = createEmbed(
+          "Introduction",
+          "✅ Your introduction has been updated!",
+          ""
+        );
+        // Defer reply once at the top
+        await interaction.deferReply({ ephemeral: true });
+        await interaction.editReply({ embeds: [embed] });
+      } catch (error) {
+        logger.error("Failed to edit previous introduction message:", error);
+
+        const embed = createEmbed(
+          "Introduction",
+          "⚠️ Failed to update your existing introduction. Please try again.",
+          "error"
+        );
+        await interaction.editReply({ embeds: [embed] });
+      }
+    }
+  } catch (error) {
+    logger.error("Introduction handler error:", error);
+
+    const embed = createEmbed(
+      "Introduction",
+      "❌ An unexpected error occurred. Please try again later.",
+      "error"
+    );
+
+    // Best effort: safe fallback
+    if (interaction.deferred || interaction.replied) {
+      await interaction.editReply({ embeds: [embed] });
+    } else {
+      await interaction.reply({ embeds: [embed], ephemeral: true });
     }
   }
 }

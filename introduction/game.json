@@ -1,7 +1,7 @@
 {
   "game": "Brawl Stars",
   "characters": [
-    { "name": "8-Bit", "color1": "#A68A70", "color2": "#D0B9A1" },
+    { "name": "8-Bit", "color1": "#D3FFFF", "color2": "#2348A0" },
     { "name": "Amber", "color1": "#FFD445", "color2": "#FF5757" },
     { "name": "Angelo", "color1": "#7F9E58", "color2": "#A9C488" },
     { "name": "Ash", "color1": "#4A3F39", "color2": "#7C6E69" },

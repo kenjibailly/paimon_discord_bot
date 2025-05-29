@@ -31,6 +31,7 @@ const handleRegisterSlashCommandsCommand = require("./register-slash-commands");
 const handleLevelConfigCommand = require("./level-config");
 const handleLevelCommand = require("./level");
 const handleSendEmbedCommand = require("./send-embed");
+const handleSetIntroductionChannelCommand = require("./set-introduction-channel");
 
 module.exports = {
   "award-team": handleAwardTeamCommand,
@@ -66,4 +67,5 @@ module.exports = {
   "level-config": handleLevelConfigCommand,
   level: handleLevelCommand,
   "send-embed": handleSendEmbedCommand,
+  "set-introduction-channel": handleSetIntroductionChannelCommand,
 };

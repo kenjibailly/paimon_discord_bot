@@ -150,6 +150,7 @@ client.on("interactionCreate", async (interaction) => {
         "set-staff-role",
         "manage-daily-character-poll",
         "register-slash-commands",
+        "set-introduction-channel",
       ];
 
       const commandName = interaction.commandName;
