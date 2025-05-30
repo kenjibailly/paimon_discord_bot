@@ -21,7 +21,7 @@ const introductionsSchema = new mongoose.Schema({
 });
 
 // Create a compound unique index on guild_id and name
-introductionsSchema.index({ guild_id: 1, name: 1 }, { unique: true });
+introductionsSchema.index({ guild_id: 1, user_id: 1 }, { unique: true });
 
 // Create a model using the schema
 const Introductions = mongoose.model("Introductions", introductionsSchema);
