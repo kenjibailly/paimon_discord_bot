@@ -5,7 +5,6 @@ const countries = require("../introduction/countries.json");
 const Introductions = require("../models/introductions");
 const IntroductionConfig = require("../models/introduction-config");
 const createEmbed = require("../helpers/embed");
-const { introduction } = require(".");
 let error = false;
 
 async function handleIntroductionCommand(interaction, client) {
@@ -182,9 +181,13 @@ async function handleIntroductionCommand(interaction, client) {
           "✅ Your introduction has been updated!",
           ""
         );
-        // Defer reply once at the top
-        await interaction.deferReply({ ephemeral: true });
-        await interaction.editReply({ embeds: [embed] });
+        try {
+          // Defer reply once at the top
+          await interaction.deferReply({ ephemeral: true });
+          await interaction.editReply({ embeds: [embed] });
+        } catch (error) {
+          logger.error(error);
+        }
       } catch (error) {
         logger.error("Failed to edit previous introduction message:", error);
 
@@ -394,7 +397,8 @@ async function drawFavoriteCharacter(
   offset,
   favoriteCharacter
 ) {
-  const favChar = favoriteCharacter.toLowerCase();
+  const favChar = favoriteCharacter.toLowerCase().replace(/\s+/g, "_");
+
   try {
     const image = await loadImage(`./introduction/characters/${favChar}.png`);
 
@@ -417,7 +421,7 @@ async function drawFavoriteCharacter(
     ctx.restore();
 
     // Draw label text above image
-    drawText(ctx, "MY FAVORITE BRAWLER", 20, 47, drawY - 60, 4);
+    drawText(ctx, "MY FAVORITE BRAWLER", 25, 47, drawY - 60, 4);
 
     // Draw curved arrow
     const img_width = 48;
@@ -455,15 +459,15 @@ async function drawGamerTag(ctx, offset, gamertag, name) {
     drawText(
       ctx,
       "HI, MY NAME IS (" + gamertag + ")",
-      20,
+      25,
       384,
       120 + offset,
       4
     );
     drawText(ctx, name.toUpperCase(), 54, 384, 170 + offset, 9);
   } else {
-    drawText(ctx, "HI, MY NAME IS", 20, 384, 120 + offset, 4);
-    drawText(ctx, gamertag.toUpperCase(), 54, 384, 170 + offset, 9);
+    drawText(ctx, "HI, MY NAME IS", 25, 384, 120 + offset, 4);
+    drawText(ctx, gamertag.toUpperCase(), 60, 384, 170 + offset, 9);
   }
 }
 
@@ -611,14 +615,14 @@ async function drawTextBox(
   drawText(ctx, title, 20, posx, posy, 4);
 
   const padding = 11;
-  const boxWidth = 225;
-  const fontSize = 16;
+  const boxWidth = 235;
+  const fontSize = 20;
   const shadowOffset = 2;
   const radius = 10;
-  const maxLines = 3;
+  const maxLines = 4;
 
-  const boxX = posx + 20;
-  const boxY = posy + 20;
+  const boxX = posx + 10;
+  const boxY = posy + 15;
 
   // Word-wrap the value
   const allLines = wrapText(ctx, value, boxWidth - padding * 2, fontSize);
