@@ -13,15 +13,19 @@ const levelConfigSchema = new mongoose.Schema({
   },
   exp_points: {
     type: Number,
-    required: false,
+    required: true,
+  },
+  channel: {
+    type: String,
+    required: true,
   },
   reward: {
     type: Number,
-    required: false,
+    required: true,
   },
   reward_extra: {
     type: Number,
-    required: false,
+    required: true,
   },
 });
 

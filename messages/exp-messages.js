@@ -1,4 +1,6 @@
 const Levels = require("../models/levels");
+const LevelConfig = require("../models/level-config");
+const { handleLevelCommand, calculateExp } = require("../commands/level");
 
 // Keeps track of the last user who sent a message in each channel
 const lastMessageByUserInChannel = new Map();
@@ -17,7 +19,7 @@ function isEmojiOnly(content) {
   return stripped.length === 0;
 }
 
-async function handleExpMessages(message) {
+async function handleExpMessages(message, client) {
   const { author, content, channelId, guildId } = message;
   if (author.bot || !content || isEmojiOnly(content.trim())) return;
 
@@ -33,6 +35,16 @@ async function handleExpMessages(message) {
         { $inc: { message_count: 1 } },
         { upsert: true }
       );
+      const config = await LevelConfig.findOne({ guild_id: guildId });
+      if (!config) return;
+      const userLevel = await Levels.findOne({
+        guild_id: guildId,
+        user_id: message.author.id,
+      });
+      const { exp_percentage } = calculateExp(userLevel.message_count, config);
+      if (exp_percentage == 0) {
+        handleLevelCommand("", client, message.author.id, message);
+      }
     } catch (error) {
       console.error("Failed to update message_count:", error);
     }

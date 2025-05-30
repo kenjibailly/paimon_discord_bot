@@ -97,7 +97,7 @@ async function handleMessageReplies(message, client) {
   }
 
   // Handle regular messages for EXP tracking
-  await handleExpMessages(message);
+  await handleExpMessages(message, client);
 }
 
 module.exports = {

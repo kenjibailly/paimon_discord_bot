@@ -18,15 +18,18 @@ const levelGradients = [
   { min: 41, max: 50, colors: ["#45FF77", "#BC57FF"] },
 ];
 
-async function handleLevelCommand(interaction, client) {
+async function handleLevelCommand(interaction, client, user, message) {
   registerFont("./introduction/fonts/Nougat-ExtraBlack.ttf", {
     family: "Nougat", // This name must match what you'll use in ctx.font
     weight: "bold", // Optional: helps with clarity
   });
-  await interaction.deferReply();
 
-  const guildId = interaction.guildId;
-  const userId = interaction.user.id;
+  if (!user) {
+    await interaction.deferReply();
+  }
+
+  const guildId = user ? message.guildId : interaction.guildId;
+  const userId = user ? user : interaction.user.id;
 
   const config = await LevelConfig.findOne({ guild_id: guildId });
 
@@ -58,16 +61,26 @@ async function handleLevelCommand(interaction, client) {
 
   const canvas = await drawBackground(level);
   const ctx = canvas.getContext("2d");
-  await drawProfile(ctx, interaction);
-  drawText(
-    ctx,
-    interaction.user.globalName.toUpperCase(),
-    24,
-    142,
-    29 + 15,
-    2,
-    4
-  );
+  await drawProfile(ctx, interaction, user, client);
+
+  let displayName;
+
+  if (interaction?.user) {
+    displayName = interaction.user.globalName?.toUpperCase();
+  } else if (user && message?.author) {
+    displayName = message.author.globalName?.toUpperCase();
+  }
+
+  // Fallback in case globalName is null or undefined
+  if (!displayName) {
+    displayName =
+      interaction?.user?.username?.toUpperCase() ||
+      message?.author?.username?.toUpperCase() ||
+      "UNKNOWN USER";
+  }
+
+  drawText(ctx, displayName, 24, 142, 29 + 15, 2, 4);
+
   drawText(
     ctx,
     "LEVEL " + level,
@@ -95,7 +108,17 @@ async function handleLevelCommand(interaction, client) {
   const buffer = canvas.toBuffer("image/png");
   const attachment = new AttachmentBuilder(buffer, { name: "level-card.png" });
 
-  await interaction.editReply({ files: [attachment] });
+  if (user) {
+    const targetChannel = await client.channels
+      .fetch(config.channel)
+      .catch(() => null);
+    await targetChannel.send({
+      content: `🎉 <@${message.author.id}> leveled up!`,
+      files: [attachment],
+    });
+  } else {
+    await interaction.editReply({ files: [attachment] });
+  }
 }
 
 // Helper to draw rounded rect
@@ -159,7 +182,7 @@ async function drawBackground(level) {
   return canvas;
 }
 
-async function drawProfile(ctx, interaction) {
+async function drawProfile(ctx, interaction, user, client) {
   const img_width = 107;
   const img_height = 122;
   const image = await loadImage("./introduction/assets/pfp-star.png");
@@ -168,10 +191,22 @@ async function drawProfile(ctx, interaction) {
   ctx.restore();
 
   const imgSize = 73; // adjust as needed
-  const imageURL = interaction.user.displayAvatarURL({
-    extension: "png",
-    size: 512,
-  });
+  let imageURL;
+
+  if (interaction?.user) {
+    imageURL = interaction.user.displayAvatarURL({
+      extension: "png",
+      size: 512,
+    });
+  } else if (user && client) {
+    const userObj = await client.users.fetch(user).catch(() => null);
+    if (userObj) {
+      imageURL = userObj.displayAvatarURL({
+        extension: "png",
+        size: 512,
+      });
+    }
+  }
 
   try {
     const image = await loadImage(imageURL);
@@ -262,7 +297,7 @@ function calculateLevel(message_count, config) {
 
 function calculateExp(message_count, config) {
   const level = message_count / config.message_count; // current float level
-  const exp = level * config.exp_points; // total EXP accumulated
+  const exp = Math.round(level * config.exp_points); // total EXP accumulated
   const flooredLevel = Math.floor(level); // integer level
 
   const current_level_exp = flooredLevel * config.exp_points; // EXP needed to reach current level
@@ -275,7 +310,7 @@ function calculateExp(message_count, config) {
     100,
     Math.max(0, (exp_into_current_level / exp_needed_for_next_level) * 100)
   );
-
+  console.log(exp);
   return { exp, next_level_exp, exp_percentage };
 }
 
@@ -357,4 +392,4 @@ async function drawRewards(ctx, level, config) {
   }
 }
 
-module.exports = handleLevelCommand;
+module.exports = { handleLevelCommand, calculateExp };

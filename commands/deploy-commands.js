@@ -620,6 +620,12 @@ async function registerCommands(guildId) {
         required: true,
       },
       {
+        type: 7, // CHANNEL
+        name: "channel",
+        description: "Choose a channel",
+        required: true,
+      },
+      {
         type: 4, // INTEGER
         name: "reward",
         description:

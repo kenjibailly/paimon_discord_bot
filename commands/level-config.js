@@ -7,6 +7,7 @@ async function handleLevelConfigCommand(interaction) {
     const exp_points = interaction.options.getInteger("exp_points");
     const reward = interaction.options.getInteger("reward");
     const reward_extra = interaction.options.getInteger("reward_extra");
+    const channel = interaction.options.getChannel("channel");
 
     // Optionally: Store config per guild
     const guild_id = interaction.guildId;
@@ -19,6 +20,7 @@ async function handleLevelConfigCommand(interaction) {
         exp_points,
         reward,
         reward_extra,
+        channel,
       },
       { upsert: true, new: true }
     );

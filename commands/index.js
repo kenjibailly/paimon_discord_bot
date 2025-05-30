@@ -29,7 +29,7 @@ const handleIntroductionCommand = require("./introduction");
 const handleManageDailyCharacterPollCommand = require("./manage-daily-character-poll-command");
 const handleRegisterSlashCommandsCommand = require("./register-slash-commands");
 const handleLevelConfigCommand = require("./level-config");
-const handleLevelCommand = require("./level");
+const { handleLevelCommand } = require("./level");
 const handleSendEmbedCommand = require("./send-embed");
 const handleSetIntroductionChannelCommand = require("./set-introduction-channel");
 
