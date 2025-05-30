@@ -52,8 +52,6 @@ async function handleChooseModel(message, client) {
       { upsert: true, new: true }
     );
 
-    console.log(newModel);
-
     const title = `Change Model Success`;
     const description = `I successfully updated your model to: **${selected_model.name}**!`;
     const color = ""; // Changed to hex code for red

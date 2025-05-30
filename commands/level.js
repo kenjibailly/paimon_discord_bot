@@ -310,7 +310,6 @@ function calculateExp(message_count, config) {
     100,
     Math.max(0, (exp_into_current_level / exp_needed_for_next_level) * 100)
   );
-  console.log(exp);
   return { exp, next_level_exp, exp_percentage };
 }
 
@@ -322,7 +321,6 @@ async function drawExpBar(ctx, exp_percentage, gradientColors) {
 
   // Calculate width of progress bar (max width = 246)
   const progressWidth = (exp_percentage / 100) * 246;
-  // console.log(exp_percentage / 100);
 
   if (progressWidth <= 0) return; // nothing to draw if zero or negative
 
