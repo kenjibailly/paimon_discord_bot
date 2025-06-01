@@ -1,46 +1,83 @@
-const createEmbed = require('../helpers/embed');
+const createEmbed = require("../helpers/embed");
 
+async function handleCancelThreadButton(interaction, client) {
+  try {
+    const guild = await client.guilds.fetch(interaction.guildId);
 
-async function handleCancelThread(guild_id, channel_id, client) {
-    // Fetch the guild (server) using the guild_id from the interaction
-    const guild = await client.guilds.fetch(guild_id);
+    let thread;
+    try {
+      thread = await guild.channels.fetch(interaction.channelId);
+    } catch (err) {
+      console.warn(
+        `Thread fetch failed: ${
+          err.code === 10003 ? "Unknown Channel" : err.message
+        }`
+      );
+      return interaction.reply({
+        content: "This thread no longer exists.",
+        flags: 64, // EPHEMERAL
+      });
+    }
 
-    // Fetch the thread channel using the channel_id from the interaction
-    const thread = await guild.channels.fetch(channel_id);
+    const title = "Exit";
+    const description = `This thread will be closed shortly.`;
+    const color = "error";
+    const embed = createEmbed(title, description, color);
+
+    setTimeout(async () => {
+      try {
+        await thread.send({ embeds: [embed] });
+
+        const members = await thread.members.fetch();
+
+        for (const member of members.values()) {
+          if (member.id !== client.user.id) {
+            try {
+              await thread.members.remove(member.id);
+            } catch (removeErr) {
+              console.warn(
+                `Failed to remove member ${member.id}: ${removeErr.message}`
+              );
+            }
+          }
+        }
+      } catch (err) {
+        console.warn(
+          `Failed to send embed or fetch/remove members: ${err.message}`
+        );
+      }
+    }, 1000);
+
+    setTimeout(() => {
+      if (thread?.deletable) {
+        thread
+          .delete()
+          .catch((err) =>
+            console.warn(`Thread deletion failed: ${err.message}`)
+          );
+      }
+    }, 20000);
 
     try {
+      await interaction.deferUpdate();
+    } catch {}
+  } catch (error) {
+    console.error("Failed to close the thread:", error);
 
-        // Send a confirmation message before closing the thread
-        const title = "Exit";
-        const description = `This thread will be closed shortly.`;
-        const color = "error";
-        const embed = createEmbed(title, description, color);
+    const title = "Exit";
+    const description = `An error occurred while trying to close this thread.`;
+    const color = "error";
+    const embed = createEmbed(title, description, color);
 
-        setTimeout(async () => {
-            await thread.send({ embeds: [embed] });
-        }, 1000);
-
-        const members = await thread.members.fetch(); // Get all members of the thread
-
-        // Remove all members except the bot itself
-        members.forEach(async member => {
-            if (member.id !== client.user.id) { // `client.user.id` is the bot's ID
-                await thread.members.remove(member.id, 'Removing all members except the bot');
-            }
-        });
-
-        setTimeout(() => {
-            thread.delete();
-        }, 20000);
-
-    } catch (error) {
-        logger.error('Failed to close the thread:', error);
-        const title = "Error Thread";
-        const description = `Failed to close the thread. Please close the thread manually.`;
-        const color = "error";
-        const embed = createEmbed(title, description, color);
-        await thread.send({ embeds: [embed] });
+    try {
+      await interaction.editReply({
+        embeds: [embed],
+        flags: 64, // EPHEMERAL
+      });
+    } catch (editErr) {
+      console.warn(`Failed to edit interaction reply: ${editErr.message}`);
     }
+  }
 }
 
-module.exports = handleCancelThread;
+module.exports = handleCancelThreadButton;
