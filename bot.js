@@ -60,11 +60,11 @@ client.once(Events.ClientReady, () => {
 
   setInterval(() => {
     checkRemoveRewards(client);
-    checkDailyCharacterPoll(client);
   }, 86400000); // 24 hours in milliseconds 86400000
 
   setInterval(() => {
     checkTeamAssignment(client);
+    checkDailyCharacterPoll(client);
   }, 300000); // 5 minutes in milliseconds 300000
 });
 

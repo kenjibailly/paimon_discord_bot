@@ -1,6 +1,7 @@
 const createEmbed = require("../helpers/embed");
 
 async function handleCancelThreadButton(interaction, client) {
+  console.log("Deleting thread");
   try {
     const guild = await client.guilds.fetch(interaction.guildId);
 
@@ -48,13 +49,23 @@ async function handleCancelThreadButton(interaction, client) {
       }
     }, 1000);
 
-    setTimeout(() => {
-      if (thread?.deletable) {
-        thread
-          .delete()
-          .catch((err) =>
-            console.warn(`Thread deletion failed: ${err.message}`)
-          );
+    setTimeout(async () => {
+      if (!thread) {
+        console.warn("Thread is undefined.");
+        return;
+      }
+
+      try {
+        if (thread.archived) {
+          console.log("Thread is archived, unarchiving...");
+          await thread.setArchived(false);
+        }
+
+        console.log(`Attempting to delete thread: ${thread.id}`);
+        await thread.delete();
+        console.log(`Thread ${thread.id} deleted successfully`);
+      } catch (err) {
+        console.warn(`Thread deletion failed: ${err.message}`);
       }
     }, 20000);
 

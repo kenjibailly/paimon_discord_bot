@@ -1,51 +1,105 @@
-const createEmbed = require('../helpers/embed');
-
+const createEmbed = require("../helpers/embed");
 
 async function handleCancelThreadButton(interaction, client) {
+  try {
+    const guild = await client.guilds.fetch(interaction.guildId);
+
+    let thread;
     try {
-        // Fetch the guild (server) using the guild_id from the interaction
-        const guild = await client.guilds.fetch(interaction.guildId);
-        
-        // Fetch the thread channel using the channel_id from the interaction
-        const thread = await guild.channels.fetch(interaction.channelId);
-
-        // Send a confirmation message before closing the thread
-        const title = "Exit";
-        const description = `This thread will be closed shortly.`;
-        const color = "error";
-        const embed = createEmbed(title, description, color);
-
-        setTimeout(async () => {
-            await thread.send({ embeds: [embed] });
-
-            const members = await thread.members.fetch(); // Get all members of the thread
-
-            // Remove all members except the bot itself
-            members.forEach(async member => {
-                if (member.id !== client.user.id) { // `client.user.id` is the bot's ID
-                    await thread.members.remove(member.id, 'Removing all members except the bot');
-                }
-            });
-        }, 1000);
-
-        setTimeout(() => {
-            thread.delete();
-        }, 20000);
-
-        // Respond to the interaction to avoid the "This interaction failed" message
-        try {
-            await interaction.deferUpdate();
-        } catch {}
-    } catch (error) {
-        logger.error('Failed to close the thread:', error);
-
-        const title = "Exit";
-        const description = `This thread will be closed shortly.`;
-        const color = "error";
-        const embed = createEmbed(title, description, color);
-
-        await interaction.editReply({ embeds: [embed], ephemeral: true });
+      thread = await guild.channels.fetch(interaction.channelId);
+    } catch (err) {
+      console.warn(
+        `Thread fetch failed: ${
+          err.code === 10003 ? "Unknown Channel" : err.message
+        }`
+      );
+      return interaction.reply({
+        content: "This thread no longer exists.",
+        flags: 64, // EPHEMERAL
+      });
     }
+
+    const title = "Exit";
+    const description = `This thread will be closed shortly.`;
+    const color = "error";
+    const embed = createEmbed(title, description, color);
+
+    // Immediately defer the update
+    try {
+      await interaction.deferUpdate();
+    } catch {}
+
+    // Send embed and remove members (after 1s)
+    setTimeout(async () => {
+      try {
+        await thread.send({ embeds: [embed] });
+
+        const members = await thread.members.fetch();
+
+        for (const member of members.values()) {
+          if (member.id !== client.user.id) {
+            try {
+              await thread.members.remove(member.id);
+            } catch (removeErr) {
+              console.warn(
+                `Failed to remove member ${member.id}: ${removeErr.message}`
+              );
+            }
+          }
+        }
+      } catch (err) {
+        console.warn(`Failed to send embed or manage members: ${err.message}`);
+      }
+    }, 1000);
+
+    // Delete the thread (after 20s)
+    setTimeout(async () => {
+      try {
+        console.log(`Owner: ${thread.ownerId}, Bot: ${client.user.id}`);
+        console.log(`Archived: ${thread.archived}, Locked: ${thread.locked}`);
+
+        if (thread.archived) {
+          await thread.setArchived(false).catch(console.warn);
+        }
+
+        if (thread.locked) {
+          await thread.setLocked(false).catch(console.warn);
+        }
+
+        // Ensure bot is a member
+        const botThreadMember = await thread.members
+          .fetch(client.user.id)
+          .catch(() => null);
+        console.log("Bot is thread member:", !!botThreadMember);
+
+        if (!botThreadMember) {
+          console.log("Adding bot to thread as member...");
+          await thread.members.add(client.user.id).catch(console.warn);
+        }
+
+        await thread.delete();
+        console.log("Thread deleted successfully.");
+      } catch (err) {
+        console.warn(`Thread deletion failed: ${err.message}`);
+      }
+    }, 20000);
+  } catch (error) {
+    console.error("Failed to close the thread:", error);
+
+    const title = "Exit";
+    const description = `An error occurred while trying to close this thread.`;
+    const color = "error";
+    const embed = createEmbed(title, description, color);
+
+    try {
+      await interaction.editReply({
+        embeds: [embed],
+        flags: 64,
+      });
+    } catch (editErr) {
+      console.warn(`Failed to edit interaction reply: ${editErr.message}`);
+    }
+  }
 }
 
 module.exports = handleCancelThreadButton;
