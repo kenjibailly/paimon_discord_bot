@@ -171,7 +171,7 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.isRepliable()) {
       await interaction.reply({
         content: "There was an error processing your request.",
-        ephemeral: true,
+        flags: 64, // ephemeral
       });
     }
   }

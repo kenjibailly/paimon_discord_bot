@@ -31,7 +31,7 @@ async function handleLevelConfigCommand(interaction) {
       ""
     );
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({ embeds: [embed], flags: 64 });
   } catch (error) {
     console.error("Error saving level config:", error);
 
@@ -41,7 +41,7 @@ async function handleLevelConfigCommand(interaction) {
       "error"
     );
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({ embeds: [embed], flags: 64 });
   }
 }
 

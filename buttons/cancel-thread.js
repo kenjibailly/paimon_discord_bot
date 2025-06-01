@@ -55,8 +55,8 @@ async function handleCancelThreadButton(interaction, client) {
     // Delete the thread (after 20s)
     setTimeout(async () => {
       try {
-        console.log(`Owner: ${thread.ownerId}, Bot: ${client.user.id}`);
-        console.log(`Archived: ${thread.archived}, Locked: ${thread.locked}`);
+        // logger.log(`Owner: ${thread.ownerId}, Bot: ${client.user.id}`);
+        // logger.log(`Archived: ${thread.archived}, Locked: ${thread.locked}`);
 
         if (thread.archived) {
           await thread.setArchived(false).catch(console.warn);
@@ -70,15 +70,15 @@ async function handleCancelThreadButton(interaction, client) {
         const botThreadMember = await thread.members
           .fetch(client.user.id)
           .catch(() => null);
-        console.log("Bot is thread member:", !!botThreadMember);
+        // logger.log("Bot is thread member:", !!botThreadMember);
 
         if (!botThreadMember) {
-          console.log("Adding bot to thread as member...");
+          //   logger.log("Adding bot to thread as member...");
           await thread.members.add(client.user.id).catch(console.warn);
         }
 
         await thread.delete();
-        console.log("Thread deleted successfully.");
+        // logger.log("Thread deleted successfully.");
       } catch (err) {
         console.warn(`Thread deletion failed: ${err.message}`);
       }

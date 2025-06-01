@@ -5,7 +5,7 @@ const getWalletConfig = require("../helpers/get-wallet-config");
 async function handleAwardUserCommand(interaction, client) {
   const { member, guildId } = interaction;
 
-  await interaction.deferReply({ ephemeral: false });
+  await interaction.deferReply();
 
   const userId = interaction.options.getUser("user")?.id;
   const amount = interaction.options.getInteger("amount");
@@ -17,7 +17,7 @@ async function handleAwardUserCommand(interaction, client) {
       "User ID or amount is missing.",
       "error"
     );
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
     return;
   }
 
@@ -27,7 +27,7 @@ async function handleAwardUserCommand(interaction, client) {
 
     // Handle config errors returned as an embed
     if (config.data) {
-      await interaction.editReply({ embeds: [config], ephemeral: true });
+      await interaction.editReply({ embeds: [config], flags: 64 });
       return;
     }
 
@@ -90,7 +90,7 @@ async function handleAwardUserCommand(interaction, client) {
       "An error occurred while processing the request.",
       "error"
     );
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 }
 

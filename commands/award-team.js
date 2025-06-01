@@ -5,7 +5,7 @@ const getWalletConfig = require("../helpers/get-wallet-config");
 async function handleAwardTeamCommand(interaction, client) {
   const { member, guildId } = interaction;
 
-  await interaction.deferReply({ ephemeral: false });
+  await interaction.deferReply();
 
   const role = interaction.options.getRole("role").id;
   const amount = interaction.options.getInteger("amount");
@@ -23,7 +23,7 @@ async function handleAwardTeamCommand(interaction, client) {
     if (tokenEmojiConfig.data) {
       await interaction.editReply({
         embeds: [tokenEmojiConfig],
-        ephemeral: true,
+        flags: 64, // ephemeral
       });
       return;
     }

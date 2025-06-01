@@ -12,7 +12,7 @@ async function handleSendEmbedFileCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 
   const channel = interaction.options.getChannel("channel");
@@ -24,7 +24,7 @@ async function handleSendEmbedFileCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 
   if (!file || !file.name.endsWith(".json")) {
@@ -33,7 +33,7 @@ async function handleSendEmbedFileCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 
   try {
@@ -48,7 +48,7 @@ async function handleSendEmbedFileCommand(interaction, client) {
       const color = "error";
       const embed = createEmbed(title, description, color);
 
-      return await interaction.editReply({ embeds: [embed], ephemeral: true });
+      return await interaction.editReply({ embeds: [embed], flags: 64 });
     }
 
     // Convert JSON data to Embed objects
@@ -80,7 +80,7 @@ async function handleSendEmbedFileCommand(interaction, client) {
     const color = "";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return await interaction.editReply({ embeds: [embed], flags: 64 });
   } catch (error) {
     logger.error("Error processing JSON file:", error);
     const title = "JSON Error";
@@ -88,7 +88,7 @@ async function handleSendEmbedFileCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 }
 

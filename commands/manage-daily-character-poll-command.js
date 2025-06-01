@@ -13,7 +13,7 @@ async function handleManageDailyCharacterPollCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 
   try {
@@ -33,14 +33,14 @@ async function handleManageDailyCharacterPollCommand(interaction, client) {
     const color = "";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   } catch (err) {
     const title = "Daily Character Poll";
     const description = `❌ Something went wrong while updating the configuration.`;
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
     logger.error("Error updating poll config:", err);
   }
 }

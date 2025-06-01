@@ -16,7 +16,7 @@ async function handleSetAllRewardsCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
     return;
   }
 
@@ -51,7 +51,7 @@ async function handleSetAllRewardsCommand(interaction, client) {
     const color = "";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   } catch (error) {
     logger.error("Error updating rewards:", error);
 
@@ -60,7 +60,7 @@ async function handleSetAllRewardsCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 }
 

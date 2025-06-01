@@ -109,7 +109,7 @@ async function handleIntroductionCommand(interaction, client) {
       // No config or missing channel: fallback to replying directly
       if (!introductionConfig || !introductionConfig.channel) {
         // Defer reply once at the top
-        await interaction.deferReply({ ephemeral: false });
+        await interaction.deferReply();
         message = await interaction.editReply({
           content: `📢 <@${userId}> has introduced themselves!`,
           files: [attachment],
@@ -138,8 +138,8 @@ async function handleIntroductionCommand(interaction, client) {
             ""
           );
           // Defer reply once at the top
-          await interaction.deferReply({ ephemeral: true });
-          await interaction.editReply({ embeds: [embed], ephemeral: true });
+          await interaction.deferReply({ flags: 64 });
+          await interaction.editReply({ embeds: [embed], flags: 64 });
 
           await Introductions.findOneAndUpdate(
             { guild_id: guildId, user_id: userId },
@@ -153,7 +153,7 @@ async function handleIntroductionCommand(interaction, client) {
             "❌ Couldn't send the message in the configured channel. Please contact an admin.",
             "error"
           );
-          await interaction.editReply({ embeds: [embed], ephemeral: true });
+          await interaction.editReply({ embeds: [embed], flags: 64 });
         }
       } else {
         const embed = createEmbed(
@@ -161,7 +161,7 @@ async function handleIntroductionCommand(interaction, client) {
           "❌ Configured channel could not be found. Please contact an admin.",
           "error"
         );
-        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], flags: 64 });
       }
     } else {
       // Updating existing intro
@@ -183,7 +183,7 @@ async function handleIntroductionCommand(interaction, client) {
         );
         try {
           // Defer reply once at the top
-          await interaction.deferReply({ ephemeral: true });
+          await interaction.deferReply({ flags: 64 });
           await interaction.editReply({ embeds: [embed] });
         } catch (error) {
           logger.error(error);
@@ -212,7 +212,7 @@ async function handleIntroductionCommand(interaction, client) {
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply({ embeds: [embed] });
     } else {
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+      await interaction.reply({ embeds: [embed], flags: 64 });
     }
   }
 }
@@ -631,7 +631,7 @@ async function drawTextBox(
     error = true;
     return interaction.reply({
       content: `❌ Text too long for box: "${box}", please make it shorter. You can copy your previous command by clicking on the blue introduction button on this message so you don't have to start over.`,
-      ephemeral: true,
+      flags: 64, // ephemeral
     });
   }
 

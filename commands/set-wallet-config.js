@@ -19,7 +19,7 @@ async function handleSetWalletConfigCommand(interaction, client) {
       "A token emoji must be provided.",
       "error"
     );
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
     return;
   }
 
@@ -88,7 +88,7 @@ async function handleSetWalletConfigCommand(interaction, client) {
     }
 
     const embed = createEmbed("Wallet Configuration Updated", desc, "");
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   } catch (error) {
     logger.error("Error updating wallet config:", error);
 
@@ -97,7 +97,7 @@ async function handleSetWalletConfigCommand(interaction, client) {
       "An error occurred while updating the wallet configuration. Please try again later.",
       "error"
     );
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 }
 

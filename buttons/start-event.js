@@ -44,7 +44,7 @@ async function handleStartEventAddGameButton(interaction, client) {
             ],
           },
         ],
-        ephemeral: true,
+        flags: 64, // ephemeral
       });
     } else {
       const title = "No games found";
@@ -78,7 +78,7 @@ async function handleStartEventAddGameButton(interaction, client) {
     const embed = createEmbed(title, description, color);
 
     userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
     cancelThread(interaction, client);
   }
 }
@@ -109,7 +109,7 @@ async function handleStartEventNoGameButton(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
     return;
   }
 

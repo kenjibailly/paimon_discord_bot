@@ -15,7 +15,7 @@ async function handleDownloadEmbedFileCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 
   // Extract the message link
@@ -33,7 +33,7 @@ async function handleDownloadEmbedFileCommand(interaction, client) {
     );
     return await interaction.editReply({
       embeds: [errorEmbed],
-      ephemeral: true,
+      flags: 64, // ephemeral
     });
   }
 
@@ -73,7 +73,7 @@ async function handleDownloadEmbedFileCommand(interaction, client) {
     await interaction.editReply({
       embeds: [successEmbed],
       files: [attachment],
-      ephemeral: true,
+      flags: 64, // ephemeral
     });
   } catch (error) {
     console.error("Error fetching message:", error);
@@ -82,7 +82,7 @@ async function handleDownloadEmbedFileCommand(interaction, client) {
       "❌ Unable to fetch the message. Please ensure the bot has access to the channel and the message exists.",
       "error"
     );
-    await interaction.editReply({ embeds: [errorEmbed], ephemeral: true });
+    await interaction.editReply({ embeds: [errorEmbed], flags: 64 });
   }
 }
 

@@ -30,7 +30,7 @@ async function handleSlashCommand(interaction, client) {
     // Reply to the user with an ephemeral message
     await interaction.editReply({
       embeds: [embed],
-      ephemeral: true, // This will make the reply visible only to the user
+      flags: 64, // ephemeral // This will make the reply visible only to the user
     });
   }
 }
@@ -54,7 +54,7 @@ async function handleButtonClicks(interaction, client) {
     // Update the interaction with an error message (ephemeral)
     await interaction.editReply({
       embeds: [embed],
-      ephemeral: true, // This will make the reply visible only to the user
+      flags: 64, // ephemeral // This will make the reply visible only to the user
     });
   }
 }

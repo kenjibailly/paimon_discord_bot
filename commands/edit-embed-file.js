@@ -12,7 +12,7 @@ async function handleEditEmbedFileCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 
   // Extract the message link
@@ -31,7 +31,7 @@ async function handleEditEmbedFileCommand(interaction, client) {
     );
     return await interaction.editReply({
       embeds: [errorEmbed],
-      ephemeral: true,
+      flags: 64, // ephemeral
     });
   }
 
@@ -44,7 +44,7 @@ async function handleEditEmbedFileCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 
   try {
@@ -59,7 +59,7 @@ async function handleEditEmbedFileCommand(interaction, client) {
       const color = "error";
       const embed = createEmbed(title, description, color);
 
-      return await interaction.editReply({ embeds: [embed], ephemeral: true });
+      return await interaction.editReply({ embeds: [embed], flags: 64 });
     }
 
     // Fetch the channel and the message
@@ -91,7 +91,7 @@ async function handleEditEmbedFileCommand(interaction, client) {
     const color = "";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return await interaction.editReply({ embeds: [embed], flags: 64 });
   } catch (error) {
     console.error("Error processing JSON file:", error);
     const title = "JSON Error";
@@ -99,7 +99,7 @@ async function handleEditEmbedFileCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], ephemeral: true });
+    return await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 }
 

@@ -19,7 +19,7 @@ async function handleRegisterSlashCommandsCommand(interaction) {
       `✅ Slash commands successfully registered for **${guild.name}**.`,
       ""
     );
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   } catch (err) {
     logger.error(`Failed to register commands for ${guild.name}:`, err);
 
@@ -29,7 +29,7 @@ async function handleRegisterSlashCommandsCommand(interaction) {
       `❌ Could not register commands for **${guild.name}**.`,
       "error"
     );
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 }
 

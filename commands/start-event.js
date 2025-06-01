@@ -20,7 +20,7 @@ async function handleStartEventCommand(interaction, client) {
       const description = `You already have an ongoing event, please let it finish or cancel it using the \`/cancel-event\` command.`;
       const color = "error";
       const embed = createEmbed(title, description, color);
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
+      await interaction.editReply({ embeds: [embed], flags: 64 });
       return;
     }
 
@@ -42,7 +42,7 @@ async function handleStartEventCommand(interaction, client) {
       const color = "error";
       const embed = createEmbed(title, description, color);
 
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
+      await interaction.editReply({ embeds: [embed], flags: 64 });
       return;
     }
 
@@ -223,12 +223,12 @@ async function handleStartEventCommand(interaction, client) {
     title = "Start Event";
     description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
     embed = createEmbed(title, description, "");
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   } catch (error) {
     logger.error("Error handling start event command:", error);
     await interaction.editReply({
       content: "An error occurred while handling the command.",
-      ephemeral: true, // Ephemeral message
+      flags: 64, // ephemeral // Ephemeral message
     });
   }
 }

@@ -39,7 +39,7 @@ async function handleStartEventNextGameButton(interaction, client) {
     const embed = createEmbed(title, description, color);
 
     // Send a confirmation message before closing the thread
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
     return;
   }
 

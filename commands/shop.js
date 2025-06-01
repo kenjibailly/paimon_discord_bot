@@ -3,7 +3,7 @@ const getWalletConfig = require("../helpers/get-wallet-config");
 const Rewards = require("../models/rewards");
 
 async function handleShopCommand(interaction, client) {
-  await interaction.deferReply({ ephemeral: false });
+  await interaction.deferReply();
   let tokenEmoji;
   const rewards_list = [];
   try {
@@ -37,7 +37,7 @@ async function handleShopCommand(interaction, client) {
     const description = `I could not find the rewards in the database. Pleae contact the administrator.`;
     const color = "error";
     const embed = createEmbed(title, description, color);
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
     return;
   }
   const title = "Shop";

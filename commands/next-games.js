@@ -4,7 +4,7 @@ const createEmbed = require("../helpers/embed");
 
 async function handleNextGamesCommand(interaction, client) {
   const { guildId } = interaction;
-  await interaction.deferReply({ ephemeral: false });
+  await interaction.deferReply();
   try {
     const upcoming_games = await NextGames.find({ guild_id: guildId }).sort({
       date: 1,
@@ -14,7 +14,7 @@ async function handleNextGamesCommand(interaction, client) {
       const description = `I couldn't find any upcoming games.`;
       const color = "error";
       const embed = createEmbed(title, description, color);
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
+      await interaction.editReply({ embeds: [embed], flags: 64 });
       return;
     }
 

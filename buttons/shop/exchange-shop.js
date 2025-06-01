@@ -1,84 +1,82 @@
-const createEmbed = require('../../helpers/embed');
-const Rewards = require('../../models/rewards');
+const createEmbed = require("../../helpers/embed");
+const Rewards = require("../../models/rewards");
 
 async function handleExchangeShopButton(interaction, client) {
-    // Step 1: Create a thread
-    const guild = await client.guilds.fetch(interaction.guildId);
-    const channel = await guild.channels.fetch(interaction.channelId);
+  // Step 1: Create a thread
+  const guild = await client.guilds.fetch(interaction.guildId);
+  const channel = await guild.channels.fetch(interaction.channelId);
 
-    // Create a private thread that is only visible to the user who clicked the button
-    const thread = await channel.threads.create({
-        name: `Shop - ${interaction.member.user.globalName}`, // Ensure you use the correct user property
-        autoArchiveDuration: 60, // Archive the thread after 60 minutes of inactivity
-        reason: 'User initiated exchange shop interaction',
-        invitable: false, // Don't allow other users to join the thread
-        type: 12, // Private Thread (only visible to members who are added)
+  // Create a private thread that is only visible to the user who clicked the button
+  const thread = await channel.threads.create({
+    name: `Shop - ${interaction.member.user.globalName}`, // Ensure you use the correct user property
+    autoArchiveDuration: 60, // Archive the thread after 60 minutes of inactivity
+    reason: "User initiated exchange shop interaction",
+    invitable: false, // Don't allow other users to join the thread
+    type: 12, // Private Thread (only visible to members who are added)
+  });
+
+  // Add the user who clicked the button to the thread
+  await thread.members.add(interaction.member.user.id);
+
+  let options_list = [];
+  try {
+    const rewards = await Rewards.find({ guild_id: interaction.guildId });
+    rewards.forEach((reward) => {
+      if (reward.enable === true) {
+        const add_reward = {
+          label: reward.short_description,
+          value: reward.name,
+        };
+        options_list.push(add_reward);
+      }
     });
+  } catch (error) {
+    const title = "Error Rewards";
+    const description = `I could not find the rewards in the database. Pleae contact the administrator.`;
+    const embed = createEmbed(title, description, "");
+    await interaction.editReply({ embeds: [embed], flags: 64 });
+    return;
+  }
 
-    // Add the user who clicked the button to the thread
-    await thread.members.add(interaction.member.user.id);
+  // Post the message in the thread
+  let title = "Shop";
+  let description = `Please choose one of the following options to redeem:`;
+  let embed = createEmbed(title, description, "");
 
-    let options_list = [];
-    try {
-        const rewards = await Rewards.find({ guild_id: interaction.guildId });
-        rewards.forEach(reward => {
-            if (reward.enable === true) {
-                const add_reward = {
-                    label: reward.short_description,
-                    value: reward.name,
-                }
-                options_list.push(add_reward);
-            }
-        });
-    } catch (error) {
-        const title = "Error Rewards";
-        const description = `I could not find the rewards in the database. Pleae contact the administrator.`;
-        const embed = createEmbed(title, description, "");
-        await interaction.editReply({ embeds: [embed], ephemeral: true });
-        return;
-    }
-    
-
-    // Post the message in the thread
-    let title = "Shop";
-    let description = `Please choose one of the following options to redeem:`;
-    let embed = createEmbed(title, description, "");
-
-    // Send the message to the thread
-    const message = await thread.send({
-        content: 'Please select an option from the dropdown below:',
-        embeds: [embed],
+  // Send the message to the thread
+  const message = await thread.send({
+    content: "Please select an option from the dropdown below:",
+    embeds: [embed],
+    components: [
+      {
+        type: 1, // Action Row
         components: [
-            {
-                type: 1, // Action Row
-                components: [
-                    {
-                        type: 3, // Select Menu
-                        custom_id: 'exchange-shop-menu',
-                        options: options_list,
-                        placeholder: 'Select an option...',
-                    },
-                ],
-            },
-            {
-                type: 1, // Action Row
-                components: [
-                    {
-                        type: 2, // Button
-                        style: 4, // Danger style
-                        label: "Cancel",
-                        custom_id: "cancel-thread"
-                    }
-                ],
-            },
+          {
+            type: 3, // Select Menu
+            custom_id: "exchange-shop-menu",
+            options: options_list,
+            placeholder: "Select an option...",
+          },
         ],
-    });
-    
+      },
+      {
+        type: 1, // Action Row
+        components: [
+          {
+            type: 2, // Button
+            style: 4, // Danger style
+            label: "Cancel",
+            custom_id: "cancel-thread",
+          },
+        ],
+      },
+    ],
+  });
 
-    title = "Shop";
-    description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
-    embed = createEmbed(title, description, "");
-    await interaction.followUp({ embeds: [embed], ephemeral: true });
+  title = "Shop";
+  description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
+  embed = createEmbed(title, description, "");
+  await interaction.followUp({ embeds: [embed], flags: 64 });
 }
 
 module.exports = handleExchangeShopButton;

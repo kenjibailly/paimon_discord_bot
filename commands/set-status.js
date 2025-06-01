@@ -17,7 +17,7 @@ async function handleSetStatusCommand(interaction, client) {
     const color = "";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   } catch (error) {
     logger.error("Set Status Error:", error);
     const title = "Status Set Error";
@@ -25,7 +25,7 @@ async function handleSetStatusCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 }
 

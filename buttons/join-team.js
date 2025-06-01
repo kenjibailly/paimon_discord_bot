@@ -35,7 +35,7 @@ async function handleJoinTeamButton(interaction, client) {
       const color = "error";
       const embed = createEmbed(title, description, color);
 
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
+      await interaction.editReply({ embeds: [embed], flags: 64 });
       return;
     }
 
@@ -50,7 +50,7 @@ async function handleJoinTeamButton(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.editReply({ embeds: [embed], ephemeral: true });
+        await interaction.editReply({ embeds: [embed], flags: 64 });
         return;
       }
     }
@@ -69,7 +69,7 @@ async function handleJoinTeamButton(interaction, client) {
       const color = "error";
       const embed = createEmbed(title, description, color);
 
-      await interaction.followUp({ embeds: [embed], ephemeral: true });
+      await interaction.followUp({ embeds: [embed], flags: 64 });
       return;
     }
 
@@ -94,7 +94,7 @@ async function handleJoinTeamButton(interaction, client) {
     const color = "";
     const embed = createEmbed(title, description, color);
 
-    await interaction.followUp({ embeds: [embed], ephemeral: true });
+    await interaction.followUp({ embeds: [embed], flags: 64 });
   } catch (error) {
     logger.error("Join Event Error:", error);
     const title = "Join Event Error";
@@ -102,7 +102,7 @@ async function handleJoinTeamButton(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    await interaction.followUp({ embeds: [embed], ephemeral: true });
+    await interaction.followUp({ embeds: [embed], flags: 64 });
   }
 }
 

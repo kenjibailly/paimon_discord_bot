@@ -5,7 +5,7 @@ const getWalletConfig = require("../helpers/get-wallet-config");
 async function handleDeductUserCommand(interaction, client) {
   const { member, guildId } = interaction;
 
-  await interaction.deferReply({ ephemeral: false });
+  await interaction.deferReply();
 
   const userId = interaction.options.getUser("user").id;
   const amount = interaction.options.getInteger("amount"); // Normal currency
@@ -20,7 +20,7 @@ async function handleDeductUserCommand(interaction, client) {
       `You must specify at least one amount to deduct.`,
       "error"
     );
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
     return;
   }
 
@@ -28,7 +28,7 @@ async function handleDeductUserCommand(interaction, client) {
     const config = await getWalletConfig(guildId);
 
     if (config.data) {
-      await interaction.editReply({ embeds: [config], ephemeral: true });
+      await interaction.editReply({ embeds: [config], flags: 64 });
       return;
     }
 
@@ -42,7 +42,7 @@ async function handleDeductUserCommand(interaction, client) {
         `The specified user does not yet have a wallet.`,
         "error"
       );
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
+      await interaction.editReply({ embeds: [embed], flags: 64 });
       return;
     }
 
@@ -62,7 +62,7 @@ async function handleDeductUserCommand(interaction, client) {
           `.\nNot enough funds to complete the deduction.`,
         "error"
       );
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
+      await interaction.editReply({ embeds: [embed], flags: 64 });
       return;
     }
 
@@ -98,7 +98,7 @@ async function handleDeductUserCommand(interaction, client) {
       `An error occurred while processing the request.`,
       "error"
     );
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 }
 

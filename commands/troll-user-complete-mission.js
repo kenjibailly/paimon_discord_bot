@@ -9,7 +9,7 @@ const fetch = (...args) =>
 async function handleTrollUserCompleteMissionCommand(interaction, client) {
   const { guildId } = interaction;
 
-  await interaction.deferReply({ ephemeral: false });
+  await interaction.deferReply();
 
   // Find each option by name
   const complete_user = interaction.options.getUser("user").id;

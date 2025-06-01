@@ -3,7 +3,7 @@ const createEmbed = require("../helpers/embed");
 
 async function handleGamesCommand(interaction, client) {
   const { guildId } = interaction;
-  await interaction.deferReply({ ephemeral: false });
+  await interaction.deferReply();
   try {
     const games = await Games.find({ guild_id: guildId });
 
@@ -12,7 +12,7 @@ async function handleGamesCommand(interaction, client) {
       const description = `I couldn't find any games.`;
       const color = "error";
       const embed = createEmbed(title, description, color);
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
+      await interaction.editReply({ embeds: [embed], flags: 64 });
       return;
     }
 

@@ -39,7 +39,7 @@ async function handleLevelCommand(interaction, client, user, message) {
       "This server has not configured its level system yet.",
       "error"
     );
-    return interaction.editReply({ embeds: [errorEmbed], ephemeral: true });
+    return interaction.editReply({ embeds: [errorEmbed], flags: 64 });
   }
 
   let userLevel = await Levels.findOne({ guild_id: guildId, user_id: userId });

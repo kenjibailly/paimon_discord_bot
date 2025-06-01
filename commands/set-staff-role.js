@@ -17,7 +17,7 @@ async function handleStaffRoleCommand(interaction, client) {
     const description = `✅ Staff role has been set to <@&${staffRoleId}>.`;
     const embed = createEmbed(title, description, "");
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   } catch (error) {
     logger.error("Error saving staff role:", error);
     const title = "Staff Role";
@@ -25,7 +25,7 @@ async function handleStaffRoleCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 }
 

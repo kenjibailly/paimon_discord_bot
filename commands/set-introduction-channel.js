@@ -19,7 +19,7 @@ async function handleSetIntroductionChannelCommand(interaction, client) {
     const color = "";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   } catch (error) {
     logger.error("Introduction Channel Error:", error);
     const title = "Introduction Channel Error";
@@ -27,7 +27,7 @@ async function handleSetIntroductionChannelCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    await interaction.editReply({ embeds: [embed], ephemeral: true });
+    await interaction.editReply({ embeds: [embed], flags: 64 });
   }
 }
 

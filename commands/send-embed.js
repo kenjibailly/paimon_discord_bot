@@ -7,8 +7,8 @@ async function handleSendEmbedCommand(interaction, client) {
     const color = interaction.options.getString("color") || "#9800FF";
 
     const embed = createEmbed(title, message, color);
-    await interaction.deferReply({ ephemeral: false });
-    await interaction.editReply({ embeds: [embed], ephemeral: false });
+    await interaction.deferReply();
+    await interaction.editReply({ embeds: [embed] });
   } catch (error) {
     console.error("Error handling /send-embed:", error);
 
@@ -20,9 +20,9 @@ async function handleSendEmbedCommand(interaction, client) {
 
     // Just edit the original reply if already deferred
     if (interaction.deferred || interaction.replied) {
-      await interaction.editReply({ embeds: [embed], ephemeral: true });
+      await interaction.editReply({ embeds: [embed], flags: 64 });
     } else {
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+      await interaction.reply({ embeds: [embed], flags: 64 });
     }
   }
 }
