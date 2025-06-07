@@ -27,6 +27,11 @@ const levelConfigSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  ignored_channels: {
+    type: [String], // or Array<String>
+    required: false,
+    default: [],
+  },
 });
 
 // Create a model using the schema

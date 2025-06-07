@@ -23,6 +23,13 @@ async function handleExpMessages(message, client) {
   const { author, content, channelId, guildId } = message;
   if (author.bot || !content || isEmojiOnly(content.trim())) return;
 
+  // Fetch level config to check ignored channels
+  const config = await LevelConfig.findOne({ guild_id: guildId });
+  if (!config) return;
+
+  // Ignore if the current channel is in the ignored list
+  if (config.ignored_channels.includes(channelId)) return;
+
   const lastUserId = lastMessageByUserInChannel.get(channelId);
 
   // Only count if someone else has spoken since this user last messaged
@@ -35,14 +42,14 @@ async function handleExpMessages(message, client) {
         { $inc: { message_count: 1 } },
         { upsert: true }
       );
-      const config = await LevelConfig.findOne({ guild_id: guildId });
-      if (!config) return;
+
       const userLevel = await Levels.findOne({
         guild_id: guildId,
         user_id: message.author.id,
       });
+
       const { exp_percentage } = calculateExp(userLevel.message_count, config);
-      if (exp_percentage == 0) {
+      if (exp_percentage === 0) {
         handleLevelCommand("", client, message.author.id, message);
       }
     } catch (error) {
