@@ -587,7 +587,7 @@ async function registerCommands(guildId) {
         required: true,
       },
       {
-        type: 7, // ROLE
+        type: 7, // CHANNEL
         name: "channel",
         description:
           "In which channel should the daily character poll be posted?",
@@ -647,6 +647,27 @@ async function registerCommands(guildId) {
     description: "Check out your current level",
   };
 
+  const JOIN_LEAVE_CONFIG_COMMAND = {
+    name: "join-leave-config",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    description:
+      "Configure a secret channel people with access to the command can join or leave.",
+    options: [
+      {
+        type: 7, // CHANNEL
+        name: "channel",
+        description: "Choose a channel to be configured for join and leave.",
+        required: true,
+      },
+    ],
+  };
+
+  const JOIN_LEAVE_COMMAND = {
+    name: "join-leave",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    description: "Join or leave channel",
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -680,6 +701,8 @@ async function registerCommands(guildId) {
     REGISTER_SLASH_COMMANDS_COMMAND,
     LEVEL_CONFIG_COMMAND,
     LEVEL_COMMAND,
+    JOIN_LEAVE_CONFIG_COMMAND,
+    JOIN_LEAVE_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];

@@ -151,6 +151,8 @@ client.on("interactionCreate", async (interaction) => {
         "manage-daily-character-poll",
         "register-slash-commands",
         "set-introduction-channel",
+        "join-leave",
+        "join-leave-config",
       ];
 
       const commandName = interaction.commandName;
