@@ -310,7 +310,7 @@ function calculateExp(message_count, config) {
     100,
     Math.max(0, (exp_into_current_level / exp_needed_for_next_level) * 100)
   );
-  return { exp, next_level_exp, exp_percentage };
+  return { level, exp, next_level_exp, exp_percentage };
 }
 
 async function drawExpBar(ctx, exp_percentage, gradientColors) {
