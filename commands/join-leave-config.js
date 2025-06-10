@@ -4,18 +4,21 @@ const createEmbed = require("../helpers/embed");
 async function handleJoinLeaveConfigCommand(interaction) {
   try {
     const channel = interaction.options.getChannel("channel");
+    const channel2 = interaction.options.getChannel("channel2");
 
-    // Optionally: Store config per guild
     const guild_id = interaction.guildId;
 
-    // Upsert (update or create) the level config
-    await JoinLeaveConfig.findOneAndUpdate(
-      { guild_id },
-      {
-        channel,
-      },
-      { upsert: true, new: true }
-    );
+    // Build the update object dynamically
+    const update = { channel };
+
+    if (channel2) {
+      update.channel2 = channel2;
+    }
+
+    await JoinLeaveConfig.findOneAndUpdate({ guild_id }, update, {
+      upsert: true,
+      new: true,
+    });
 
     const embed = createEmbed(
       "Join Leave Configuration Updated",

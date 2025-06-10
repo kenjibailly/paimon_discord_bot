@@ -15,8 +15,12 @@ async function handleJoinLeaveCommand(interaction) {
     });
   }
 
-  const channel = guild.channels.cache.get(config.channel);
-  if (!channel) {
+  const mainChannel = guild.channels.cache.get(config.channel);
+  const secondaryChannel = config.channel2
+    ? guild.channels.cache.get(config.channel2)
+    : null;
+
+  if (!mainChannel) {
     const embed = createEmbed(
       "Error",
       `Configured channel not found.`,
@@ -29,51 +33,55 @@ async function handleJoinLeaveCommand(interaction) {
   }
 
   try {
-    // Get current permission overwrite for the user
-    const currentPerms = channel.permissionOverwrites.cache.get(member.id);
-
-    const canView = member
-      .permissionsIn(channel)
+    const hasMainView = member
+      .permissionsIn(mainChannel)
       .has(PermissionsBitField.Flags.ViewChannel);
-    const canSend = member
-      .permissionsIn(channel)
+    const hasMainSend = member
+      .permissionsIn(mainChannel)
       .has(PermissionsBitField.Flags.SendMessages);
 
-    if (canView && canSend) {
-      // Revoke view/send permissions
-      await channel.permissionOverwrites.edit(member, {
-        ViewChannel: false,
-        SendMessages: false,
-      });
+    const hasSecondaryView = secondaryChannel
+      ? member
+          .permissionsIn(secondaryChannel)
+          .has(PermissionsBitField.Flags.ViewChannel)
+      : false;
+    const hasSecondarySend = secondaryChannel
+      ? member
+          .permissionsIn(secondaryChannel)
+          .has(PermissionsBitField.Flags.SendMessages)
+      : false;
 
-      const embed = createEmbed(
-        "Success",
-        `Your access to <#${channel.id}> has been removed.`,
-        ""
-      );
+    const shouldRevoke = hasMainView && hasMainSend;
 
-      await interaction.editReply({
-        embeds: [embed],
-        flags: 64,
-      });
-    } else {
-      // Grant view/send permissions
-      await channel.permissionOverwrites.edit(member, {
-        ViewChannel: true,
-        SendMessages: true,
-      });
+    // Apply permission changes
+    await mainChannel.permissionOverwrites.edit(member, {
+      ViewChannel: !shouldRevoke,
+      SendMessages: !shouldRevoke,
+    });
 
-      const embed = createEmbed(
-        "Success",
-        `You now have access to <#${channel.id}>.`,
-        ""
-      );
-
-      await interaction.editReply({
-        embeds: [embed],
-        flags: 64,
+    if (secondaryChannel) {
+      await secondaryChannel.permissionOverwrites.edit(member, {
+        ViewChannel: !shouldRevoke,
+        SendMessages: !shouldRevoke,
       });
     }
+
+    const embed = createEmbed(
+      "Success",
+      shouldRevoke
+        ? `Your access to <#${mainChannel.id}>${
+            secondaryChannel ? ` and <#${secondaryChannel.id}>` : ""
+          } has been removed.`
+        : `You now have access to <#${mainChannel.id}>${
+            secondaryChannel ? ` and <#${secondaryChannel.id}>` : ""
+          }.`,
+      ""
+    );
+
+    await interaction.editReply({
+      embeds: [embed],
+      flags: 64,
+    });
   } catch (error) {
     console.error("Error handling Join/Leave command:", error);
     const embed = createEmbed(

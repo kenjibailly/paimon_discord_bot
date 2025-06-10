@@ -11,6 +11,10 @@ const joinLeaveConfigSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  channel2: {
+    type: String,
+    required: false,
+  },
 });
 
 // Create a model using the schema
