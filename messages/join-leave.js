@@ -76,9 +76,11 @@ async function handleJoinLeaveMessage(client, message, userId) {
         ? `Noooo <@${member.id}> has left.\nAccess to <#${mainChannel.id}>${
             secondaryChannel ? ` and <#${secondaryChannel.id}>` : ""
           } has been **revoked** for <@${member.id}>.`
-        : `Yaaay I'm back!\n<@${member.id}> now has access to <#${
-            mainChannel.id
-          }>${secondaryChannel ? ` and <#${secondaryChannel.id}>` : ""}.`,
+        : `Yaaay <@${member.id}> is back!\n<@${
+            member.id
+          }> now has access to <#${mainChannel.id}>${
+            secondaryChannel ? ` and <#${secondaryChannel.id}>` : ""
+          }.`,
       ""
     );
 
