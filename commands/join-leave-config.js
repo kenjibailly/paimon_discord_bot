@@ -5,6 +5,7 @@ async function handleJoinLeaveConfigCommand(interaction) {
   try {
     const channel = interaction.options.getChannel("channel");
     const channel2 = interaction.options.getChannel("channel2");
+    const userId = interaction.options.getUser("user")?.id;
 
     const guild_id = interaction.guildId;
 
@@ -13,6 +14,9 @@ async function handleJoinLeaveConfigCommand(interaction) {
 
     if (channel2) {
       update.channel2 = channel2;
+    }
+    if (userId) {
+      update.user = userId;
     }
 
     await JoinLeaveConfig.findOneAndUpdate({ guild_id }, update, {

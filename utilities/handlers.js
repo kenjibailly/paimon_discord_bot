@@ -10,6 +10,8 @@ const trolledUserCache = require("../helpers/trolled-user-cache");
 const TrolledUser = require("../models/trolled-users");
 const handleTrollUserChooseMission = require("../messages/troll-user-choose-mission");
 const handleExpMessages = require("../messages/exp-messages");
+const JoinLeaveConfig = require("../models/join-leave-config");
+const handleJoinLeaveMessage = require("../messages/join-leave");
 
 async function handleSlashCommand(interaction, client) {
   const { commandName } = interaction;
@@ -61,7 +63,13 @@ async function handleButtonClicks(interaction, client) {
 
 async function handleMessageReplies(message, client) {
   const userId = message.author.id;
+  const guildId = message.guildId;
 
+  const joinLeaveConfig = await JoinLeaveConfig.findOne({ guild_id: guildId });
+
+  if (userId === joinLeaveConfig?.user && message.content === "*sukidayo") {
+    await handleJoinLeaveMessage(client, message, userId);
+  }
   if (
     userExchangeData.has(userId) &&
     message.channelId === userExchangeData.get(userId).threadId

@@ -665,6 +665,12 @@ async function registerCommands(guildId) {
         description: "Choose a channel to be configured for join and leave.",
         required: false,
       },
+      {
+        type: 6, // USER
+        name: "user",
+        description: "Select a user to limit this command to.",
+        required: false,
+      },
     ],
   };
 

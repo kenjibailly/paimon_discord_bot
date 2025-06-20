@@ -15,6 +15,10 @@ const joinLeaveConfigSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  user: {
+    type: String,
+    required: false,
+  },
 });
 
 // Create a model using the schema
