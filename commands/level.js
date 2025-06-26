@@ -6,8 +6,8 @@ const { AttachmentBuilder } = require("discord.js");
 const createEmbed = require("../helpers/embed");
 
 // Constants
-const WIDTH = 400;
-const HEIGHT = 150;
+const WIDTH = 800;
+const HEIGHT = 300;
 const RADIUS = 20;
 
 const levelGradients = [
@@ -187,6 +187,7 @@ async function drawProfile(ctx, interaction, user, client) {
   const img_height = 122;
   const image = await loadImage("./introduction/assets/pfp-star.png");
   ctx.save();
+  ctx.scale(2, 2);
   ctx.drawImage(image, 14, 14, img_width, img_height);
   ctx.restore();
 
@@ -216,6 +217,7 @@ async function drawProfile(ctx, interaction, user, client) {
 
     // Step 1: Draw the circular profile picture
     ctx.save();
+    ctx.scale(2, 2);
     ctx.beginPath();
     ctx.arc(x + imgSize / 2, y + imgSize / 2, imgSize / 2, 0, Math.PI * 2);
     ctx.closePath();
@@ -225,6 +227,7 @@ async function drawProfile(ctx, interaction, user, client) {
 
     // Step 2: Draw the crescent-shaped inner shadow
     ctx.save();
+    ctx.scale(2, 2);
     ctx.beginPath();
 
     // Outer circle (shadow base), slightly inset
@@ -263,6 +266,7 @@ function drawText(
 ) {
   if (!value) return;
   ctx.save();
+  ctx.scale(2, 2);
   ctx.font = size + 'px "Nougat"';
 
   ctx.strokeStyle = "black";
@@ -315,6 +319,7 @@ function calculateExp(message_count, config) {
 
 async function drawExpBar(ctx, exp_percentage, gradientColors) {
   const ypos = 95;
+  ctx.scale(2, 2);
 
   // Draw background bar
   drawRoundedRect(ctx, 132, ypos, 250, 10, 5, "#2D2D2D");
