@@ -44,6 +44,28 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
       member = await guild.members.fetch(interaction.member.user.id);
     }
 
+    await member.setNickname(user_exchange_data.nickname);
+
+    try {
+      // Deduct from the wallet
+      wallet.amount -= Number(user_exchange_data.rewardPrice);
+      await wallet.save();
+    } catch (error) {
+      logger.error("Failed to save wallet:", error);
+
+      const title = "Transaction Error";
+      const description =
+        "There was an error while processing your wallet transaction. Please try again later.";
+      const color = "error"; // Assuming you have a color constant for errors
+      const embed = createEmbed(title, description, color);
+      await interaction.editReply({
+        embeds: [embed],
+        components: [], // Ensure this is an empty array
+      });
+      handleCancelThread(interaction, client);
+      return;
+    }
+
     try {
       let reward;
       if (user_exchange_data.taggedUser) {
@@ -114,28 +136,6 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
       const color = "error";
       const embed = createEmbed(title, description, color);
       f;
-      await interaction.editReply({
-        embeds: [embed],
-        components: [], // Ensure this is an empty array
-      });
-      handleCancelThread(interaction, client);
-      return;
-    }
-
-    await member.setNickname(user_exchange_data.nickname);
-
-    try {
-      // Deduct from the wallet
-      wallet.amount -= Number(user_exchange_data.rewardPrice);
-      await wallet.save();
-    } catch (error) {
-      logger.error("Failed to save wallet:", error);
-
-      const title = "Transaction Error";
-      const description =
-        "There was an error while processing your wallet transaction. Please try again later.";
-      const color = "error"; // Assuming you have a color constant for errors
-      const embed = createEmbed(title, description, color);
       await interaction.editReply({
         embeds: [embed],
         components: [], // Ensure this is an empty array
