@@ -74,7 +74,9 @@ async function handleEditEmbedFileCommand(interaction, client) {
       if (embedData.description) embed.setDescription(embedData.description);
       if (embedData.color) embed.setColor(embedData.color);
       if (embedData.fields) embed.setFields(embedData.fields);
-      if (embedData.image) embed.setImage(embedData.image.url);
+      if (embedData.image && embedData.image.url) {
+        embed.setImage(embedData.image.url);
+      }
       if (embedData.footer) embed.setFooter(embedData.footer);
 
       return embed;
