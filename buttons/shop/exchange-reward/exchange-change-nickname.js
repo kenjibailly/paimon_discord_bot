@@ -44,7 +44,44 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
       member = await guild.members.fetch(interaction.member.user.id);
     }
 
-    await member.setNickname(user_exchange_data.nickname);
+    // Check if the member is the server owner
+    if (member.id === guild.ownerId) {
+      // Can't change owner's nickname, send DM to owner instead
+      const owner = await guild.fetchOwner();
+      try {
+        let title = "Change Nickname";
+        let description = `A nickname change was requested for you: \`\`\`${user_exchange_data.nickname}\`\`\`However, bots can't change the server owner's nickname. Please update it manually.`;
+        const color = "";
+        let embed = createEmbed(title, description, color);
+        await owner.send({
+          embeds: [embed],
+        });
+
+        title = "Shop";
+        description =
+          "The user is the server owner. I've sent them a DM requesting the nickname change.";
+        embed = createEmbed(title, description, color);
+        await interaction.editReply({
+          embeds: [embed],
+          components: [], // Ensure this is an empty array
+        });
+      } catch (error) {
+        const title = "Error";
+        const description =
+          "The user is the server owner, and I couldn't send them a DM.";
+        const color = "";
+        const embed = createEmbed(title, description, color);
+
+        console.error("Failed to send DM to the server owner:", error);
+        await interaction.editReply({
+          embeds: [embed],
+          components: [], // Ensure this is an empty array
+        });
+      }
+    } else {
+      // Change nickname if not the owner
+      await member.setNickname(user_exchange_data.nickname);
+    }
 
     try {
       // Deduct from the wallet
@@ -144,17 +181,19 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
       return;
     }
 
-    const title = "Shop";
-    const description =
-      `**${member.user.globalName}**'s nickname has been changed to **${user_exchange_data.nickname}**.\n` +
-      `You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
-    const embed = createEmbed(title, description, "");
+    if (member.id !== guild.ownerId) {
+      const title = "Shop";
+      const description =
+        `**${member.user.globalName}**'s nickname has been changed to **${user_exchange_data.nickname}**.\n` +
+        `You now have **${wallet.amount}** ${user_exchange_data.tokenEmoji.token_emoji} in your wallet.`;
+      const embed = createEmbed(title, description, "");
 
-    // Send success message before canceling the thread message
-    await interaction.editReply({
-      embeds: [embed],
-      components: [],
-    });
+      // Send success message before canceling the thread message
+      await interaction.editReply({
+        embeds: [embed],
+        components: [],
+      });
+    }
 
     await handleCancelThread(interaction, client);
 
@@ -162,9 +201,16 @@ async function handleExchangeChangeNicknameButton(interaction, client) {
     const parentChannel = thread.parent;
     if (parentChannel) {
       const parentTitle = "Shop";
-      const parentDescription = user_exchange_data.taggedUser
-        ? `<@${interaction.member.user.id}> has changed **${member.user.globalName}**'s nickname to <@${member.user.id}>.`
-        : `**${interaction.member.user.globalName}** has changed their nickname to <@${member.user.id}>.`;
+      let parentDescription;
+      // Check if the member is the server owner
+      if (member.id === guild.ownerId) {
+        parentDescription = `<@${interaction.member.user.id}> has requested **${member.user.globalName}**'s nickname to **${user_exchange_data.nickname}**.`;
+      } else {
+        parentDescription = user_exchange_data.taggedUser
+          ? `<@${interaction.member.user.id}> has changed **${member.user.globalName}**'s nickname to <@${member.user.id}>.`
+          : `**${interaction.member.user.globalName}** has changed their nickname to <@${member.user.id}>.`;
+      }
+
       const parentEmbed = createEmbed(parentTitle, parentDescription, "");
 
       await parentChannel.send({
