@@ -92,6 +92,7 @@ async function handleStartEventNoGameButton(interaction, client) {
       channel_id: user_exchange_data.channel_id,
       name: user_exchange_data.event_name,
       description: user_exchange_data.event_description,
+      auto_team_generation: user_exchange_data.auto_team_generation,
       max_members_per_team: user_exchange_data.max_members_per_team,
       expiration: user_exchange_data.expiration,
       color: user_exchange_data.color,

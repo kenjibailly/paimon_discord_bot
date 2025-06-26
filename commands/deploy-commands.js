@@ -287,6 +287,12 @@ async function registerCommands(guildId) {
         required: true,
       },
       {
+        type: 5, // BOOLEAN
+        name: "auto_team_generation",
+        description: "Should the teams be automatically generated?",
+        required: true,
+      },
+      {
         type: 4, // STRING
         name: "max_members_per_team",
         description: "Choose the maximum amount of members per team",

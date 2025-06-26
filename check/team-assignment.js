@@ -218,15 +218,17 @@ async function assignTwoTeams(client, teams, event, assignmentsByGuild) {
   const team1Usernames = await fetchUsernames(team1Users, client);
   const team2Usernames = await fetchUsernames(team2Users, client);
 
-  // Send the embed message to the channel
-  await sendTeamsEmbed(
-    event,
-    team1RoleName,
-    team2RoleName,
-    team1Usernames,
-    team2Usernames,
-    client
-  );
+  if (event.auto_team_generation) {
+    // Send the embed message to the channel
+    await sendTeamsEmbed(
+      event,
+      team1RoleName,
+      team2RoleName,
+      team1Usernames,
+      team2Usernames,
+      client
+    );
+  }
 
   // Remove the event from the database
   await Events.deleteOne({ _id: event._id });
@@ -261,9 +263,10 @@ async function assignMultipleTeams(client, event, assignmentsByGuild) {
     teams.map(async (team) => await fetchUsernames(team, client))
   );
 
-  // Send the embed message
-  await sendMultipleTeamsEmbed(event, teamUsernames, client);
-
+  if (event.auto_team_generation) {
+    // Send the embed message
+    await sendMultipleTeamsEmbed(event, teamUsernames, client);
+  }
   // Remove event and team assignments from the database
   await Events.deleteOne({ _id: event._id });
   await TeamAssignments.deleteMany({ event_id: event._id });

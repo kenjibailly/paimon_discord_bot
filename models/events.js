@@ -23,6 +23,10 @@ const eventsSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  auto_team_generation: {
+    type: Boolean,
+    required: true,
+  },
   max_members_per_team: {
     type: Number,
     required: false,
