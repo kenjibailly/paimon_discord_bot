@@ -38,6 +38,14 @@ async function registerCommands(guildId) {
   const WALLET_COMMAND = {
     name: "wallet",
     description: "Check your wallet balance",
+    options: [
+      {
+        type: 6, // ROLE
+        name: "user",
+        description: "Select a user to their wallet",
+        required: false,
+      },
+    ],
   };
 
   const DEDUCT_USER_COMMAND = {
