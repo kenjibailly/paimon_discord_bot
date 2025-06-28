@@ -42,7 +42,7 @@ async function registerCommands(guildId) {
       {
         type: 6, // ROLE
         name: "user",
-        description: "Select a user to their wallet",
+        description: "Select a user to see their wallet",
         required: false,
       },
     ],
@@ -659,6 +659,14 @@ async function registerCommands(guildId) {
   const LEVEL_COMMAND = {
     name: "level",
     description: "Check out your current level",
+    options: [
+      {
+        type: 6, // ROLE
+        name: "user",
+        description: "Select a user to see their level",
+        required: false,
+      },
+    ],
   };
 
   const JOIN_LEAVE_CONFIG_COMMAND = {

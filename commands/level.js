@@ -29,7 +29,13 @@ async function handleLevelCommand(interaction, client, user, message) {
   }
 
   const guildId = user ? message.guildId : interaction.guildId;
-  const userId = user ? user : interaction.user.id;
+  // Get optional user option
+  const targetUser =
+    interaction?.options?.getUser("user") || interaction?.user || null;
+  let userId = user ? user : interaction.user.id;
+  if (targetUser) {
+    userId = targetUser.id;
+  }
 
   const config = await LevelConfig.findOne({ guild_id: guildId });
 
@@ -61,12 +67,13 @@ async function handleLevelCommand(interaction, client, user, message) {
 
   const canvas = await drawBackground(level);
   const ctx = canvas.getContext("2d");
-  await drawProfile(ctx, interaction, user, client);
+  await drawProfile(ctx, interaction, user, client, userId);
 
   let displayName;
 
   if (interaction?.user) {
-    displayName = interaction.user.globalName?.toUpperCase();
+    const userObj = await client.users.fetch(userId).catch(() => null);
+    displayName = userObj.globalName?.toUpperCase();
   } else if (user && message?.author) {
     displayName = message.author.globalName?.toUpperCase();
   }
@@ -107,7 +114,6 @@ async function handleLevelCommand(interaction, client, user, message) {
 
   const buffer = canvas.toBuffer("image/png");
   const attachment = new AttachmentBuilder(buffer, { name: "level-card.png" });
-
   if (user) {
     const targetChannel = await client.channels
       .fetch(config.channel)
@@ -182,7 +188,7 @@ async function drawBackground(level) {
   return canvas;
 }
 
-async function drawProfile(ctx, interaction, user, client) {
+async function drawProfile(ctx, interaction, user, client, userId) {
   const img_width = 107;
   const img_height = 122;
   const image = await loadImage("./introduction/assets/pfp-star.png");
@@ -194,11 +200,14 @@ async function drawProfile(ctx, interaction, user, client) {
   const imgSize = 73; // adjust as needed
   let imageURL;
 
-  if (interaction?.user) {
-    imageURL = interaction.user.displayAvatarURL({
-      extension: "png",
-      size: 512,
-    });
+  if (interaction?.user && userId) {
+    const userObj = await client.users.fetch(userId).catch(() => null);
+    if (userObj) {
+      imageURL = userObj.displayAvatarURL({
+        extension: "png",
+        size: 512,
+      });
+    }
   } else if (user && client) {
     const userObj = await client.users.fetch(user).catch(() => null);
     if (userObj) {
