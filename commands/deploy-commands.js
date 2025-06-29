@@ -702,6 +702,11 @@ async function registerCommands(guildId) {
     description: "Join or leave channel",
   };
 
+  const LEADERBOARD_COMMAND = {
+    name: "leaderboard",
+    description: "Show the leaderboard",
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -737,6 +742,7 @@ async function registerCommands(guildId) {
     LEVEL_COMMAND,
     JOIN_LEAVE_CONFIG_COMMAND,
     JOIN_LEAVE_COMMAND,
+    LEADERBOARD_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];

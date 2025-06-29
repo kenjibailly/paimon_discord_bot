@@ -133,11 +133,20 @@ async function handleStartEventNoGameButton(interaction, client) {
           {
             type: 2, // Button type
             style: 1, // Primary style
-            label: "Join Team",
+            label: "Sign up",
             emoji: {
               name: "⚔️", // Use the name
             },
             custom_id: `join-team:${newEvent._id}`,
+          },
+          {
+            type: 2, // Button type
+            style: 4, // Primary style
+            label: "Sign off",
+            emoji: {
+              name: "⛔", // Use the name
+            },
+            custom_id: `leave-team:${newEvent._id}`,
           },
         ],
       },
