@@ -36,6 +36,8 @@ async function handleStartEventCommand(interaction, client) {
     const image = interaction.options.getString("image");
     const color = interaction.options.getString("color");
     const expiration = interaction.options.getInteger("expiration");
+    const event_date = interaction.options.getString("date");
+    const timezone = interaction.options.getString("timezone");
 
     if (image && !isValidImageUrl(image)) {
       // Handle invalid image URL
@@ -78,7 +80,7 @@ async function handleStartEventCommand(interaction, client) {
       }
     }
 
-    let time_generation = 24;
+    let time_generation = 7;
     if (expiration) {
       time_generation = expiration;
     }
@@ -92,6 +94,8 @@ async function handleStartEventCommand(interaction, client) {
     user_exchange_data.image = image;
     user_exchange_data.color = color_embed;
     user_exchange_data.expiration = time_generation;
+    user_exchange_data.event_date = event_date;
+    user_exchange_data.timezone = timezone;
     // Store the updated object back into userExchangeData
     userExchangeData.set(interaction.member.user.id, user_exchange_data);
 

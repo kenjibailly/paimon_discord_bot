@@ -124,7 +124,7 @@ async function checkTeamAssignment(client) {
           {
             $add: [
               { $toDate: "$date" }, // Convert `date` field to Date object
-              { $multiply: ["$expiration", 60 * 60 * 1000] }, // Convert `expiration` field (in hours) to milliseconds and add to date
+              { $multiply: ["$expiration", 24 * 60 * 60 * 1000] }, // Convert `expiration` (in days) to ms and add to date
             ],
           },
           dateNow, // Current time

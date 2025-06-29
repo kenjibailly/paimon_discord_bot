@@ -1,4 +1,5 @@
 const createEmbed = require("../helpers/embed");
+const { EmbedBuilder } = require("discord.js");
 const Games = require("../models/games");
 const Events = require("../models/events");
 const userExchangeData = require("../helpers/userExchangeData");
@@ -96,6 +97,8 @@ async function handleStartEventNoGameButton(interaction, client) {
       max_members_per_team: user_exchange_data.max_members_per_team,
       expiration: user_exchange_data.expiration,
       color: user_exchange_data.color,
+      event_date: user_exchange_data.event_date,
+      timezone: user_exchange_data.timezone,
     });
     const savedEvent = await newEvent.save();
 
@@ -114,38 +117,63 @@ async function handleStartEventNoGameButton(interaction, client) {
     return;
   }
 
+  // Build embed content
   const eventTitle = user_exchange_data.event_name || "Event Started!";
   const eventDescription =
     user_exchange_data.event_description || "No description provided";
   const eventColor = user_exchange_data.color;
-  const embedEvent = createEmbed(eventTitle, eventDescription, eventColor);
-  embedEvent.setImage(user_exchange_data.image || undefined);
+  const timezone = user_exchange_data.timezone;
 
-  userExchangeData.delete(interaction.member.user.id); // Remove the user's data entirely
+  // Create the embed
+  const embedEvent = new EmbedBuilder()
+    .setTitle(eventTitle)
+    .setDescription(eventDescription)
+    .setColor(eventColor || null);
 
+  // Add image if it exists
+  if (user_exchange_data.image) {
+    embedEvent.setImage(user_exchange_data.image);
+  }
+
+  // Add "Sign up ends on:" field
+  if (user_exchange_data.expiration) {
+    embedEvent.addFields({
+      name: "Sign up ends in:",
+      value: `${user_exchange_data.expiration} days`,
+    });
+  }
+
+  // Add "Event starts on:" field (raw string with timezone)
+  if (user_exchange_data.event_date) {
+    embedEvent.addFields({
+      name: "Event starts on:",
+      value: `${user_exchange_data.event_date} ${timezone}`,
+    });
+  }
+
+  // Clean up user data
+  userExchangeData.delete(interaction.member.user.id);
+
+  // Send embed with buttons
   const channel = await client.channels.fetch(user_exchange_data.channel_id);
   const sentMessage = await channel.send({
     embeds: [embedEvent],
     components: [
       {
-        type: 1, // Action row type
+        type: 1, // Action row
         components: [
           {
-            type: 2, // Button type
-            style: 1, // Primary style
+            type: 2,
+            style: 1,
             label: "Sign up",
-            emoji: {
-              name: "⚔️", // Use the name
-            },
+            emoji: { name: "⚔️" },
             custom_id: `join-team:${newEvent._id}`,
           },
           {
-            type: 2, // Button type
-            style: 4, // Primary style
+            type: 2,
+            style: 4,
             label: "Sign off",
-            emoji: {
-              name: "⛔", // Use the name
-            },
+            emoji: { name: "⛔" },
             custom_id: `leave-team:${newEvent._id}`,
           },
         ],

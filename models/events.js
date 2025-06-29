@@ -36,8 +36,12 @@ const eventsSchema = new mongoose.Schema({
     required: false,
   },
   expiration: {
-    type: Number, // in hours
+    type: Number, // in days
     required: true,
+  },
+  event_date: {
+    type: String,
+    required: false,
   },
   date: {
     type: Date,

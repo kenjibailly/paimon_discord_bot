@@ -310,7 +310,19 @@ async function registerCommands(guildId) {
         type: 4, // NUMBER
         name: "expiration",
         description:
-          "Select the number of hours for team generation and signup deadline (default: 24 hours)",
+          "Select the number of days for team generation and signup deadline (default: 7 days)",
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: "date",
+        description: "Select the date and time of the event",
+        required: false,
+      },
+      {
+        type: 3, // STRING
+        name: "timezone",
+        description: "Select the timezone of the event",
         required: false,
       },
       {

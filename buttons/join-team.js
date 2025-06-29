@@ -22,7 +22,7 @@ async function handleJoinTeamButton(interaction, client) {
 
     // Calculate the expiration time by adding the event.expiration (in hours) to the event.date
     const eventCreationDate = event.date; // Ensure it's a Date object
-    const eventDurationInMilliseconds = event.expiration * 60 * 60 * 1000; // Convert hours to milliseconds
+    const eventDurationInMilliseconds = event.expiration * 24 * 60 * 60 * 1000; // Convert days to milliseconds
     const eventExpirationTime = new Date(
       eventCreationDate.getTime() + eventDurationInMilliseconds
     );
@@ -35,7 +35,7 @@ async function handleJoinTeamButton(interaction, client) {
       const color = "error";
       const embed = createEmbed(title, description, color);
 
-      await interaction.editReply({ embeds: [embed], flags: 64 });
+      await interaction.followUp({ embeds: [embed], flags: 64 });
       return;
     }
 
@@ -50,7 +50,7 @@ async function handleJoinTeamButton(interaction, client) {
         const color = "error";
         const embed = createEmbed(title, description, color);
 
-        await interaction.editReply({ embeds: [embed], flags: 64 });
+        await interaction.followUp({ embeds: [embed], flags: 64 });
         return;
       }
     }
