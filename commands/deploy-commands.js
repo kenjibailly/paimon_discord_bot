@@ -441,6 +441,12 @@ async function registerCommands(guildId) {
         required: true,
       },
       {
+        type: 5, // BOOLEAN
+        name: "everyone",
+        description: "Tag @everyone?",
+        required: false,
+      },
+      {
         type: 3, // STRING
         name: "color",
         description: "Select the color in hex format for the embed",

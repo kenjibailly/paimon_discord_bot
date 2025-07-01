@@ -4,11 +4,20 @@ async function handleSendEmbedCommand(interaction, client) {
   try {
     const title = interaction.options.getString("title");
     const message = interaction.options.getString("message");
+    const tagEveryone = interaction.options.getBoolean("everyone") || false;
     const color = interaction.options.getString("color") || "#9800FF";
 
     const embed = createEmbed(title, message, color);
     await interaction.deferReply();
-    await interaction.editReply({ embeds: [embed] });
+    const content = "@everyone";
+    if (tagEveryone) {
+      await interaction.editReply({
+        content: content,
+        embeds: [embed],
+      });
+    } else {
+      await interaction.editReply({ embeds: [embed] });
+    }
   } catch (error) {
     console.error("Error handling /send-embed:", error);
 
