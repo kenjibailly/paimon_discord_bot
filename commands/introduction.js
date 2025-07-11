@@ -8,10 +8,14 @@ const createEmbed = require("../helpers/embed");
 let error = false;
 
 async function handleIntroductionCommand(interaction, client) {
+  await interaction.deferReply({ ephemeral: true });
   error = false;
   registerFont("./introduction/fonts/Nougat-ExtraBlack.ttf", {
     family: "Nougat", // This name must match what you'll use in ctx.font
     weight: "bold", // Optional: helps with clarity
+  });
+  registerFont("./introduction/fonts/NotoSansCJKjp-Regular.otf", {
+    family: "Noto Sans CJK JP",
   });
   const gamertag = interaction.options.getString("gamertag");
   const name = interaction.options.getString("name");
@@ -106,11 +110,24 @@ async function handleIntroductionCommand(interaction, client) {
         guild_id: guildId,
       });
 
+      let targetChannel;
+      if (introductionConfig) {
+        // Attempt to fetch the configured channel
+        targetChannel = await interaction.guild.channels
+          .fetch(introductionConfig.channel)
+          .catch(() => null);
+      } else {
+        // Attempt to fetch the configured channel
+        targetChannel = await interaction.guild.channels
+          .fetch(interaction.channelId)
+          .catch(() => null);
+      }
+
       // No config or missing channel: fallback to replying directly
       if (!introductionConfig || !introductionConfig.channel) {
         // Defer reply once at the top
-        await interaction.deferReply();
-        message = await interaction.editReply({
+        // await interaction.deferReply();
+        message = await targetChannel.send({
           content: `📢 <@${userId}> has introduced themselves!`,
           files: [attachment],
         });
@@ -122,10 +139,6 @@ async function handleIntroductionCommand(interaction, client) {
         return;
       }
 
-      // Attempt to fetch the configured channel
-      const targetChannel = await interaction.guild.channels
-        .fetch(introductionConfig.channel)
-        .catch(() => null);
       if (targetChannel) {
         try {
           message = await targetChannel.send({
@@ -138,8 +151,8 @@ async function handleIntroductionCommand(interaction, client) {
             ""
           );
           // Defer reply once at the top
-          await interaction.deferReply({ flags: 64 });
-          await interaction.editReply({ embeds: [embed], flags: 64 });
+          // await interaction.deferReply({ flags: 64 });
+          await interaction.editReply({ embeds: [embed] });
 
           await Introductions.findOneAndUpdate(
             { guild_id: guildId, user_id: userId },
@@ -153,7 +166,7 @@ async function handleIntroductionCommand(interaction, client) {
             "❌ Couldn't send the message in the configured channel. Please contact an admin.",
             "error"
           );
-          await interaction.editReply({ embeds: [embed], flags: 64 });
+          await interaction.editReply({ embeds: [embed] });
         }
       } else {
         const embed = createEmbed(
@@ -161,7 +174,7 @@ async function handleIntroductionCommand(interaction, client) {
           "❌ Configured channel could not be found. Please contact an admin.",
           "error"
         );
-        await interaction.editReply({ embeds: [embed], flags: 64 });
+        await interaction.editReply({ embeds: [embed] });
       }
     } else {
       // Updating existing intro
@@ -183,7 +196,7 @@ async function handleIntroductionCommand(interaction, client) {
         );
         try {
           // Defer reply once at the top
-          await interaction.deferReply({ flags: 64 });
+          // await interaction.deferReply({ flags: 64 });
           await interaction.editReply({ embeds: [embed] });
         } catch (error) {
           logger.error(error);
@@ -212,30 +225,62 @@ async function handleIntroductionCommand(interaction, client) {
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply({ embeds: [embed] });
     } else {
-      await interaction.reply({ embeds: [embed], flags: 64 });
+      await interaction.reply({ embeds: [embed] });
     }
   }
 }
 
 function drawText(ctx, value, size, posx, posy, shadowoffset, align = "left") {
   if (!value) return;
+
   ctx.save();
-  ctx.font = size + 'px "Nougat"'; // Use the registered family name
-
   ctx.strokeStyle = "black";
-  ctx.shadowColor = "black"; // Fully opaque black
-  ctx.shadowBlur = 0; // No blur
-  ctx.shadowOffsetX = 0; // No horizontal shift
-  ctx.shadowOffsetY = shadowoffset; // Push shadow downward (adjust as needed)
-
+  ctx.shadowColor = "black";
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = shadowoffset;
   ctx.fillStyle = "#ffffff";
   ctx.lineWidth = 4;
-
   ctx.textAlign = align;
+  ctx.textBaseline = "alphabetic"; // Match original behavior
 
-  ctx.strokeText(`${value}`, posx, posy);
+  let currentX = posx;
 
-  ctx.fillText(`${value}`, posx, posy);
+  // 🔍 Add this log before adjusting currentX
+  if (align === "center" || align === "right") {
+    const totalWidth = measureMixedText(ctx, value, size);
+
+    if (align === "center") {
+      currentX = posx - totalWidth / 2;
+    } else {
+      currentX = posx - totalWidth;
+    }
+  } else {
+    currentX = posx;
+  }
+
+  let buffer = "";
+  let lastWasJapanese = null;
+
+  for (let i = 0; i < value.length; i++) {
+    const char = value[i];
+    const isJap = isJapanese(char);
+
+    if (lastWasJapanese === null) {
+      lastWasJapanese = isJap;
+    }
+
+    if (isJap !== lastWasJapanese) {
+      drawChunk(ctx, buffer, size, currentX, posy, lastWasJapanese);
+      currentX += measureChunk(ctx, buffer, size, lastWasJapanese);
+      buffer = "";
+      lastWasJapanese = isJap;
+    }
+
+    buffer += char;
+  }
+
+  drawChunk(ctx, buffer, size, currentX, posy, lastWasJapanese);
   ctx.restore();
 }
 
@@ -461,12 +506,12 @@ async function drawGamerTag(ctx, offset, gamertag, name) {
       "HI, MY NAME IS (" + gamertag + ")",
       25,
       384,
-      120 + offset,
+      110 + offset,
       4
     );
     drawText(ctx, name.toUpperCase(), 54, 384, 170 + offset, 9);
   } else {
-    drawText(ctx, "HI, MY NAME IS", 25, 384, 120 + offset, 4);
+    drawText(ctx, "HI, MY NAME IS", 25, 384, 110 + offset, 4);
     drawText(ctx, gamertag.toUpperCase(), 60, 384, 170 + offset, 9);
   }
 }
@@ -542,7 +587,7 @@ async function drawAge(ctx, age, offset) {
   ctx.drawImage(image, 384 + 148, 185 + offset, img_width, img_height);
   ctx.restore();
   drawText(ctx, "THIS IS MY AGE", 18, 387 + 158, 120 + 230 + offset, 4);
-  drawText(ctx, age, 34, 384 + 228, 120 + 155 + offset, 4, "center");
+  drawText(ctx, String(age), 34, 384 + 228, 120 + 155 + offset, 4, "center");
 }
 
 async function drawCountry(ctx, country, offset) {
@@ -671,6 +716,56 @@ function wrapText(ctx, text, maxWidth, fontSize) {
 
   if (line) lines.push(line);
   return lines;
+}
+
+function isJapanese(char) {
+  return /[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/.test(char);
+}
+
+function drawChunk(ctx, chunk, size, x, y, isJapanese) {
+  if (!chunk) return;
+
+  ctx.save();
+  ctx.font = size + (isJapanese ? 'px "Noto Sans JP"' : 'px "Nougat"');
+  ctx.textAlign = "left"; // Always left here since we pre-aligned x
+  ctx.strokeText(chunk, x, y);
+  ctx.fillText(chunk, x, y);
+  ctx.restore();
+}
+
+function measureChunk(ctx, text, size, isJapanese) {
+  if (!text) return 0;
+  ctx.save();
+  ctx.font = size + 'px "' + (isJapanese ? "JapaneseFont" : "Nougat") + '"'; // match drawChunk
+  const width = ctx.measureText(text).width;
+  ctx.restore();
+  return width;
+}
+
+function measureMixedText(ctx, value, size) {
+  let width = 0;
+  let buffer = "";
+  let lastWasJapanese = null;
+
+  for (let i = 0; i < value.length; i++) {
+    const char = value[i];
+    const isJap = isJapanese(char);
+
+    if (lastWasJapanese === null) {
+      lastWasJapanese = isJap;
+    }
+
+    if (isJap !== lastWasJapanese) {
+      width += measureChunk(ctx, buffer, size, lastWasJapanese);
+      buffer = "";
+      lastWasJapanese = isJap;
+    }
+
+    buffer += char;
+  }
+
+  width += measureChunk(ctx, buffer, size, lastWasJapanese);
+  return width;
 }
 
 module.exports = handleIntroductionCommand;
