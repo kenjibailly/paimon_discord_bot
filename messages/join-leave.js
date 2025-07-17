@@ -5,9 +5,7 @@ const createEmbed = require("../helpers/embed");
 async function handleJoinLeaveMessage(client, message, userId) {
   const { guild } = message;
 
-  // Fetch the member by userId
   const member = await guild.members.fetch(userId).catch(() => null);
-  // Delete the triggering message
   await message.delete().catch(() => {});
   if (!member) {
     return message.reply({
@@ -15,7 +13,6 @@ async function handleJoinLeaveMessage(client, message, userId) {
     });
   }
 
-  // Fetch config from DB
   const config = await JoinLeaveConfig.findOne({ guild_id: guild.id });
   if (!config) {
     const embed = createEmbed("Error", `Join/Leave config not found.`, "error");
@@ -25,6 +22,9 @@ async function handleJoinLeaveMessage(client, message, userId) {
   const mainChannel = guild.channels.cache.get(config.channel);
   const secondaryChannel = config.channel2
     ? guild.channels.cache.get(config.channel2)
+    : null;
+  const thirdChannel = config.channel3
+    ? guild.channels.cache.get(config.channel3)
     : null;
 
   if (!mainChannel) {
@@ -55,9 +55,19 @@ async function handleJoinLeaveMessage(client, message, userId) {
           .has(PermissionsBitField.Flags.SendMessages)
       : false;
 
+    const hasThirdView = thirdChannel
+      ? member
+          .permissionsIn(thirdChannel)
+          .has(PermissionsBitField.Flags.ViewChannel)
+      : false;
+    const hasThirdSend = thirdChannel
+      ? member
+          .permissionsIn(thirdChannel)
+          .has(PermissionsBitField.Flags.SendMessages)
+      : false;
+
     const shouldRevoke = hasMainView && hasMainSend;
 
-    // Apply permission changes
     await mainChannel.permissionOverwrites.edit(member, {
       ViewChannel: !shouldRevoke,
       SendMessages: !shouldRevoke,
@@ -70,17 +80,26 @@ async function handleJoinLeaveMessage(client, message, userId) {
       });
     }
 
+    if (thirdChannel) {
+      await thirdChannel.permissionOverwrites.edit(member, {
+        ViewChannel: !shouldRevoke,
+        SendMessages: !shouldRevoke,
+      });
+    }
+
     const embed = createEmbed(
       "Success",
       shouldRevoke
         ? `Noooo <@${member.id}> has left.\nAccess to <#${mainChannel.id}>${
-            secondaryChannel ? ` and <#${secondaryChannel.id}>` : ""
+            secondaryChannel ? `, <#${secondaryChannel.id}>` : ""
+          }${
+            thirdChannel ? `, and <#${thirdChannel.id}>` : ""
           } has been **revoked** for <@${member.id}>.`
         : `Yaaay <@${member.id}> is back!\n<@${
             member.id
           }> now has access to <#${mainChannel.id}>${
-            secondaryChannel ? ` and <#${secondaryChannel.id}>` : ""
-          }.`,
+            secondaryChannel ? `, <#${secondaryChannel.id}>` : ""
+          }${thirdChannel ? `, and <#${thirdChannel.id}>` : ""}.`,
       ""
     );
 
