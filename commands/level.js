@@ -18,7 +18,13 @@ const levelGradients = [
   { min: 41, max: 50, colors: ["#45FF77", "#BC57FF"] },
 ];
 
-async function handleLevelCommand(interaction, client, user, message) {
+async function handleLevelCommand(
+  interaction,
+  client,
+  user,
+  message,
+  guild_id
+) {
   registerFont("./introduction/fonts/Nougat-ExtraBlack.ttf", {
     family: "Nougat", // This name must match what you'll use in ctx.font
     weight: "bold", // Optional: helps with clarity
@@ -28,7 +34,8 @@ async function handleLevelCommand(interaction, client, user, message) {
     await interaction.deferReply();
   }
 
-  const guildId = user ? message.guildId : interaction.guildId;
+  const guildId = message?.guildId || interaction?.guildId || guild_id;
+
   // Get optional user option
   const targetUser =
     interaction?.options?.getUser("user") || interaction?.user || null;
@@ -115,11 +122,12 @@ async function handleLevelCommand(interaction, client, user, message) {
   const buffer = canvas.toBuffer("image/png");
   const attachment = new AttachmentBuilder(buffer, { name: "level-card.png" });
   if (user) {
+    const userId = message?.author?.id ?? user;
     const targetChannel = await client.channels
       .fetch(config.channel)
       .catch(() => null);
     await targetChannel.send({
-      content: `🎉 <@${message.author.id}> leveled up!`,
+      content: `🎉 <@${userId}> leveled up!`,
       files: [attachment],
     });
   } else {

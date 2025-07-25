@@ -20,10 +20,11 @@ const Logger = require("./utilities/logger.js");
 global.logger = new Logger("Bot");
 const game = require("./introduction/game.json");
 const countries = require("./introduction/countries.json");
-
+const activeVoiceChannelsData = require("./helpers/activeVoiceChannelsData");
 const mongoose = require("mongoose");
 const mongodb_URI = require("./mongodb/URI");
 // const registerCommands = require('./commands/deploy-commands');
+const giveExp = require("./helpers/give-exp");
 
 mongoose
   .connect(mongodb_URI)
@@ -42,6 +43,7 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessagePolls,
+    GatewayIntentBits.GuildVoiceStates,
   ],
   partials: [Partials.Channel],
 });
@@ -184,6 +186,35 @@ client.on("interactionCreate", async (interaction) => {
 client.on("messageCreate", async (message) => {
   const response = await handleMessageReplies(message, client);
   // return res.send(response);
+});
+
+client.on("voiceStateUpdate", async (oldState, newState) => {
+  const channel = newState.channel || oldState.channel;
+  if (!channel || channel.type !== 2) return;
+
+  const guildId = newState.guild?.id || oldState.guild?.id;
+  if (!guildId) return;
+
+  const nonBotMembers = channel.members.filter((member) => !member.user.bot);
+
+  if (nonBotMembers.size >= 2) {
+    if (!activeVoiceChannelsData.has(channel.id)) {
+      const intervalId = setInterval(() => {
+        (async () => {
+          for (const member of nonBotMembers.values()) {
+            await giveExp(member.user.id, channel.id, guildId, client);
+          }
+        })();
+      }, 10_000);
+
+      activeVoiceChannelsData.set(channel.id, intervalId);
+    }
+  } else {
+    if (activeVoiceChannelsData.has(channel.id)) {
+      clearInterval(activeVoiceChannelsData.get(channel.id));
+      activeVoiceChannelsData.delete(channel.id);
+    }
+  }
 });
 
 app.listen(PORT, () => {

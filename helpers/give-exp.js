@@ -3,34 +3,15 @@ const LevelConfig = require("../models/level-config");
 const Wallet = require("../models/wallet");
 const { handleLevelCommand, calculateExp } = require("../commands/level");
 
-const lastMessageByUserInChannel = new Map();
-
-function isEmojiOnly(content) {
-  const customEmojiRegex = /<(a)?:\w+:\d+>/g;
-  const stripped = content
-    .replace(/(\p{Emoji_Presentation}|\p{Extended_Pictographic})/gu, "")
-    .replace(customEmojiRegex, "")
-    .trim();
-  return stripped.length === 0;
-}
-
-async function handleExpMessages(message, client) {
-  const { author, content, channelId, guildId } = message;
-  if (author.bot || !content || isEmojiOnly(content.trim())) return;
-
+async function giveExp(user_id, channelId, guildId, client) {
   const config = await LevelConfig.findOne({ guild_id: guildId });
   if (!config) return;
   if (config.ignored_channels.includes(channelId)) return;
 
-  const lastUserId = lastMessageByUserInChannel.get(channelId);
-  if (lastUserId === author.id) return;
-
-  lastMessageByUserInChannel.set(channelId, author.id);
-
   try {
     // Increment message count
     const update = await Levels.findOneAndUpdate(
-      { guild_id: guildId, user_id: author.id },
+      { guild_id: guildId, user_id: user_id },
       { $inc: { message_count: 1 } },
       { new: true, upsert: true }
     );
@@ -42,7 +23,7 @@ async function handleExpMessages(message, client) {
 
     // Handle level up (logic already in place)
     if (exp_percentage === 0) {
-      handleLevelCommand("", client, message.author.id, message);
+      handleLevelCommand("", client, user_id, "", guildId);
     }
 
     // Reward logic
@@ -68,15 +49,15 @@ async function handleExpMessages(message, client) {
       // Apply wallet updates
       if (Object.keys(walletUpdate).length > 0) {
         await Wallet.updateOne(
-          { guild_id: guildId, user_id: author.id },
+          { guild_id: guildId, user_id: user_id },
           { $inc: walletUpdate },
           { upsert: true }
         );
       }
     }
   } catch (error) {
-    console.error("Failed to process EXP message:", error);
+    console.error("Failed to process voice EXP:", error);
   }
 }
 
-module.exports = handleExpMessages;
+module.exports = giveExp;
