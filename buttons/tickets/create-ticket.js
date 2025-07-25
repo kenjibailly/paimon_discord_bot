@@ -137,11 +137,16 @@ async function handleCreateTicketButton(interaction, client) {
       },
     ],
   });
-  // Step 6: Acknowledge modal submission privately
-  const replyTitle = "Ticket";
-  const replyDescription = `You have created a ticket [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id})`;
-  const replyEmbed = createEmbed(replyTitle, replyDescription, "");
-  await submitted.reply({ embeds: [replyEmbed], flags: 64 });
+
+  try {
+    // Step 6: Acknowledge modal submission privately
+    const replyTitle = "Ticket";
+    const replyDescription = `You have created a ticket [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id})`;
+    const replyEmbed = createEmbed(replyTitle, replyDescription, "");
+    await submitted.reply({ embeds: [replyEmbed], flags: 64 });
+  } catch (error) {
+    logger.error(error);
+  }
 }
 
 module.exports = handleCreateTicketButton;
