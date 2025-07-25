@@ -700,15 +700,10 @@ async function registerCommands(guildId) {
         required: true,
       },
       {
-        type: 7, // CHANNEL
-        name: "channel2",
-        description: "Choose a channel to be configured for join and leave.",
-        required: false,
-      },
-      {
-        type: 7, // CHANNEL
-        name: "channel3",
-        description: "Choose a channel to be configured for join and leave.",
+        type: 3, // STRING
+        name: "other_channels",
+        description:
+          "List the channel IDs separated by a comma to be configured for join and leave.",
         required: false,
       },
       {

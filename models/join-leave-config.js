@@ -11,11 +11,7 @@ const joinLeaveConfigSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  channel2: {
-    type: String,
-    required: false,
-  },
-  channel3: {
+  other_channels: {
     type: String,
     required: false,
   },

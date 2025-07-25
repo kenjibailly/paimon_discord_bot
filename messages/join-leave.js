@@ -20,21 +20,22 @@ async function handleJoinLeaveMessage(client, message, userId) {
   }
 
   const mainChannel = guild.channels.cache.get(config.channel);
-  const secondaryChannel = config.channel2
-    ? guild.channels.cache.get(config.channel2)
-    : null;
-  const thirdChannel = config.channel3
-    ? guild.channels.cache.get(config.channel3)
-    : null;
-
   if (!mainChannel) {
     const embed = createEmbed(
       "Error",
-      `Configured channel not found.`,
+      `Configured main channel not found.`,
       "error"
     );
     return message.reply({ embeds: [embed] });
   }
+
+  const extraChannelIds = config.other_channels
+    ? config.other_channels.split(",").map((id) => id.trim())
+    : [];
+
+  const extraChannels = extraChannelIds
+    .map((id) => guild.channels.cache.get(id))
+    .filter((ch) => ch); // Filter out nulls
 
   try {
     const hasMainView = member
@@ -44,62 +45,32 @@ async function handleJoinLeaveMessage(client, message, userId) {
       .permissionsIn(mainChannel)
       .has(PermissionsBitField.Flags.SendMessages);
 
-    const hasSecondaryView = secondaryChannel
-      ? member
-          .permissionsIn(secondaryChannel)
-          .has(PermissionsBitField.Flags.ViewChannel)
-      : false;
-    const hasSecondarySend = secondaryChannel
-      ? member
-          .permissionsIn(secondaryChannel)
-          .has(PermissionsBitField.Flags.SendMessages)
-      : false;
-
-    const hasThirdView = thirdChannel
-      ? member
-          .permissionsIn(thirdChannel)
-          .has(PermissionsBitField.Flags.ViewChannel)
-      : false;
-    const hasThirdSend = thirdChannel
-      ? member
-          .permissionsIn(thirdChannel)
-          .has(PermissionsBitField.Flags.SendMessages)
-      : false;
-
     const shouldRevoke = hasMainView && hasMainSend;
 
+    // Main channel overwrite
     await mainChannel.permissionOverwrites.edit(member, {
       ViewChannel: !shouldRevoke,
       SendMessages: !shouldRevoke,
     });
 
-    if (secondaryChannel) {
-      await secondaryChannel.permissionOverwrites.edit(member, {
+    // Extra channels overwrite
+    for (const channel of extraChannels) {
+      await channel.permissionOverwrites.edit(member, {
         ViewChannel: !shouldRevoke,
         SendMessages: !shouldRevoke,
       });
     }
 
-    if (thirdChannel) {
-      await thirdChannel.permissionOverwrites.edit(member, {
-        ViewChannel: !shouldRevoke,
-        SendMessages: !shouldRevoke,
-      });
-    }
+    const channelMentions = [
+      `<#${mainChannel.id}>`,
+      ...extraChannels.map((ch) => `<#${ch.id}>`),
+    ].join(", ");
 
     const embed = createEmbed(
       "Success",
       shouldRevoke
-        ? `Noooo <@${member.id}> has left.\nAccess to <#${mainChannel.id}>${
-            secondaryChannel ? `, <#${secondaryChannel.id}>` : ""
-          }${
-            thirdChannel ? `, and <#${thirdChannel.id}>` : ""
-          } has been **revoked** for <@${member.id}>.`
-        : `Yaaay <@${member.id}> is back!\n<@${
-            member.id
-          }> now has access to <#${mainChannel.id}>${
-            secondaryChannel ? `, <#${secondaryChannel.id}>` : ""
-          }${thirdChannel ? `, and <#${thirdChannel.id}>` : ""}.`,
+        ? `Noooo <@${member.id}> has left.\nAccess to ${channelMentions} has been **revoked** for <@${member.id}>.`
+        : `Yaaay <@${member.id}> is back!\n<@${member.id}> now has access to ${channelMentions}.`,
       ""
     );
 

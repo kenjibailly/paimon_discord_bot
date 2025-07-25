@@ -4,8 +4,7 @@ const createEmbed = require("../helpers/embed");
 async function handleJoinLeaveConfigCommand(interaction) {
   try {
     const channel = interaction.options.getChannel("channel");
-    const channel2 = interaction.options.getChannel("channel2");
-    const channel3 = interaction.options.getChannel("channel3");
+    const other_channels = interaction.options.getString("other_channels");
     const userId = interaction.options.getUser("user")?.id;
 
     const guild_id = interaction.guildId;
@@ -13,11 +12,8 @@ async function handleJoinLeaveConfigCommand(interaction) {
     // Build the update object dynamically
     const update = { channel };
 
-    if (channel2) {
-      update.channel2 = channel2;
-    }
-    if (channel3) {
-      update.channel3 = channel3;
+    if (other_channels) {
+      update.other_channels = other_channels;
     }
     if (userId) {
       update.user = userId;
