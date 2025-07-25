@@ -35,6 +35,7 @@ const handleSetIntroductionChannelCommand = require("./set-introduction-channel"
 const handleJoinLeaveConfigCommand = require("./join-leave-config");
 const handleJoinLeaveCommand = require("./join-leave");
 const handleLeaderboardCommand = require("./leaderboard");
+const handleSendTicketMessageCommand = require("./ticket-message");
 
 module.exports = {
   "award-team": handleAwardTeamCommand,
@@ -74,4 +75,5 @@ module.exports = {
   "join-leave-config": handleJoinLeaveConfigCommand,
   "join-leave": handleJoinLeaveCommand,
   leaderboard: handleLeaderboardCommand,
+  "ticket-message": handleSendTicketMessageCommand,
 };

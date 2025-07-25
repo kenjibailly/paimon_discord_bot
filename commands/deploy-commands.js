@@ -731,6 +731,11 @@ async function registerCommands(guildId) {
     description: "Show the leaderboard",
   };
 
+  const TICKET_MESSAGE_COMMAND = {
+    name: "ticket-message",
+    description: "Send the ticket message where people can create a ticket",
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -767,6 +772,7 @@ async function registerCommands(guildId) {
     JOIN_LEAVE_CONFIG_COMMAND,
     JOIN_LEAVE_COMMAND,
     LEADERBOARD_COMMAND,
+    TICKET_MESSAGE_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];

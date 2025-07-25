@@ -37,6 +37,8 @@ const handleModelButton = require("./create-image-settings/model");
 const handleLorabutton = require("./create-image-settings/lora");
 const handleRemoveLoraButton = require("./create-image-settings/remove-lora");
 const handleLeaveTeamButton = require("./leave-team.js");
+const handleCreateTicketButton = require("./tickets/create-ticket");
+const handleCompleteTicketButton = require("./tickets/complete-ticket.js");
 
 module.exports = {
   "exchange-shop": handleExchangeShopButton,
@@ -76,4 +78,6 @@ module.exports = {
   model: handleModelButton,
   lora: handleLorabutton,
   "remove-lora": handleRemoveLoraButton,
+  "create-ticket": handleCreateTicketButton,
+  "complete-ticket": handleCompleteTicketButton,
 };

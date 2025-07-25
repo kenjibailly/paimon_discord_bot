@@ -165,7 +165,9 @@ client.on("interactionCreate", async (interaction) => {
       }
       await handleSlashCommand(interaction, client);
     } else if (type === InteractionType.MESSAGE_COMPONENT) {
-      await interaction.deferUpdate();
+      if (interaction.customId !== "create-ticket") {
+        await interaction.deferUpdate();
+      }
       await handleButtonClicks(interaction, client);
     }
   } catch (error) {
