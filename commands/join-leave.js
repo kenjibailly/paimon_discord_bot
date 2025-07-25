@@ -16,14 +16,10 @@ async function handleJoinLeaveCommand(interaction) {
   }
 
   const mainChannel = guild.channels.cache.get(config.channel);
-  const secondaryChannel = config.channel2
-    ? guild.channels.cache.get(config.channel2)
-    : null;
-
   if (!mainChannel) {
     const embed = createEmbed(
       "Error",
-      `Configured channel not found.`,
+      `Configured main channel not found.`,
       "error"
     );
     return interaction.editReply({
@@ -31,6 +27,14 @@ async function handleJoinLeaveCommand(interaction) {
       flags: 64,
     });
   }
+
+  const extraChannelIds = config.other_channels
+    ? config.other_channels.split(",").map((id) => id.trim())
+    : [];
+
+  const extraChannels = extraChannelIds
+    .map((id) => guild.channels.cache.get(id))
+    .filter((ch) => ch); // Remove any nulls
 
   try {
     const hasMainView = member
@@ -40,41 +44,32 @@ async function handleJoinLeaveCommand(interaction) {
       .permissionsIn(mainChannel)
       .has(PermissionsBitField.Flags.SendMessages);
 
-    const hasSecondaryView = secondaryChannel
-      ? member
-          .permissionsIn(secondaryChannel)
-          .has(PermissionsBitField.Flags.ViewChannel)
-      : false;
-    const hasSecondarySend = secondaryChannel
-      ? member
-          .permissionsIn(secondaryChannel)
-          .has(PermissionsBitField.Flags.SendMessages)
-      : false;
-
     const shouldRevoke = hasMainView && hasMainSend;
 
-    // Apply permission changes
+    // Apply permission changes to main channel
     await mainChannel.permissionOverwrites.edit(member, {
       ViewChannel: !shouldRevoke,
       SendMessages: !shouldRevoke,
     });
 
-    if (secondaryChannel) {
-      await secondaryChannel.permissionOverwrites.edit(member, {
+    // Apply to all additional channels
+    for (const channel of extraChannels) {
+      await channel.permissionOverwrites.edit(member, {
         ViewChannel: !shouldRevoke,
         SendMessages: !shouldRevoke,
       });
     }
 
+    const channelMentions = [
+      `<#${mainChannel.id}>`,
+      ...extraChannels.map((ch) => `<#${ch.id}>`),
+    ].join(", ");
+
     const embed = createEmbed(
       "Success",
       shouldRevoke
-        ? `Your access to <#${mainChannel.id}>${
-            secondaryChannel ? ` and <#${secondaryChannel.id}>` : ""
-          } has been removed.`
-        : `You now have access to <#${mainChannel.id}>${
-            secondaryChannel ? ` and <#${secondaryChannel.id}>` : ""
-          }.`,
+        ? `Your access to ${channelMentions} has been removed.`
+        : `You now have access to ${channelMentions}.`,
       ""
     );
 
