@@ -114,7 +114,9 @@ async function handleCreateTicketButton(interaction, client) {
       type: 2,
       style: 1,
       label: "Complete",
-      emoji: "🎫",
+      emoji: {
+        name: "🎫", // wrap the emoji in an object
+      },
       custom_id: `complete-ticket:${ticket.id}`,
     },
     {
