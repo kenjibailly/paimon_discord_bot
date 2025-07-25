@@ -733,6 +733,7 @@ async function registerCommands(guildId) {
 
   const TICKET_MESSAGE_COMMAND = {
     name: "ticket-message",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
     description: "Send the ticket message where people can create a ticket",
   };
 
