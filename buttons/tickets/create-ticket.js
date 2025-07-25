@@ -121,7 +121,7 @@ async function handleCreateTicketButton(interaction, client) {
       type: 2,
       style: 4,
       label: "Cancel",
-      custom_id: "cancel-thread",
+      custom_id: `cancel-ticket:${ticket.id}`,
     },
   ];
 

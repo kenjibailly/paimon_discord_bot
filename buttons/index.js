@@ -39,6 +39,7 @@ const handleRemoveLoraButton = require("./create-image-settings/remove-lora");
 const handleLeaveTeamButton = require("./leave-team.js");
 const handleCreateTicketButton = require("./tickets/create-ticket");
 const handleCompleteTicketButton = require("./tickets/complete-ticket.js");
+const handleCancelTicketButton = require("./tickets/cancel-ticket.js");
 
 module.exports = {
   "exchange-shop": handleExchangeShopButton,
@@ -80,4 +81,5 @@ module.exports = {
   "remove-lora": handleRemoveLoraButton,
   "create-ticket": handleCreateTicketButton,
   "complete-ticket": handleCompleteTicketButton,
+  "cancel-ticket": handleCancelTicketButton,
 };
