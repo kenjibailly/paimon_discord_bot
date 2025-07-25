@@ -8,7 +8,9 @@ async function handleSendTicketMessageCommand(interaction, client) {
     type: 2, // Button type
     style: 1, // Primary style
     label: "Create",
-    emoji: "🎫",
+    emoji: {
+      name: "🎫", // wrap the emoji in an object
+    },
     custom_id: `create-ticket`,
   };
 
