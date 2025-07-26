@@ -96,7 +96,7 @@ client.once(Events.ClientReady, () => {
         }
       }
     }
-  }, 5 * 60 * 1000); // every 5 minutes
+  }, 10 * 59 * 1000); // every 10 minutes
 });
 
 client.on("guildCreate", async (guild) => {
