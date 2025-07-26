@@ -87,10 +87,21 @@ async function handleLevelCommand(
 
   // Fallback in case globalName is null or undefined
   if (!displayName) {
-    displayName =
-      interaction?.user?.username?.toUpperCase() ||
-      message?.author?.username?.toUpperCase() ||
-      "UNKNOWN USER";
+    if (interaction?.user) {
+      displayName = interaction.user.username.toUpperCase();
+    } else if (message?.author) {
+      displayName = message.author.username.toUpperCase();
+    } else if (user && typeof user === "string") {
+      try {
+        const fetchedUser = await client.users.fetch(user);
+        displayName = fetchedUser.globalName.toUpperCase();
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+        displayName = "UNKNOWN USER";
+      }
+    } else {
+      displayName = "UNKNOWN USER";
+    }
   }
 
   drawText(ctx, displayName, 24, 142, 29 + 15, 2, 4);
