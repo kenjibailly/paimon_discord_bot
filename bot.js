@@ -199,12 +199,21 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 
   if (nonBotMembers.size >= 2) {
     if (!activeVoiceChannelsData.has(channel.id)) {
-      const intervalId = setInterval(() => {
-        (async () => {
-          for (const member of nonBotMembers.values()) {
-            await giveExp(member.user.id, channel.id, guildId, client);
-          }
-        })();
+      const intervalId = setInterval(async () => {
+        const updatedChannel = await client.channels.fetch(channel.id);
+        const updatedMembers = updatedChannel.members.filter(
+          (m) => !m.user.bot
+        );
+
+        if (updatedMembers.size < 2) {
+          clearInterval(activeVoiceChannelsData.get(channel.id));
+          activeVoiceChannelsData.delete(channel.id);
+          return;
+        }
+
+        for (const member of updatedMembers.values()) {
+          await giveExp(member.user.id, channel.id, guildId, client);
+        }
       }, 60_000);
 
       activeVoiceChannelsData.set(channel.id, intervalId);
