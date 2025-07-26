@@ -25,6 +25,7 @@ const mongoose = require("mongoose");
 const mongodb_URI = require("./mongodb/URI");
 // const registerCommands = require('./commands/deploy-commands');
 const giveExp = require("./helpers/give-exp");
+const userLastMessageTimestamps = require("./helpers/userLastMessageTimestamps");
 
 mongoose
   .connect(mongodb_URI)
@@ -68,6 +69,34 @@ client.once(Events.ClientReady, () => {
     checkTeamAssignment(client);
     checkDailyCharacterPoll(client);
   }, 300000); // 5 minutes in milliseconds 300000
+
+  // ✅ Start inactivity interval once after bot is ready
+  setInterval(async () => {
+    for (const [guildId, guild] of client.guilds.cache) {
+      const voiceChannels = guild.channels.cache.filter(
+        (ch) => ch.type === 2 && ch.members.size > 0
+      );
+
+      for (const channel of voiceChannels.values()) {
+        for (const [userId, member] of channel.members) {
+          if (member.user.bot) continue;
+
+          const isMuted = member.voice.selfMute;
+          const lastTextTime = userLastMessageTimestamps.get(userId) || 0;
+          const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
+
+          if (isMuted && lastTextTime < tenMinutesAgo) {
+            try {
+              await member.voice.disconnect();
+              logger.warn(`Disconnected ${member.user.tag} for inactivity.`);
+            } catch (err) {
+              logger.error(`Failed to disconnect ${member.user.tag}:`, err);
+            }
+          }
+        }
+      }
+    }
+  }, 5 * 60 * 1000); // every 5 minutes
 });
 
 client.on("guildCreate", async (guild) => {
@@ -185,7 +214,9 @@ client.on("interactionCreate", async (interaction) => {
 
 client.on("messageCreate", async (message) => {
   const response = await handleMessageReplies(message, client);
-  // return res.send(response);
+  const voiceChannel = message.member?.voice?.channel;
+  if (!voiceChannel) return; // user not in VC
+  userLastMessageTimestamps.set(message.author.id, Date.now());
 });
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
