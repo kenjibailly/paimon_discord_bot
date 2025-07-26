@@ -205,7 +205,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
             await giveExp(member.user.id, channel.id, guildId, client);
           }
         })();
-      }, 10_000);
+      }, 60_000);
 
       activeVoiceChannelsData.set(channel.id, intervalId);
     }
