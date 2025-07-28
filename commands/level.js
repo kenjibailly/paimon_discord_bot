@@ -16,6 +16,11 @@ const levelGradients = [
   { min: 21, max: 30, colors: ["#DD45FF", "#57D2FF"] },
   { min: 31, max: 40, colors: ["#45FF77", "#57D2FF"] },
   { min: 41, max: 50, colors: ["#45FF77", "#BC57FF"] },
+  { min: 51, max: 60, colors: ["#57D2FF", "#FF8A45"] },
+  { min: 61, max: 70, colors: ["#FF8A45", "#FFA3FF"] },
+  { min: 71, max: 80, colors: ["#FFA3FF", "#57FFB4"] },
+  { min: 81, max: 90, colors: ["#57FFB4", "#FF57A1"] },
+  { min: 91, max: 100, colors: ["#FF57A1", "#FFD445"] },
 ];
 
 async function handleLevelCommand(
