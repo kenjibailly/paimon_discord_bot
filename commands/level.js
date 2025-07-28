@@ -396,7 +396,7 @@ async function drawRewards(ctx, level, config) {
         const leftMostX = startX - (coinsToDraw - 1) * (coinSize + spacing);
         const textX = leftMostX - 5;
         const textY = y + 12;
-        drawText(ctx, `${totalCoins}`, 13, textX, textY, 1, 1, "right");
+        drawText(ctx, `${totalCoins}`, 8, textX / 2, textY / 2, 1, 1, "right");
       }
 
       drewMainReward = true;
@@ -422,7 +422,7 @@ async function drawRewards(ctx, level, config) {
         const leftMostX = startX - (extrasToDraw - 1) * (extraSize + spacing);
         const textX = leftMostX - 10;
         const textY = y + 15;
-        drawText(ctx, `${totalExtras}`, 13, textX, textY, 1, 1, "right");
+        drawText(ctx, `${totalExtras}`, 8, textX / 2, textY / 2, 1, 1, "right");
       }
     }
   }
