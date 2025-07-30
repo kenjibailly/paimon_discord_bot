@@ -38,45 +38,52 @@ async function handleExchangeShopButton(interaction, client) {
     return;
   }
 
-  // Post the message in the thread
-  let title = "Shop";
-  let description = `Please choose one of the following options to redeem:`;
-  let embed = createEmbed(title, description, "");
+  try {
+    // Post the message in the thread
+    let title = "Shop";
+    let description = `Please choose one of the following options to redeem:`;
+    let embed = createEmbed(title, description, "");
 
-  // Send the message to the thread
-  const message = await thread.send({
-    content: "Please select an option from the dropdown below:",
-    embeds: [embed],
-    components: [
-      {
-        type: 1, // Action Row
-        components: [
-          {
-            type: 3, // Select Menu
-            custom_id: "exchange-shop-menu",
-            options: options_list,
-            placeholder: "Select an option...",
-          },
-        ],
-      },
-      {
-        type: 1, // Action Row
-        components: [
-          {
-            type: 2, // Button
-            style: 4, // Danger style
-            label: "Cancel",
-            custom_id: "cancel-thread",
-          },
-        ],
-      },
-    ],
-  });
+    // Send the message to the thread
+    const message = await thread.send({
+      content: "Please select an option from the dropdown below:",
+      embeds: [embed],
+      components: [
+        {
+          type: 1, // Action Row
+          components: [
+            {
+              type: 3, // Select Menu
+              custom_id: "exchange-shop-menu",
+              options: options_list,
+              placeholder: "Select an option...",
+            },
+          ],
+        },
+        {
+          type: 1, // Action Row
+          components: [
+            {
+              type: 2, // Button
+              style: 4, // Danger style
+              label: "Cancel",
+              custom_id: "cancel-thread",
+            },
+          ],
+        },
+      ],
+    });
 
-  title = "Shop";
-  description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
-  embed = createEmbed(title, description, "");
-  await interaction.followUp({ embeds: [embed], flags: 64 });
+    title = "Shop";
+    description = `Please continue in the private thread I created [here](https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}).`;
+    embed = createEmbed(title, description, "");
+    await interaction.followUp({ embeds: [embed], flags: 64 });
+  } catch (error) {
+    logger.error(
+      "There was an issue with sending the follow up message in the exchange shop"
+    );
+    logger.error(error);
+  }
 }
 
 module.exports = handleExchangeShopButton;

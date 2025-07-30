@@ -26,6 +26,7 @@ const mongodb_URI = require("./mongodb/URI");
 // const registerCommands = require('./commands/deploy-commands');
 const giveExp = require("./helpers/give-exp");
 const userLastMessageTimestamps = require("./helpers/userLastMessageTimestamps");
+const handleNicknameUserJoin = require("./utilities/handle-nickname-user-join.js");
 
 mongoose
   .connect(mongodb_URI)
@@ -106,6 +107,7 @@ client.on("guildCreate", async (guild) => {
 // When a user joins the server, check if they're being trolled
 client.on("guildMemberAdd", async (member) => {
   await handleTrolledUserJoin(member);
+  await handleNicknameUserJoin(member);
 });
 
 // Express server setup for handling interactions
