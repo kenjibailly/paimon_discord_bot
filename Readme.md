@@ -324,7 +324,7 @@ Optional: Change the permissions of the commands of the bot. Go to `Server Setti
 - ✅ /timeout-user
   - You can timeout a user, first timeout = 10 mins, second timeout = 1h, third and following timeouts = 24h. User gets a DM with optionally their violated message and which rules they have violated
   - Input: `user`, optional: `message link`
-- ❌ /warn-user
+- ✅ /warn-user
   - You can warn a user for violating a rule. User gets a DM with optionally their violated message and which rules they have violated
   - Input: `user`, optional: `message link`
 

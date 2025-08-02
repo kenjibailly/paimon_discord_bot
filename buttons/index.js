@@ -47,7 +47,8 @@ const {
   handleUpdateRuleNameButton,
   handleUpdateRuleDescriptionButton,
 } = require("./manage/manage-rules");
-const handleTimeoutuserButton = require("./timeout-user.js");
+const handleTimeoutUserButton = require("./timeout-user.js");
+const handleWarnUserButton = require("./warn-user.js");
 
 module.exports = {
   "exchange-shop": handleExchangeShopButton,
@@ -96,5 +97,6 @@ module.exports = {
   "remove-rule": handleManageRulesButton,
   "update-rule-name": handleUpdateRuleNameButton,
   "update-rule-description": handleUpdateRuleDescriptionButton,
-  rule_violation_select: handleTimeoutuserButton,
+  rule_violation_select: handleTimeoutUserButton,
+  rule_violation_select_warn: handleWarnUserButton,
 };

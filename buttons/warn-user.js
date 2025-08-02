@@ -1,10 +1,9 @@
 const Rules = require("../models/rules");
-const Timeouts = require("../models/timeouts");
 const { EmbedBuilder } = require("discord.js");
 const StaffRole = require("../models/staff-role");
 const userExchangeData = require("../helpers/userExchangeData");
 
-async function handleTimeoutUserButton(interaction, client) {
+async function handleWarnUserButton(interaction, client) {
   const [_, targetUserId] = interaction.customId.split(":");
   const user_exchange_data = userExchangeData.get(targetUserId);
   userExchangeData.delete(targetUserId);
@@ -29,42 +28,11 @@ async function handleTimeoutUserButton(interaction, client) {
   }
   const selectedRuleIds = interaction.values;
 
-  // Fetch existing timeout count
-  let timeoutData = await Timeouts.findOne({
-    guild_id: interaction.guildId,
-    user_id: targetUserId,
-  });
-
-  if (!timeoutData) {
-    timeoutData = new Timeouts({
-      guild_id: interaction.guildId,
-      user_id: targetUserId,
-      amount: 0,
-    });
-  }
-
-  // Determine timeout duration
-  let timeoutMs;
-  const nextTimeoutCount = timeoutData.amount + 1;
-
-  switch (nextTimeoutCount) {
-    case 1:
-      timeoutMs = 10 * 60 * 1000; // 10 minutes
-      break;
-    case 2:
-      timeoutMs = 60 * 60 * 1000; // 1 hour
-      break;
-    default:
-      timeoutMs = 24 * 60 * 60 * 1000; // 24 hours
-      break;
-  }
-
   // Fetch rules
   const selectedRules = await Rules.find({ _id: { $in: selectedRuleIds } });
   const ruleList = selectedRules
     .map((r) => `• **${r.name}**: ${r.description}`)
     .join("\n");
-  const durationStr = formatDuration(timeoutMs);
 
   let staffRoleName = "";
   try {
@@ -87,7 +55,7 @@ async function handleTimeoutUserButton(interaction, client) {
     const dmEmbed = new EmbedBuilder()
       .setTitle("You have been timed out")
       .setDescription(
-        `You were timed out in **${interaction.guild.name}** for **${durationStr}**.\n\n**Violation of rule(s):**\n${ruleList}` +
+        `You are warned in **${interaction.guild.name}**. Next time you violate the rules, you will be timed out.\n\n**Violation of rule(s):**\n${ruleList}` +
           (messageContent
             ? `\n\n**Violated Message**\n${messageContent}`
             : "") +
@@ -102,39 +70,19 @@ async function handleTimeoutUserButton(interaction, client) {
     logger.warn(`Failed to DM user ${targetUserId}:`, dmErr.message);
   }
 
-  // Timeout the user
-  try {
-    const member = await interaction.guild.members.fetch(targetUserId);
-    await member.timeout(timeoutMs);
-  } catch (err) {
-    logger.error("Failed to timeout user:", err.message);
-  }
-
-  // Update DB
-  timeoutData.amount = nextTimeoutCount;
-  await timeoutData.save();
-
   // Send confirmation in interaction
   const embed = new EmbedBuilder()
-    .setTitle("User Timed Out")
+    .setTitle("User Warned")
     .setDescription(
-      `You were timed out in **${interaction.guild.name}** for **${durationStr}**.\n\n**Reason(s):**\n${ruleList}`
+      `You are warned in **${interaction.guild.name}**.\n\n**Reason(s):**\n${ruleList}`
     )
-    .addFields({ name: "Duration", value: durationStr, inline: true })
     .setColor("Red");
 
   await interaction.editReply({
-    content: `User <@${targetUserId}> has been timed out.`,
+    content: `User <@${targetUserId}> has been warned.`,
     embeds: [embed],
     components: [],
   });
 }
 
-function formatDuration(ms) {
-  const s = Math.floor(ms / 1000);
-  if (s < 3600) return `${Math.floor(s / 60)} minutes`;
-  if (s < 86400) return `${Math.floor(s / 3600)} hour`;
-  return `${Math.floor(s / 86400)} day`;
-}
-
-module.exports = handleTimeoutUserButton;
+module.exports = handleWarnUserButton;

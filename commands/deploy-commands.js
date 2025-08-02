@@ -758,6 +758,26 @@ async function registerCommands(guildId) {
     ],
   };
 
+  const WARN_USER_COMMAND = {
+    name: "warn-user",
+    description: "Warn a user and select the rule(s) they violated",
+    default_member_permissions: 0x2000, // Moderate Members (Timeout)
+    options: [
+      {
+        type: 6, // USER
+        name: "user",
+        description: "Select the user to warn",
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: "message",
+        description: "Copy the message link of the violation and paste it here",
+        required: false,
+      },
+    ],
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -797,6 +817,7 @@ async function registerCommands(guildId) {
     TICKET_MESSAGE_COMMAND,
     MANAGE_RULES_COMMAND,
     TIMEOUT_USER_COMMAND,
+    WARN_USER_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];

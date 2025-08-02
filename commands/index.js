@@ -38,6 +38,7 @@ const handleLeaderboardCommand = require("./leaderboard");
 const handleSendTicketMessageCommand = require("./ticket-message");
 const handleManageRulesCommand = require("./manage-rules");
 const handleTimeoutUserCommand = require("./timeout-user");
+const handleWarnUserCommand = require("./warn-user");
 
 module.exports = {
   "award-team": handleAwardTeamCommand,
@@ -80,4 +81,5 @@ module.exports = {
   "ticket-message": handleSendTicketMessageCommand,
   "manage-rules": handleManageRulesCommand,
   "timeout-user": handleTimeoutUserCommand,
+  "warn-user": handleWarnUserCommand,
 };

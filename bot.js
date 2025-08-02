@@ -188,6 +188,7 @@ client.on("interactionCreate", async (interaction) => {
         "join-leave-config",
         "manage-rules",
         "timeout-user",
+        "warn-user",
       ];
 
       const commandName = interaction.commandName;
