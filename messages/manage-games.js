@@ -1,6 +1,6 @@
 const createEmbed = require("../helpers/embed");
 const userExchangeData = require("../helpers/userExchangeData");
-const cancelThread = require("../helpers/cancel-thread");
+const cancelThreadFromMessage = require("../helpers/cancel-thread-from-message");
 const Games = require("../models/games");
 const NextGames = require("../models/next-games");
 const validateNumber = require("../helpers/validate-number");
@@ -87,7 +87,7 @@ async function handleManageGames(message, client) {
     );
     if (gameRemoved) {
       userExchangeData.delete(message.author.id); // Remove the user's data entirely
-      cancelThread(message.guildId, message.channelId, client);
+      cancelThreadFromMessage(message.guildId, message.channelId, client);
     }
     return;
   }
@@ -157,7 +157,7 @@ async function handleAddGameDescription(message, client) {
     });
 
     userExchangeData.delete(message.author.id); // Remove the user's data entirely
-    cancelThread(message.guildId, message.channelId, client);
+    cancelThreadFromMessage(message.guildId, message.channelId, client);
   }
 
   const title = `Add Game`;
@@ -173,7 +173,7 @@ async function handleAddGameDescription(message, client) {
   });
 
   userExchangeData.delete(message.author.id); // Remove the user's data entirely
-  cancelThread(message.guildId, message.channelId, client);
+  cancelThreadFromMessage(message.guildId, message.channelId, client);
 }
 
 async function removeGame(game, client, message) {
@@ -292,7 +292,7 @@ async function removeGame(game, client, message) {
     });
 
     userExchangeData.delete(message.author.id); // Remove the user's data entirely
-    cancelThread(message.guildId, message.channelId, client);
+    cancelThreadFromMessage(message.guildId, message.channelId, client);
     return false;
   }
 }
@@ -389,7 +389,7 @@ async function handleUpdateGameDescription(message, client) {
       });
 
       userExchangeData.delete(message.author.id); // Remove the user's data entirely
-      cancelThread(message.guildId, message.channelId, client);
+      cancelThreadFromMessage(message.guildId, message.channelId, client);
     } else {
       throw new Error("Couldn't update game to database");
     }
@@ -406,7 +406,7 @@ async function handleUpdateGameDescription(message, client) {
     });
 
     userExchangeData.delete(message.author.id); // Remove the user's data entirely
-    cancelThread(message.guildId, message.channelId, client);
+    cancelThreadFromMessage(message.guildId, message.channelId, client);
   }
 
   return;

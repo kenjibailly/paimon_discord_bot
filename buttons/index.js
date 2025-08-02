@@ -40,6 +40,14 @@ const handleLeaveTeamButton = require("./leave-team.js");
 const handleCreateTicketButton = require("./tickets/create-ticket");
 const handleCompleteTicketButton = require("./tickets/complete-ticket.js");
 const handleCancelTicketButton = require("./tickets/cancel-ticket.js");
+const {
+  handleAddRuleNameButton,
+  handleAddRuleWithoutDescriptionButton,
+  handleManageRulesButton,
+  handleUpdateRuleNameButton,
+  handleUpdateRuleDescriptionButton,
+} = require("./manage/manage-rules");
+const handleTimeoutuserButton = require("./timeout-user.js");
 
 module.exports = {
   "exchange-shop": handleExchangeShopButton,
@@ -82,4 +90,11 @@ module.exports = {
   "create-ticket": handleCreateTicketButton,
   "complete-ticket": handleCompleteTicketButton,
   "cancel-ticket": handleCancelTicketButton,
+  "add-rule-name": handleAddRuleNameButton,
+  "add-rule-without-description": handleAddRuleWithoutDescriptionButton,
+  "update-rule": handleManageRulesButton,
+  "remove-rule": handleManageRulesButton,
+  "update-rule-name": handleUpdateRuleNameButton,
+  "update-rule-description": handleUpdateRuleDescriptionButton,
+  rule_violation_select: handleTimeoutuserButton,
 };

@@ -732,6 +732,32 @@ async function registerCommands(guildId) {
     description: "Send the ticket message where people can create a ticket",
   };
 
+  const MANAGE_RULES_COMMAND = {
+    name: "manage-rules",
+    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    description: "Manage the rules",
+  };
+
+  const TIMEOUT_USER_COMMAND = {
+    name: "timeout-user",
+    description: "Timeout a user and select the rule(s) they violated",
+    default_member_permissions: 0x2000, // Moderate Members (Timeout)
+    options: [
+      {
+        type: 6, // USER
+        name: "user",
+        description: "Select the user to timeout",
+        required: true,
+      },
+      {
+        type: 3, // STRING
+        name: "message",
+        description: "Copy the message link of the violation and paste it here",
+        required: false,
+      },
+    ],
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -769,6 +795,8 @@ async function registerCommands(guildId) {
     JOIN_LEAVE_COMMAND,
     LEADERBOARD_COMMAND,
     TICKET_MESSAGE_COMMAND,
+    MANAGE_RULES_COMMAND,
+    TIMEOUT_USER_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];

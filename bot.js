@@ -186,6 +186,8 @@ client.on("interactionCreate", async (interaction) => {
         "set-introduction-channel",
         "join-leave",
         "join-leave-config",
+        "manage-rules",
+        "timeout-user",
       ];
 
       const commandName = interaction.commandName;

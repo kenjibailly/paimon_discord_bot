@@ -36,6 +36,8 @@ const handleJoinLeaveConfigCommand = require("./join-leave-config");
 const handleJoinLeaveCommand = require("./join-leave");
 const handleLeaderboardCommand = require("./leaderboard");
 const handleSendTicketMessageCommand = require("./ticket-message");
+const handleManageRulesCommand = require("./manage-rules");
+const handleTimeoutUserCommand = require("./timeout-user");
 
 module.exports = {
   "award-team": handleAwardTeamCommand,
@@ -76,4 +78,6 @@ module.exports = {
   "join-leave": handleJoinLeaveCommand,
   leaderboard: handleLeaderboardCommand,
   "ticket-message": handleSendTicketMessageCommand,
+  "manage-rules": handleManageRulesCommand,
+  "timeout-user": handleTimeoutUserCommand,
 };

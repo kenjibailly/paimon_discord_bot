@@ -265,6 +265,9 @@ docker compose up -d
 - ✅ /introduction
   - A user can introduce themselves using this command. An image will be generated with the provided data. Users can edit their introduction using the same command and the initial message will be updated.
   - You can edit the game characters in the `./introduction/game.json` file, the colors in the file are used to make a gradient background. You can also change the assets, but make sure they have the same dimensions.
+- ✅ /level
+  - A user can check their current level or they can check another user's level.
+  - Input: optional: `user`
 
 #### 🧑‍💼 Staff functions
 
@@ -316,6 +319,14 @@ Optional: Change the permissions of the commands of the bot. Go to `Server Setti
 - ✅ /manage-daily-character-poll
   - You can activate a daily character poll for your game. The poll will include 2 characters from the json file located in `./introduction/game.json` and ask which character they like best.
   - Input: `active`, `channel`
+- ✅ /manage-rules
+  - You can add rules to select from the `/timeout-user` command
+- ✅ /timeout-user
+  - You can timeout a user, first timeout = 10 mins, second timeout = 1h, third and following timeouts = 24h. User gets a DM with optionally their violated message and which rules they have violated
+  - Input: `user`, optional: `message link`
+- ❌ /warn-user
+  - You can warn a user for violating a rule. User gets a DM with optionally their violated message and which rules they have violated
+  - Input: `user`, optional: `message link`
 
 #### ⚙️ Settings
 
