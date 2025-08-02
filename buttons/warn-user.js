@@ -53,7 +53,7 @@ async function handleWarnUserButton(interaction, client) {
   try {
     const user = await client.users.fetch(targetUserId);
     const dmEmbed = new EmbedBuilder()
-      .setTitle("You have been timed out")
+      .setTitle("You have been warned")
       .setDescription(
         `You are warned in **${interaction.guild.name}**. Next time you violate the rules, you will be timed out.\n\n**Violation of rule(s):**\n${ruleList}` +
           (messageContent
