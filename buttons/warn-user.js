@@ -74,7 +74,7 @@ async function handleWarnUserButton(interaction, client) {
   const embed = new EmbedBuilder()
     .setTitle("User Warned")
     .setDescription(
-      `You are warned in **${interaction.guild.name}**.\n\n**Reason(s):**\n${ruleList}`
+      `You have warned <@${targetUserId}> in **${interaction.guild.name}**.\n\n**Reason(s):**\n${ruleList}`
     )
     .setColor("Red");
 
