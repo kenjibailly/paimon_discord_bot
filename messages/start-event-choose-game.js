@@ -65,11 +65,15 @@ async function handleStartEventChooseGame(message, client) {
     return;
   }
 
+  const rawDescription =
+    user_exchange_data.event_description || "No description provided";
+
+  // Convert "\n" (typed literally in the command) into real line breaks
+  const eventDescription = rawDescription.replace(/\\n/g, "\n");
+
   const embedEvent = new EmbedBuilder()
     .setTitle(user_exchange_data.event_name || "Event Started!")
-    .setDescription(
-      user_exchange_data.event_description || "No description provided"
-    )
+    .setDescription(eventDescription)
     .setImage(user_exchange_data.image || undefined)
     .setColor(user_exchange_data.color) // Customize the color
     .addFields([

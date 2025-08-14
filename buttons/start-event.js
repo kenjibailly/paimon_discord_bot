@@ -160,6 +160,7 @@ async function handleStartEventNoGameButton(interaction, client) {
   // Send embed with buttons
   const channel = await client.channels.fetch(user_exchange_data.channel_id);
   const sentMessage = await channel.send({
+    content: user_exchange_data.tag_everyone ? "@everyone" : undefined,
     embeds: [embedEvent],
     components: [
       {

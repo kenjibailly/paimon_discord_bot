@@ -30,6 +30,7 @@ async function handleStartEventCommand(interaction, client) {
     const auto_team_generation = interaction.options.getBoolean(
       "auto_team_generation"
     );
+    const tag_everyone = interaction.options.getBoolean("tag_everyone");
     const max_members_per_team = interaction.options.getInteger(
       "max_members_per_team"
     );
@@ -96,6 +97,7 @@ async function handleStartEventCommand(interaction, client) {
     user_exchange_data.expiration = time_generation;
     user_exchange_data.event_date = event_date;
     user_exchange_data.timezone = timezone;
+    user_exchange_data.tag_everyone = tag_everyone;
     // Store the updated object back into userExchangeData
     userExchangeData.set(interaction.member.user.id, user_exchange_data);
 

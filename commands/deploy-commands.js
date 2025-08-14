@@ -346,6 +346,12 @@ async function registerCommands(guildId) {
           { name: "pink", value: "pink" },
         ],
       },
+      {
+        type: 5, // BOOLEAN
+        name: "tag_everyone",
+        description: "Should everyone be tagged?",
+        required: false,
+      },
     ],
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
     dm_permission: false, // Command can’t be used in DMs

@@ -28,12 +28,19 @@ async function handleCancelEventCommand(interaction, client) {
     let description = `The event below has been canceled:`;
     let color = "error";
     let embed = createEmbed(title, description, color);
-    const event_fields = {
-      name: event.name,
-      value: event.description ? event.description : "No description available",
-      inline: false, // You can set this to `true` to display fields inline
-    };
-    embed.addFields(event_fields); // Add the fields to the embed
+    const chunks = [];
+    const text = event.description || "No description available";
+    for (let i = 0; i < text.length; i += 1024) {
+      chunks.push(text.slice(i, i + 1024));
+    }
+
+    const event_fields = chunks.map((chunk, index) => ({
+      name: index === 0 ? event.name.slice(0, 256) : "\u200B", // empty name for subsequent fields
+      value: chunk,
+      inline: false,
+    }));
+
+    embed.addFields(event_fields);
 
     const bot_channel = await getBotChannel(guildId);
     const botChannel = await client.channels.fetch(bot_channel.channel);
@@ -55,7 +62,7 @@ async function handleCancelEventCommand(interaction, client) {
         events.forEach((event) => {
           const event_info = {
             name: event.name,
-            value: event._id,
+            value: event._id.toString(),
           };
           events_list.push(event_info);
         });
