@@ -265,6 +265,7 @@ async function assignMultipleTeams(client, event, assignmentsByGuild) {
 
   if (event.auto_team_generation) {
     // Send the embed message
+    console.log("send embed");
     await sendMultipleTeamsEmbed(event, teamUsernames, client);
   }
   // Remove event and team assignments from the database

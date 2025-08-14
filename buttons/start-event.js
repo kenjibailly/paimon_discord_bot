@@ -119,12 +119,15 @@ async function handleStartEventNoGameButton(interaction, client) {
 
   // Build embed content
   const eventTitle = user_exchange_data.event_name || "Event Started!";
-  const eventDescription =
-    user_exchange_data.event_description || "No description provided";
   const eventColor = user_exchange_data.color;
   const timezone = user_exchange_data.timezone;
 
-  // Create the embed
+  const rawDescription =
+    user_exchange_data.event_description || "No description provided";
+
+  // Convert "\n" (typed literally in the command) into real line breaks
+  const eventDescription = rawDescription.replace(/\\n/g, "\n");
+
   const embedEvent = new EmbedBuilder()
     .setTitle(eventTitle)
     .setDescription(eventDescription)

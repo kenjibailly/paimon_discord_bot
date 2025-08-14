@@ -9,11 +9,23 @@ const userExchangeData = require("../helpers/userExchangeData");
 async function handleTimeoutUserCommand(interaction, client) {
   const targetUser = interaction.options.getUser("user");
   const violationMessage = interaction.options.getString("message");
+  const timeoutAmount = interaction.options.getInteger("timeout_hours");
   const guildId = interaction.guildId;
 
+  let existingData = {};
+
+  // If violationMessage exists, add it
   if (violationMessage) {
-    userExchangeData.set(targetUser.id, violationMessage);
+    existingData.violationMessage = violationMessage;
   }
+
+  // If timeoutAmount exists, add it
+  if (timeoutAmount) {
+    existingData.timeoutAmount = timeoutAmount;
+  }
+
+  // Save everything back
+  userExchangeData.set(targetUser.id, existingData);
 
   const rules = await Rules.find({ guild_id: guildId });
 

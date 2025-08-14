@@ -8,7 +8,8 @@ async function handleTimeoutUserButton(interaction, client) {
   const [_, targetUserId] = interaction.customId.split(":");
   const user_exchange_data = userExchangeData.get(targetUserId);
   userExchangeData.delete(targetUserId);
-  const violationMessage = user_exchange_data;
+  const violationMessage = user_exchange_data.violationMessage;
+  const timeoutAmount = user_exchange_data.timeoutAmount;
   let messageContent = null;
   if (violationMessage) {
     // Parse the link to extract channel ID and message ID
@@ -64,7 +65,13 @@ async function handleTimeoutUserButton(interaction, client) {
   const ruleList = selectedRules
     .map((r) => `• **${r.name}**: ${r.description}`)
     .join("\n");
-  const durationStr = formatDuration(timeoutMs);
+  let durationStr;
+
+  if (user_exchange_data.timeoutAmount) {
+    durationStr = timeoutAmount + " hours";
+  } else {
+    durationStr = formatDuration(timeoutMs);
+  }
 
   let staffRoleName = "";
   try {
@@ -105,7 +112,12 @@ async function handleTimeoutUserButton(interaction, client) {
   // Timeout the user
   try {
     const member = await interaction.guild.members.fetch(targetUserId);
-    await member.timeout(timeoutMs);
+    if (user_exchange_data.timeoutAmount) {
+      const ms = user_exchange_data.timeoutAmount * 60 * 60 * 1000;
+      await member.timeout(ms);
+    } else {
+      await member.timeout(timeoutMs);
+    }
   } catch (err) {
     logger.error("Failed to timeout user:", err.message);
   }

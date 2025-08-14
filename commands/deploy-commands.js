@@ -755,6 +755,12 @@ async function registerCommands(guildId) {
         description: "Copy the message link of the violation and paste it here",
         required: false,
       },
+      {
+        type: 4, // STRING
+        name: "timeout_hours",
+        description: "Override the timeout amount (in hours)",
+        required: false,
+      },
     ],
   };
 
