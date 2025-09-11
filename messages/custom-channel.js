@@ -9,7 +9,6 @@ const ChannelNameConfig = require("../models/channel-name-config");
 async function handleCustomChannel(message, client) {
   const messageContent = message.content;
   const user_exchange_data = userExchangeData.get(message.author.id);
-
   const contentValidationError = validateChannelName(messageContent);
   if (contentValidationError) {
     // Handle message content validation error
@@ -135,87 +134,127 @@ async function handleCustomChannel(message, client) {
 async function handleCustomChannelCategory(message, client) {
   const messageContent = message.content;
   const user_exchange_data = userExchangeData.get(message.author.id);
+
   const validationError = validateNumber(
     messageContent,
     user_exchange_data.categories
   );
 
   if (validationError) {
-    logger.error("Validation Error:", validationError);
-    // Send a confirmation message before closing the thread
-    const title = `Input Error`;
-    const description = `${validationError}\nPlease try again.`;
-    const color = "error"; // Changed to hex code for red
-    const embed = createEmbed(title, description, color);
-
-    await message.channel.send({
-      embeds: [embed],
-    });
+    const embed = createEmbed(
+      "Input Error",
+      `${validationError}\nPlease try again.`,
+      "error"
+    );
+    await message.channel.send({ embeds: [embed] });
     return;
   }
 
+  // Save selected category
   user_exchange_data.category =
     user_exchange_data.categories[Number(messageContent) - 1];
   delete user_exchange_data.categories;
-  userExchangeData.set(message.author.id, user_exchange_data);
 
-  // Determine if the emoji is custom or normal
-  const emojiDisplay = user_exchange_data.tokenEmoji.token_emoji_id
-    ? `<:${user_exchange_data.tokenEmoji.token_emoji_name}:${user_exchange_data.tokenEmoji.token_emoji_id}>`
-    : user_exchange_data.tokenEmoji.token_emoji;
-
-  let channel_name_config = "\n";
+  // Fetch channel config
+  let channel_name_config;
   try {
     channel_name_config = await ChannelNameConfig.findOne({
       guild_id: message.guild.id,
     });
   } catch (error) {
-    logger.error(
-      "Error getting Channel Name Configuration from the database",
-      error
+    const embed = createEmbed(
+      "Channel Name Configuration Error",
+      "I could not find the channel name configuration in the database, please try again later or contact your administrator.",
+      "error"
     );
-    // Send a confirmation message before closing the thread
-    const title = `Channel Name Configuration Error`;
-    const description = `I could not find the channel name configuration in the database, please try again later or contact your administrator.`;
-    const color = "error"; // Changed to hex code for red
-    const embed = createEmbed(title, description, color);
-
-    await message.channel.send({
-      embeds: [embed],
-    });
+    await message.channel.send({ embeds: [embed] });
     return;
   }
 
-  const title = "Shop";
-  const description =
-    `Do you want to add this custom channel?\n` +
-    `Channel name: **${user_exchange_data.channelName}**\nChannel category: **${user_exchange_data.category.name}**\n\n` +
-    `This will deduct **${user_exchange_data.rewardPrice}** ${emojiDisplay} from your wallet.`;
-  const embed = createEmbed(title, description, "");
+  // If emoji is required → switch to emoji flow
+  if (channel_name_config?.emoji) {
+    // flag what we’re waiting for
+    user_exchange_data.name = "custom-channel-emoji";
 
-  // Construct the button component
+    // if channel config also has a separator → store it
+    if (channel_name_config.separator) {
+      user_exchange_data.separator = channel_name_config.separator;
+    }
+
+    userExchangeData.set(message.author.id, user_exchange_data);
+
+    const embed = createEmbed(
+      "Emoji Required",
+      "Please send an emoji that will be used at the beginning of your channel name.",
+      ""
+    );
+
+    await message.channel.send({ embeds: [embed] });
+    return; // stop here, wait for emoji handler
+  }
+
+  // If only separator (and no emoji required) → just save separator and continue
+  if (channel_name_config?.separator) {
+    user_exchange_data.separator = channel_name_config.separator;
+    userExchangeData.set(message.author.id, user_exchange_data);
+  }
+
+  // Otherwise continue normally
+  return continueToConfirmation(message, user_exchange_data);
+}
+
+async function handleCustomChannelEmoji(message, client) {
+  const user_exchange_data = userExchangeData.get(message.author.id);
+  if (!user_exchange_data) return;
+
+  const emoji = message.content.trim();
+
+  // store emoji
+  user_exchange_data.channelEmoji = emoji;
+
+  delete user_exchange_data.expectingEmoji;
+  userExchangeData.set(message.author.id, user_exchange_data);
+
+  return continueToConfirmation(message, user_exchange_data);
+}
+
+async function continueToConfirmation(message, user_exchange_data) {
+  const emojiDisplay = user_exchange_data.tokenEmoji?.token_emoji_id
+    ? `<:${user_exchange_data.tokenEmoji.token_emoji_name}:${user_exchange_data.tokenEmoji.token_emoji_id}>`
+    : user_exchange_data.tokenEmoji?.token_emoji || "";
+
+  const embed = createEmbed(
+    "Shop",
+    `Do you want to add this custom channel?\n\n` +
+      (user_exchange_data.channelEmoji
+        ? `Channel emoji: ${user_exchange_data.channelEmoji}\n`
+        : "") +
+      `Channel name: **${user_exchange_data.channelName}**\nChannel category: **${user_exchange_data.category.name}**\n\n` +
+      `This will deduct **${user_exchange_data.rewardPrice}** ${emojiDisplay} from your wallet.`,
+    ""
+  );
+
   const buttonComponent = {
-    type: 2, // Button type
-    style: 1, // Primary style
+    type: 2,
+    style: 1,
     label: "Exchange",
     emoji: {
-      name: user_exchange_data.tokenEmoji.token_emoji_name, // Use the emoji name
-      id: user_exchange_data.tokenEmoji.token_emoji_id, // Include the ID if it's a custom emoji
+      name: user_exchange_data.tokenEmoji?.token_emoji_name,
+      id: user_exchange_data.tokenEmoji?.token_emoji_id,
     },
     custom_id: `exchange-custom-channel`,
   };
 
-  // Send the message
   await message.channel.send({
     embeds: [embed],
     components: [
       {
-        type: 1, // Action row type
+        type: 1,
         components: [
           buttonComponent,
           {
-            type: 2, // Button type
-            style: 4, // Danger style
+            type: 2,
+            style: 4,
             label: "Cancel",
             custom_id: "cancel-thread",
           },
@@ -249,4 +288,8 @@ function validateChannelName(channelName) {
   return null;
 }
 
-module.exports = { handleCustomChannel, handleCustomChannelCategory };
+module.exports = {
+  handleCustomChannel,
+  handleCustomChannelCategory,
+  handleCustomChannelEmoji,
+};

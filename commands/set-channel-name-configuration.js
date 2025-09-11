@@ -20,7 +20,7 @@ async function handleSetChannelNameConfigurationCommand(interaction, client) {
     // Add the user who clicked the button to the thread
     await thread.members.add(interaction.member.user.id);
 
-    const channel_name_config = await ChannelNameConfig.find({
+    const channel_name_config = await ChannelNameConfig.findOne({
       guild_id: guildId,
     });
 
