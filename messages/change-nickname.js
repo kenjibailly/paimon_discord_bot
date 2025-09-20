@@ -2,6 +2,8 @@ const createEmbed = require("../helpers/embed");
 const userExchangeData = require("../helpers/userExchangeData");
 const getWalletConfig = require("../helpers/get-wallet-config");
 const getReward = require("../helpers/get-reward");
+const AwardedReward = require("../models/awarded-reward");
+const cancelThread = require("../helpers/cancel-thread-from-message");
 
 const validateTaggedUser = require("../helpers/validate-tagged-user");
 
@@ -155,6 +157,33 @@ async function handleChangeUserNickname(message, client) {
       taggedUser,
       "Tagged user removed from the thread"
     );
+  }
+
+  const existingAwardedReward = await AwardedReward.findOne({
+    guild_id: message.guild.id,
+    awarded_user_id: member.user.id,
+    $or: [
+      { reward: "change-user-nickname" },
+      { reward: "change-own-nickname" },
+    ],
+  });
+
+  if (existingAwardedReward) {
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    if (existingAwardedReward.date > twentyFourHoursAgo) {
+      // Send message
+      const title = "Shop";
+      const description = `It hasn't been 24h yet since the nickname of this user has been changed, please try again later.`;
+      const embed = createEmbed(title, description, "");
+      await message.channel.send({
+        embeds: [embed],
+      });
+
+      await cancelThread(message.guild.id, message.channel.id, client);
+      return;
+    }
   }
 
   const title = "Shop";
