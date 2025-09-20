@@ -27,6 +27,7 @@ const mongodb_URI = require("./mongodb/URI");
 const giveExp = require("./helpers/give-exp");
 const userLastMessageTimestamps = require("./helpers/userLastMessageTimestamps");
 const handleNicknameUserJoin = require("./utilities/handle-nickname-user-join.js");
+const BotEvents = require("./models/events.js");
 
 mongoose
   .connect(mongodb_URI)
@@ -154,6 +155,26 @@ client.on("interactionCreate", async (interaction) => {
         const choices = filtered.map((c) => ({
           name: c.name,
           value: c.name,
+        }));
+
+        await interaction.respond(choices);
+        return;
+      } else if (
+        interaction.commandName === "cancel-event" &&
+        interaction.options.getFocused(true).name === "event-to-cancel"
+      ) {
+        const focusedOption = interaction.options.getFocused(true);
+        const typed = focusedOption.value.toLowerCase();
+
+        const events = await BotEvents.find({ guild_id: interaction.guildId });
+        // Filter characters by typed input and limit to 25
+        const filtered = events
+          .filter((e) => e.name.toLowerCase().startsWith(typed))
+          .slice(0, 25);
+
+        const choices = filtered.map((e) => ({
+          name: e.name,
+          value: e.name,
         }));
 
         await interaction.respond(choices);

@@ -362,6 +362,15 @@ async function registerCommands(guildId) {
     description: "Cancel current event",
     default_member_permissions: defaultManageGuildPermission, // Manage Server permission
     dm_permission: false, // Command can’t be used in DMs
+    options: [
+      {
+        type: 3, // STRING
+        name: "event-to-cancel",
+        description: "Which event do you want to cancel?",
+        required: true,
+        autocomplete: true,
+      },
+    ],
   };
 
   const SET_CHANNEL_NAME_CONFIGURATION_COMMAND = {

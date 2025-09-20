@@ -14,15 +14,15 @@ async function handleStartEventCommand(interaction, client) {
   const { guildId, channelId } = interaction;
 
   try {
-    const event = await Events.findOne({ guild_id: guildId });
-    if (event) {
-      const title = "Error Start Event";
-      const description = `You already have an ongoing event, please let it finish or cancel it using the \`/cancel-event\` command.`;
-      const color = "error";
-      const embed = createEmbed(title, description, color);
-      await interaction.editReply({ embeds: [embed], flags: 64 });
-      return;
-    }
+    // const event = await Events.findOne({ guild_id: guildId });
+    // if (event) {
+    //   const title = "Error Start Event";
+    //   const description = `You already have an ongoing event, please let it finish or cancel it using the \`/cancel-event\` command.`;
+    //   const color = "error";
+    //   const embed = createEmbed(title, description, color);
+    //   await interaction.editReply({ embeds: [embed], flags: 64 });
+    //   return;
+    // }
 
     // Find each option by name
     const event_name = interaction.options.getString("name");

@@ -7,8 +7,13 @@ const getBotChannel = require("../helpers/get-bot-channel");
 async function handleCancelEventCommand(interaction, client) {
   const { guildId } = interaction;
 
+  const eventToCancel = interaction.options.getString("event-to-cancel");
+
   try {
-    const event = await Events.findOneAndDelete({ guild_id: guildId });
+    const event = await Events.findOneAndDelete({
+      guild_id: guildId,
+      name: eventToCancel,
+    });
     if (event) {
       // Call the function to delete the event message from the server
       await deleteEventMessage(
