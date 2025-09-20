@@ -428,4 +428,4 @@ async function drawRewards(ctx, level, config) {
   }
 }
 
-module.exports = { handleLevelCommand, calculateExp };
+module.exports = { handleLevelCommand, calculateExp, calculateLevel };
