@@ -50,6 +50,10 @@ const eventsSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  teams_assigned: {
+    type: Boolean,
+    required: false,
+  },
 });
 
 // Create a model using the schema

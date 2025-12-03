@@ -71,7 +71,7 @@ async function sendTeamsEmbed(
         { name: team1Name, value: formattedTeam1Usernames, inline: true },
         { name: team2Name, value: formattedTeam2Usernames, inline: true }
       )
-      .setColor(event.color); // Adjust color if needed
+      .setColor(event.color);
 
     // Send the message
     await channel.send({
@@ -102,7 +102,7 @@ async function sendMultipleTeamsEmbed(event, teamUsernames, client) {
         `All users who have applied for **${event.name}** have now been assigned to the teams below:`
       )
       .addFields(...fields)
-      .setColor(event.color); // Adjust color if needed
+      .setColor(event.color);
 
     // Send the message
     await channel.send({
@@ -117,35 +117,35 @@ async function checkTeamAssignment(client) {
   try {
     const dateNow = new Date();
 
-    // Find expired events
+    // Find expired events that haven't been processed yet
     const expiredEvents = await Events.find({
+      teams_assigned: { $ne: true }, // Only unprocessed events
       $expr: {
-        $lt: [
+        $lte: [
           {
             $add: [
-              { $toDate: "$date" }, // Convert `date` field to Date object
-              { $multiply: ["$expiration", 24 * 60 * 60 * 1000] }, // Convert `expiration` (in days) to ms and add to date
+              { $toDate: "$date" },
+              { $multiply: ["$expiration", 24 * 60 * 60 * 1000] },
             ],
           },
-          dateNow, // Current time
+          dateNow,
         ],
       },
     });
 
     if (expiredEvents.length > 0) {
-      // Extract unique guild_ids from expired events
+      logger.info(`Found ${expiredEvents.length} expired events to process`);
+
       const guildIds = [
         ...new Set(expiredEvents.map((event) => event.guild_id)),
       ];
 
-      // Fetch team assignments for all extracted guild_ids
       const teamAssignments = await TeamAssignments.find({
         guild_id: { $in: guildIds },
       });
-      // Fetch teams for all extracted guild_ids
+
       const teams = await Teams.find({ guild_id: { $in: guildIds } });
 
-      // Organize team assignments by guild_id
       const assignmentsByGuild = teamAssignments.reduce(
         (guildMap, assignment) => {
           if (!guildMap[assignment.guild_id])
@@ -156,10 +156,8 @@ async function checkTeamAssignment(client) {
         {}
       );
 
-      // Assign users to roles and send embed
       for (const event of expiredEvents) {
-        logger.info("Expired event:");
-        logger.info(event);
+        logger.info(`Processing expired event: ${event.name}`);
         if (event.max_members_per_team === null) {
           await assignTwoTeams(client, teams, event, assignmentsByGuild);
         } else {
@@ -173,106 +171,144 @@ async function checkTeamAssignment(client) {
 }
 
 async function assignTwoTeams(client, teams, event, assignmentsByGuild) {
-  // Organize teams by guild_id
-  const teamsByGuild = teams.reduce((guildMap, team) => {
-    guildMap[team.guild_id] = {
-      team_1: team.team_1,
-      team_2: team.team_2,
-    };
-    return guildMap;
-  }, {});
+  try {
+    // Organize teams by guild_id
+    const teamsByGuild = teams.reduce((guildMap, team) => {
+      guildMap[team.guild_id] = {
+        team_1: team.team_1,
+        team_2: team.team_2,
+      };
+      return guildMap;
+    }, {});
 
-  const guildId = event.guild_id;
-  const users = assignmentsByGuild[guildId] || [];
-  const roles = teamsByGuild[guildId];
+    const guildId = event.guild_id;
+    const users = assignmentsByGuild[guildId] || [];
+    const roles = teamsByGuild[guildId];
 
-  // Shuffle users to ensure random distribution
-  shuffleArray(users);
+    // Check if we have valid data
+    if (!roles) {
+      logger.error(`No team roles found for guild ${guildId}`);
+      await Events.updateOne({ _id: event._id }, { teams_assigned: true });
+      return;
+    }
 
-  // Determine the number of users for each role
-  const numTeam1 = Math.floor(users.length / 2);
-  const numTeam2 = users.length - numTeam1;
+    if (users.length === 0) {
+      logger.warn(`No users found for event ${event.name}`);
+      await Events.updateOne({ _id: event._id }, { teams_assigned: true });
+      return;
+    }
 
-  // Assign roles
-  const team1Users = users.slice(0, numTeam1);
-  const team2Users = users.slice(numTeam1);
+    // Shuffle users to ensure random distribution
+    shuffleArray(users);
 
-  // Fetch role IDs and names
-  const team1RoleId = roles.team_1;
-  const team2RoleId = roles.team_2;
+    // Determine the number of users for each role
+    const numTeam1 = Math.floor(users.length / 2);
+    const numTeam2 = users.length - numTeam1;
 
-  const team1Role = await client.guilds.cache
-    .get(guildId)
-    .roles.fetch(team1RoleId);
-  const team2Role = await client.guilds.cache
-    .get(guildId)
-    .roles.fetch(team2RoleId);
-  const team1RoleName = team1Role.name;
-  const team2RoleName = team2Role.name;
+    // Assign roles
+    const team1Users = users.slice(0, numTeam1);
+    const team2Users = users.slice(numTeam1);
 
-  // Add users to roles
-  await assignUsersToRole(guildId, team1Users, team1RoleId, client);
-  await assignUsersToRole(guildId, team2Users, team2RoleId, client);
+    // Fetch role IDs and names
+    const team1RoleId = roles.team_1;
+    const team2RoleId = roles.team_2;
 
-  // Fetch usernames
-  const team1Usernames = await fetchUsernames(team1Users, client);
-  const team2Usernames = await fetchUsernames(team2Users, client);
+    const team1Role = await client.guilds.cache
+      .get(guildId)
+      .roles.fetch(team1RoleId);
+    const team2Role = await client.guilds.cache
+      .get(guildId)
+      .roles.fetch(team2RoleId);
+    const team1RoleName = team1Role.name;
+    const team2RoleName = team2Role.name;
 
-  if (event.auto_team_generation) {
-    // Send the embed message to the channel
-    await sendTeamsEmbed(
-      event,
-      team1RoleName,
-      team2RoleName,
-      team1Usernames,
-      team2Usernames,
-      client
-    );
+    // Add users to roles
+    await assignUsersToRole(guildId, team1Users, team1RoleId, client);
+    await assignUsersToRole(guildId, team2Users, team2RoleId, client);
+
+    // Fetch usernames
+    const team1Usernames = await fetchUsernames(team1Users, client);
+    const team2Usernames = await fetchUsernames(team2Users, client);
+
+    if (event.auto_team_generation) {
+      logger.info(`Sending teams embed for event ${event.name}`);
+      // Send the embed message to the channel
+      await sendTeamsEmbed(
+        event,
+        team1RoleName,
+        team2RoleName,
+        team1Usernames,
+        team2Usernames,
+        client
+      );
+      logger.info(`Teams embed sent successfully`);
+    }
+
+    // Mark event as processed
+    await Events.updateOne({ _id: event._id }, { teams_assigned: true });
+
+    // Remove team assignments associated with the event
+    await TeamAssignments.deleteMany({ event_id: event._id });
+
+    logger.info(`Event ${event.name} processed successfully`);
+  } catch (error) {
+    logger.error(`Error in assignTwoTeams for event ${event.name}:`, error);
+    // Mark as processed even if there was an error to prevent infinite retries
+    await Events.updateOne({ _id: event._id }, { teams_assigned: true });
   }
-
-  // Remove the event from the database
-  await Events.deleteOne({ _id: event._id });
-
-  // Remove team assignments associated with the event
-  await TeamAssignments.deleteMany({ event_id: event._id });
-
-  return;
 }
 
 async function assignMultipleTeams(client, event, assignmentsByGuild) {
-  const guildId = event.guild_id;
-  const users = assignmentsByGuild[guildId] || [];
+  try {
+    const guildId = event.guild_id;
+    const users = assignmentsByGuild[guildId] || [];
 
-  if (users.length === 0) return;
+    if (users.length === 0) {
+      logger.warn(`No users found for event ${event.name}`);
+      await Events.updateOne({ _id: event._id }, { teams_assigned: true });
+      return;
+    }
 
-  // Shuffle users for randomness
-  shuffleArray(users);
+    // Shuffle users for randomness
+    shuffleArray(users);
 
-  // Determine the number of teams needed
-  const maxMembersPerTeam = event.max_members_per_team;
-  const numTeams = Math.ceil(users.length / maxMembersPerTeam);
+    // Determine the number of teams needed
+    const maxMembersPerTeam = event.max_members_per_team;
+    const numTeams = Math.ceil(users.length / maxMembersPerTeam);
 
-  // Distribute users into teams
-  const teams = Array.from({ length: numTeams }, () => []);
-  users.forEach((user, index) => {
-    teams[index % numTeams].push(user);
-  });
+    // Distribute users into teams
+    const teams = Array.from({ length: numTeams }, () => []);
+    users.forEach((user, index) => {
+      teams[index % numTeams].push(user);
+    });
 
-  // Fetch usernames
-  const teamUsernames = await Promise.all(
-    teams.map(async (team) => await fetchUsernames(team, client))
-  );
+    // Fetch usernames
+    const teamUsernames = await Promise.all(
+      teams.map(async (team) => await fetchUsernames(team, client))
+    );
 
-  if (event.auto_team_generation) {
-    // Send the embed message
-    console.log("send embed");
-    await sendMultipleTeamsEmbed(event, teamUsernames, client);
+    if (event.auto_team_generation) {
+      logger.info(`Sending multiple teams embed for event ${event.name}`);
+      // Send the embed message
+      await sendMultipleTeamsEmbed(event, teamUsernames, client);
+      logger.info(`Multiple teams embed sent successfully`);
+    }
+
+    // Mark event as processed
+    await Events.updateOne({ _id: event._id }, { teams_assigned: true });
+
+    // Remove team assignments from the database
+    await TeamAssignments.deleteMany({ event_id: event._id });
+
+    logger.info(`Event ${event.name} processed successfully`);
+  } catch (error) {
+    logger.error(
+      `Error in assignMultipleTeams for event ${event.name}:`,
+      error
+    );
+    // Mark as processed even if there was an error to prevent infinite retries
+    await Events.updateOne({ _id: event._id }, { teams_assigned: true });
   }
-  // Remove event and team assignments from the database
-  await Events.deleteOne({ _id: event._id });
-  await TeamAssignments.deleteMany({ event_id: event._id });
-
-  return;
 }
 
 module.exports = checkTeamAssignment;
