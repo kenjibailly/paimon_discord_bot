@@ -158,6 +158,8 @@ async function checkTeamAssignment(client) {
 
       // Assign users to roles and send embed
       for (const event of expiredEvents) {
+        logger.info("Expired event:");
+        logger.info(event);
         if (event.max_members_per_team === null) {
           await assignTwoTeams(client, teams, event, assignmentsByGuild);
         } else {

@@ -8,6 +8,7 @@ async function handleJoinTeamButton(interaction, client) {
   const customIdParts = interaction.customId.split(":");
   const customId = customIdParts[0];
   const eventId = customIdParts[1];
+  logger.info("Join Team clicked with event ID:", eventId);
   try {
     const user = interaction.member.user;
 
