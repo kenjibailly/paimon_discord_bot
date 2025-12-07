@@ -3,6 +3,8 @@ const createEmbed = require("../helpers/embed");
 const https = require("https");
 const http = require("http");
 const archiver = require("archiver");
+const fs = require("fs");
+const path = require("path");
 const stream = require("stream");
 const { promisify } = require("util");
 const pipeline = promisify(stream.pipeline);
@@ -101,40 +103,36 @@ async function handleDownloadMessagesCommand(interaction, client) {
     );
     await progressMessage.edit({ embeds: [zipEmbed] }).catch(() => {});
 
-    const zipBuffer = await createZipArchive(html, mediaFiles, channel);
-
-    // Check file size (Discord has a 25MB limit for bots, 8MB for free users)
-    const fileSizeMB = zipBuffer.length / (1024 * 1024);
-
-    if (fileSizeMB > 24) {
-      const errorEmbed = createEmbed(
-        "File Too Large",
-        `❌ The transcript archive is ${fileSizeMB.toFixed(
-          2
-        )}MB, which exceeds Discord's 25MB upload limit.\n\nConsider:\n- Downloading a smaller channel\n- Breaking it into date ranges\n- Using a file hosting service`,
-        ""
-      );
-      await progressMessage.edit({ embeds: [errorEmbed] });
-      return;
-    }
-
-    // Create attachment
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `transcript-${channel.name}-${timestamp}.zip`;
-    const attachment = new AttachmentBuilder(zipBuffer, { name: filename });
+
+    // Create transcripts directory if it doesn't exist
+    const transcriptsDir = path.join(__dirname, "..", "transcripts");
+    if (!fs.existsSync(transcriptsDir)) {
+      fs.mkdirSync(transcriptsDir, { recursive: true });
+    }
+
+    const filepath = path.join(transcriptsDir, filename);
+
+    await createZipArchiveToFile(html, mediaFiles, filepath);
+
+    // Get file size
+    const stats = fs.statSync(filepath);
+    const fileSizeMB = stats.size / (1024 * 1024);
+    const fileSizeGB = fileSizeMB / 1024;
+
+    const sizeDisplay =
+      fileSizeMB > 1024
+        ? `${fileSizeGB.toFixed(2)}GB`
+        : `${fileSizeMB.toFixed(2)}MB`;
 
     const successEmbed = createEmbed(
       "Transcript Complete!",
-      `✅ Successfully generated transcript with:\n• ${
-        messages.length
-      } messages\n• ${
-        mediaFiles.size
-      } media files\n• Archive size: ${fileSizeMB.toFixed(2)}MB`,
+      `✅ Successfully generated transcript with:\n• ${messages.length} messages\n• ${mediaFiles.size} media files\n• Archive size: ${sizeDisplay}\n\n📁 Saved to: \`${filepath}\``,
       ""
     );
 
     await progressMessage.edit({ embeds: [successEmbed] });
-    await dmChannel.send({ files: [attachment] });
   } catch (error) {
     console.error("Error generating transcript:", error);
 
@@ -335,14 +333,16 @@ function sanitizeFilename(filename) {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
-async function createZipArchive(html, mediaFiles, channel) {
+async function createZipArchiveToFile(html, mediaFiles, filepath) {
   return new Promise((resolve, reject) => {
+    const output = fs.createWriteStream(filepath);
     const archive = archiver("zip", { zlib: { level: 9 } });
-    const chunks = [];
 
-    archive.on("data", (chunk) => chunks.push(chunk));
-    archive.on("end", () => resolve(Buffer.concat(chunks)));
+    output.on("close", () => resolve());
+    output.on("error", reject);
     archive.on("error", reject);
+
+    archive.pipe(output);
 
     // Add HTML file
     archive.append(html, { name: "transcript.html" });
