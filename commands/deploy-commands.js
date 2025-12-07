@@ -799,6 +799,20 @@ async function registerCommands(guildId) {
     ],
   };
 
+  const DOWNLOAD_MESSAGES_COMMAND = {
+    name: "download-messages",
+    description: "Download all the messages in a certain channel",
+    default_member_permission: 0x20,
+    options: [
+      {
+        type: 7, // CHANNEL
+        name: "channel",
+        description: "Choose a channel to download the messages from",
+        required: true,
+      },
+    ],
+  };
+
   const NEW_COMMANDS = [
     AWARD_TEAM_COMMAND,
     WALLET_COMMAND,
@@ -839,6 +853,7 @@ async function registerCommands(guildId) {
     MANAGE_RULES_COMMAND,
     TIMEOUT_USER_COMMAND,
     WARN_USER_COMMAND,
+    DOWNLOAD_MESSAGES_COMMAND,
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
     ...(process.env.COMFYUI_ADDRESS ? [CREATE_IMAGE_SETTINGS_COMMAND] : []), // Conditionally add CREATE_IMAGE_COMMAND
   ];
