@@ -441,7 +441,7 @@ async function registerCommands(guildId) {
   const SEND_EMBED_COMMAND = {
     name: "send-embed",
     description: "Send a simple embed",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     options: [
       {
         type: 3, // STRING
@@ -473,7 +473,7 @@ async function registerCommands(guildId) {
   const SEND_EMBED_FILE_COMMAND = {
     name: "send-embed-file",
     description: "Send an embed using a JSON file",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     options: [
       {
         type: 7, // CHANNEL
@@ -493,7 +493,7 @@ async function registerCommands(guildId) {
   const DOWNLOAD_EMBED_FILE_COMMAND = {
     name: "download-embed-file",
     description: "Download an embed as a JSON file",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     options: [
       {
         type: 3, // STRING
@@ -507,7 +507,7 @@ async function registerCommands(guildId) {
   const EDIT_EMBED_FILE_COMMAND = {
     name: "edit-embed-file",
     description: "Edit an already sent embed with a JSON file",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     options: [
       {
         type: 3, // STRING
@@ -527,7 +527,7 @@ async function registerCommands(guildId) {
   const SET_STAFF_ROLE_COMMAND = {
     name: "set-staff-role",
     description: "Configure the staff role",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     options: [
       {
         type: 8, // ROLE
@@ -625,7 +625,7 @@ async function registerCommands(guildId) {
   const MANAGE_DAILY_CHARACTER_POLL_COMMAND = {
     name: "manage-daily-character-poll",
     description: "Configure the daily character poll",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     options: [
       {
         type: 5, // BOOLEAN
@@ -646,13 +646,13 @@ async function registerCommands(guildId) {
   const REGISTER_SLASH_COMMANDS_COMMAND = {
     name: "register-slash-commands",
     description: "Register new slash commands.",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
   };
 
   const LEVEL_CONFIG_COMMAND = {
     name: "level-config",
     description: "Configure the level system",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     options: [
       {
         type: 4, // INTEGER
@@ -704,7 +704,7 @@ async function registerCommands(guildId) {
 
   const JOIN_LEAVE_CONFIG_COMMAND = {
     name: "join-leave-config",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     description:
       "Configure a secret channel people with access to the command can join or leave.",
     options: [
@@ -732,7 +732,7 @@ async function registerCommands(guildId) {
 
   const JOIN_LEAVE_COMMAND = {
     name: "join-leave",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     description: "Join or leave channel",
   };
 
@@ -743,13 +743,13 @@ async function registerCommands(guildId) {
 
   const TICKET_MESSAGE_COMMAND = {
     name: "ticket-message",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     description: "Send the ticket message where people can create a ticket",
   };
 
   const MANAGE_RULES_COMMAND = {
     name: "manage-rules",
-    default_member_permissions: 0x20, // Manage Guild Permission (Administrator)
+    default_member_permissions: 0x00000020, // Manage Guild Permission (Administrator)
     description: "Manage the rules",
   };
 
@@ -802,7 +802,7 @@ async function registerCommands(guildId) {
   const DOWNLOAD_MESSAGES_COMMAND = {
     name: "download-messages",
     description: "Download all the messages in a certain channel",
-    default_member_permission: 0x20,
+    default_member_permissions: 0x00000020,
     options: [
       {
         type: 7, // CHANNEL
