@@ -17,26 +17,36 @@ async function handleDownloadMessagesCommand(interaction, client) {
     const color = "error";
     const embed = createEmbed(title, description, color);
 
-    return await interaction.editReply({ embeds: [embed], flags: 64 });
+    return await interaction.reply({ embeds: [embed], ephemeral: true });
   }
 
   const channel = interaction.options.getChannel("channel");
 
-  // Defer reply since this might take a while
-  await interaction.deferReply({ ephemeral: true });
+  // Reply immediately to acknowledge the command
+  const startEmbed = createEmbed(
+    "Processing Started",
+    `⏳ Started processing transcript for ${channel}. This may take a while for large channels.\n\nI'll send you a DM when it's ready!`,
+    ""
+  );
+  await interaction.reply({ embeds: [startEmbed], ephemeral: true });
+
+  // Get the user to send DMs
+  const user = interaction.user;
 
   try {
+    // Send initial DM
+    const dmChannel = await user.createDM();
+    const progressEmbed = createEmbed(
+      "Transcript Generation Started",
+      `📥 Fetching messages from ${channel.name}...`,
+      ""
+    );
+    const progressMessage = await dmChannel.send({ embeds: [progressEmbed] });
+
     const messages = [];
     let lastMessageId;
 
     // Fetch all messages in the channel (100 at a time)
-    const fetchEmbed = createEmbed(
-      "Fetching Messages",
-      `📥 Downloading messages from ${channel}...`,
-      ""
-    );
-    await interaction.editReply({ embeds: [fetchEmbed] });
-
     while (true) {
       const options = { limit: 100 };
       if (lastMessageId) {
@@ -48,6 +58,16 @@ async function handleDownloadMessagesCommand(interaction, client) {
 
       messages.push(...batch.values());
       lastMessageId = batch.last().id;
+
+      // Update progress every 1000 messages
+      if (messages.length % 1000 === 0) {
+        const updateEmbed = createEmbed(
+          "Fetching Messages",
+          `📥 Fetched ${messages.length} messages so far...`,
+          ""
+        );
+        await progressMessage.edit({ embeds: [updateEmbed] }).catch(() => {});
+      }
     }
 
     // Sort messages by timestamp (oldest first)
@@ -56,14 +76,21 @@ async function handleDownloadMessagesCommand(interaction, client) {
     // Download all media files
     const downloadEmbed = createEmbed(
       "Downloading Media",
-      `📦 Downloading media files...`,
+      `📦 Downloading media files from ${messages.length} messages...`,
       ""
     );
-    await interaction.editReply({ embeds: [downloadEmbed] });
+    await progressMessage.edit({ embeds: [downloadEmbed] }).catch(() => {});
 
-    const mediaFiles = await downloadAllMedia(messages);
+    const mediaFiles = await downloadAllMedia(messages, progressMessage);
 
     // Generate HTML transcript with local file paths
+    const genEmbed = createEmbed(
+      "Generating HTML",
+      `📝 Generating HTML transcript...`,
+      ""
+    );
+    await progressMessage.edit({ embeds: [genEmbed] }).catch(() => {});
+
     const html = generateHTML(messages, channel, interaction.guild, mediaFiles);
 
     // Create ZIP file
@@ -72,9 +99,24 @@ async function handleDownloadMessagesCommand(interaction, client) {
       `🗜️ Creating ZIP archive...`,
       ""
     );
-    await interaction.editReply({ embeds: [zipEmbed] });
+    await progressMessage.edit({ embeds: [zipEmbed] }).catch(() => {});
 
     const zipBuffer = await createZipArchive(html, mediaFiles, channel);
+
+    // Check file size (Discord has a 25MB limit for bots, 8MB for free users)
+    const fileSizeMB = zipBuffer.length / (1024 * 1024);
+
+    if (fileSizeMB > 24) {
+      const errorEmbed = createEmbed(
+        "File Too Large",
+        `❌ The transcript archive is ${fileSizeMB.toFixed(
+          2
+        )}MB, which exceeds Discord's 25MB upload limit.\n\nConsider:\n- Downloading a smaller channel\n- Breaking it into date ranges\n- Using a file hosting service`,
+        ""
+      );
+      await progressMessage.edit({ embeds: [errorEmbed] });
+      return;
+    }
 
     // Create attachment
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -82,29 +124,60 @@ async function handleDownloadMessagesCommand(interaction, client) {
     const attachment = new AttachmentBuilder(zipBuffer, { name: filename });
 
     const successEmbed = createEmbed(
-      "Transcript Generated",
-      `✅ Successfully generated transcript with ${messages.length} messages and ${mediaFiles.size} media files from ${channel}!`,
+      "Transcript Complete!",
+      `✅ Successfully generated transcript with:\n• ${
+        messages.length
+      } messages\n• ${
+        mediaFiles.size
+      } media files\n• Archive size: ${fileSizeMB.toFixed(2)}MB`,
       ""
     );
 
-    await interaction.editReply({
-      embeds: [successEmbed],
-      files: [attachment],
-    });
+    await progressMessage.edit({ embeds: [successEmbed] });
+    await dmChannel.send({ files: [attachment] });
   } catch (error) {
     console.error("Error generating transcript:", error);
-    const errorEmbed = createEmbed(
-      "Error",
-      `❌ Failed to generate transcript: ${error.message}`,
-      ""
-    );
-    await interaction.editReply({ embeds: [errorEmbed] });
+
+    // Try to send error to user's DM
+    try {
+      const dmChannel = await user.createDM();
+      const errorEmbed = createEmbed(
+        "Error",
+        `❌ Failed to generate transcript: ${error.message}`,
+        ""
+      );
+      await dmChannel.send({ embeds: [errorEmbed] });
+    } catch (dmError) {
+      console.error("Could not send error DM:", dmError);
+    }
   }
 }
 
-async function downloadAllMedia(messages) {
+async function downloadAllMedia(messages, progressMessage) {
   const mediaFiles = new Map(); // url -> { buffer, filename, ext }
   let fileCounter = 0;
+  let downloadedCount = 0;
+  let totalMediaCount = 0;
+
+  // First, count total media files
+  for (const message of messages) {
+    totalMediaCount += message.attachments.size;
+    if (message.embeds.length > 0) {
+      for (const embed of message.embeds) {
+        if (embed.image?.url) totalMediaCount++;
+        if (embed.thumbnail?.url) totalMediaCount++;
+      }
+    }
+    if (message.reactions.cache.size > 0) {
+      for (const reaction of message.reactions.cache.values()) {
+        if (reaction.emoji.id) totalMediaCount++;
+      }
+    }
+    const emojiMatches = message.content.matchAll(/<a?:(\w+):(\d+)>/g);
+    for (const match of emojiMatches) {
+      totalMediaCount++;
+    }
+  }
 
   for (const message of messages) {
     // Download attachments
@@ -118,6 +191,19 @@ async function downloadAllMedia(messages) {
               attachment.name
             )}`;
             mediaFiles.set(attachment.url, { buffer, filename, ext });
+            downloadedCount++;
+
+            // Update progress every 50 files
+            if (downloadedCount % 50 === 0) {
+              const updateEmbed = createEmbed(
+                "Downloading Media",
+                `📦 Downloaded ${downloadedCount}/${totalMediaCount} media files...`,
+                ""
+              );
+              await progressMessage
+                .edit({ embeds: [updateEmbed] })
+                .catch(() => {});
+            }
           } catch (error) {
             console.error(`Failed to download ${attachment.url}:`, error);
           }
@@ -134,6 +220,18 @@ async function downloadAllMedia(messages) {
             const ext = getFileExtension(embed.image.url);
             const filename = `media/${fileCounter++}_embed${ext}`;
             mediaFiles.set(embed.image.url, { buffer, filename, ext });
+            downloadedCount++;
+
+            if (downloadedCount % 50 === 0) {
+              const updateEmbed = createEmbed(
+                "Downloading Media",
+                `📦 Downloaded ${downloadedCount}/${totalMediaCount} media files...`,
+                ""
+              );
+              await progressMessage
+                .edit({ embeds: [updateEmbed] })
+                .catch(() => {});
+            }
           } catch (error) {
             console.error(`Failed to download ${embed.image.url}:`, error);
           }
@@ -144,6 +242,18 @@ async function downloadAllMedia(messages) {
             const ext = getFileExtension(embed.thumbnail.url);
             const filename = `media/${fileCounter++}_thumb${ext}`;
             mediaFiles.set(embed.thumbnail.url, { buffer, filename, ext });
+            downloadedCount++;
+
+            if (downloadedCount % 50 === 0) {
+              const updateEmbed = createEmbed(
+                "Downloading Media",
+                `📦 Downloaded ${downloadedCount}/${totalMediaCount} media files...`,
+                ""
+              );
+              await progressMessage
+                .edit({ embeds: [updateEmbed] })
+                .catch(() => {});
+            }
           } catch (error) {
             console.error(`Failed to download ${embed.thumbnail.url}:`, error);
           }
@@ -163,6 +273,7 @@ async function downloadAllMedia(messages) {
                 reaction.emoji.id
               }.png`;
               mediaFiles.set(emojiUrl, { buffer, filename, ext: ".png" });
+              downloadedCount++;
             } catch (error) {
               console.error(`Failed to download ${emojiUrl}:`, error);
             }
@@ -181,6 +292,7 @@ async function downloadAllMedia(messages) {
           const buffer = await downloadFile(emojiUrl);
           const filename = `media/${fileCounter++}_emoji_${emojiId}.png`;
           mediaFiles.set(emojiUrl, { buffer, filename, ext: ".png" });
+          downloadedCount++;
         } catch (error) {
           console.error(`Failed to download ${emojiUrl}:`, error);
         }
