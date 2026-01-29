@@ -73,32 +73,32 @@ client.once(Events.ClientReady, () => {
   }, 300000); // 5 minutes in milliseconds 300000
 
   // ✅ Start inactivity interval once after bot is ready
-  setInterval(async () => {
-    for (const [guildId, guild] of client.guilds.cache) {
-      const voiceChannels = guild.channels.cache.filter(
-        (ch) => ch.type === 2 && ch.members.size > 0
-      );
+  // setInterval(async () => {
+  //   for (const [guildId, guild] of client.guilds.cache) {
+  //     const voiceChannels = guild.channels.cache.filter(
+  //       (ch) => ch.type === 2 && ch.members.size > 0
+  //     );
 
-      for (const channel of voiceChannels.values()) {
-        for (const [userId, member] of channel.members) {
-          if (member.user.bot) continue;
+  //     for (const channel of voiceChannels.values()) {
+  //       for (const [userId, member] of channel.members) {
+  //         if (member.user.bot) continue;
 
-          const isMuted = member.voice.selfMute;
-          const lastTextTime = userLastMessageTimestamps.get(userId) || 0;
-          const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
+  //         const isMuted = member.voice.selfMute;
+  //         const lastTextTime = userLastMessageTimestamps.get(userId) || 0;
+  //         const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
 
-          if (isMuted && lastTextTime < tenMinutesAgo) {
-            try {
-              await member.voice.disconnect();
-              logger.warn(`Disconnected ${member.user.tag} for inactivity.`);
-            } catch (err) {
-              logger.error(`Failed to disconnect ${member.user.tag}:`, err);
-            }
-          }
-        }
-      }
-    }
-  }, 10 * 59 * 1000); // every 10 minutes
+  //         if (isMuted && lastTextTime < tenMinutesAgo) {
+  //           try {
+  //             await member.voice.disconnect();
+  //             logger.warn(`Disconnected ${member.user.tag} for inactivity.`);
+  //           } catch (err) {
+  //             logger.error(`Failed to disconnect ${member.user.tag}:`, err);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }, 10 * 59 * 1000); // every 10 minutes
 });
 
 client.on("guildCreate", async (guild) => {
